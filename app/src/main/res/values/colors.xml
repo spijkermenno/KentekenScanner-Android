@@ -5,5 +5,9 @@
     <color name="colorAccent">#616161</color>
     <color name="background_color">#FFFFFF</color>
     <color name="border_color">#EEEEEE</color>
+    <color name="dark_border_color">#707070</color>
     <color name="border_color_error">#FF5050</color>
+    <color name="dark_background_color">#505050</color>
+    <color name="search_background_color">#6060FF</color>
+    <color name="white">#FFFFFF</color>
 </resources>

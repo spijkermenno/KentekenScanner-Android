@@ -25,10 +25,14 @@ import org.json.*;
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.zip.DataFormatException;
 
 
 public class Scan extends Activity {
@@ -156,7 +160,7 @@ public class Scan extends Activity {
                                 result.removeAllViews();
                                 runner = new Async();
                                 runner.execute("1000");
-                            }else{
+                            } else {
                                 text.setBackground(getResources().getDrawable(R.drawable.border_error));
                             }
                         } catch (Exception e) {
@@ -240,22 +244,41 @@ public class Scan extends Activity {
                         String key = (String) iterator.next();
                         if (inArray(key)) {
                             String Filtered = key.replace("_", " ");
+                            String value = object.getString(key);
 
                             TextView line = new TextView(Scan.this);
                             TextView line2 = new TextView(Scan.this);
 
+                            if (key.equals("vervaldatum_apk")){
+                                try {
+                                    if (new SimpleDateFormat("DD/MM/yyyy").parse(value).before(new Date())) {
+                                        line2.setBackground(getResources().getDrawable(R.drawable.border_error_item));
+                                    }else{
+                                        line2.setBackgroundColor(Color.parseColor("#616161"));
+                                    }
+                                }catch (ParseException PE){
+                                    PE.printStackTrace();
+                                }
+                            }else{
+                                line2.setBackgroundColor(Color.parseColor("#616161"));
+                            }
+
                             line.setText(Filtered);
-                            line2.setText(object.getString(key));
+                            line2.setText(value);
 
                             line.setTextColor(Color.BLACK);
                             line2.setTextColor(Color.BLACK);
 
-                            line.setBackgroundColor(Color.parseColor("#FFFFFF"));
-                            line2.setBackgroundColor(Color.parseColor("#DDDDDD"));
+                            line.setBackgroundColor(Color.parseColor("#717171"));
+
+                            line.setTextColor(Color.parseColor("#FFFFFF"));
+                            line2.setTextColor(Color.parseColor("#FFFFFF"));
 
                             line.setVisibility(View.VISIBLE);
                             line2.setVisibility(View.VISIBLE);
 
+                            line.setPadding(10, 0, 0, 0);
+                            line2.setPadding(10, 0, 0, 0);
 
                             line.setTextSize(15);
                             line2.setTextSize(15);

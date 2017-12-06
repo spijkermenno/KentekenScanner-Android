@@ -7,6 +7,7 @@
     android:paddingBottom="5dp"
     android:paddingLeft="5dp"
     android:paddingRight="5dp"
+    android:background="@drawable/dark_background"
     android:paddingTop="5dp">
 
     <EditText
@@ -20,10 +21,14 @@
     <Button
         android:id="@+id/sendRequest"
         style="@style/Base.Widget.AppCompat.Button.Borderless"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="end"
         android:onClick="searchKenteken"
+        android:background="@drawable/search_background"
+        android:textColor="@color/white"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="5dp"
         android:text="@string/button_send" />
 
     <ScrollView
@@ -43,7 +48,7 @@
     <com.google.android.gms.ads.AdView
         android:id="@+id/ad1"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         ads:adSize="BANNER"
