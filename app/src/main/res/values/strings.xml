@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">KentekenScanner</string>
+    <string name="edit_kenteken">Kenteken</string>
+    <string name="button_send">Zoeken</string>
+</resources>
