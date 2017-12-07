@@ -8,8 +8,11 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.*;
@@ -29,9 +32,11 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.EventListener;
 import java.util.Iterator;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.stream.IntStream;
 import java.util.zip.DataFormatException;
 
 
@@ -49,16 +54,101 @@ public class Scan extends Activity {
     public URL url;
     private ConnectionDetector connection;
 
-    final String BUILD = "B0.2";
+    final String BUILD = "1002";
 
     ArrayList<String> shownKeys = new ArrayList<String>();
     ArrayList<String> resultList = new ArrayList<String>();
 
     private static AdView mAdView;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected String makeKenteken(String input) {
+        input = input.toUpperCase();
+        int checkPrev = 0;
+        int checkCur;
+        String kenteken = "";
+        char[] kentekenChar = new char[6];
+        String[] parts = new String[3];
 
+        kentekenChar[0] = input.charAt(0);
+        kentekenChar[1] = input.charAt(1);
+        kentekenChar[2] = input.charAt(2);
+        kentekenChar[3] = input.charAt(3);
+        kentekenChar[4] = input.charAt(4);
+        kentekenChar[5] = input.charAt(5);
+
+        try { // try sidecode 8
+
+            // format = 1-aaa-11
+
+            // setting part 3;
+            if (Character.isDigit(kentekenChar[4]) && Character.isDigit(kentekenChar[5])) {
+                parts[2] = String.valueOf(kentekenChar[4]) + String.valueOf(kentekenChar[5]);
+            }
+            // setting part 1;
+            if (Character.isDigit(kentekenChar[0]) && parts[2].length() == 2) {
+                parts[0] = String.valueOf(kentekenChar[0]);
+            }
+            // setting part 2;
+            if (parts[0].length() == 1 && parts[2].length() == 2) {
+                parts[1] = String.valueOf(kentekenChar[1]) + String.valueOf(kentekenChar[2]) + String.valueOf(kentekenChar[3]);
+                kenteken = parts[0] + "-" + parts[1] + "-" + parts[2];
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        if (kenteken.length() == 0) {
+            try { // try sidecode 7
+
+                // format = 11-aaa-1
+
+                // setting part 3;
+                if (Character.isAlphabetic(kentekenChar[4]) && Character.isDigit(kentekenChar[5])) { // setting part 3 of the licenseplate.
+                    parts[2] = String.valueOf(kentekenChar[5]);
+                }
+                // setting part 1;
+                if (Character.isDigit(kentekenChar[0]) && Character.isDigit(kentekenChar[1]) && parts[2].length() == 1) { // setting part 1 of the licenseplate
+                    parts[0] = String.valueOf(kentekenChar[0]) + String.valueOf(kentekenChar[1]);
+                }
+                // setting part 2;
+                if (parts[0].length() == 2 && parts[2].length() == 1) { // setting part 2 of the licenseplate
+                    parts[1] = String.valueOf(kentekenChar[2]) + String.valueOf(kentekenChar[3]) + String.valueOf(kentekenChar[4]);
+                    kenteken = parts[0] + "-" + parts[1] + "-" + parts[2];
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        if (kenteken.length() == 0) {
+            try { // try sidecode 6
+
+                // format = 11-aa-aa
+
+                // setting part 1;
+                if (Character.isDigit(kentekenChar[0]) && Character.isDigit(kentekenChar[1])) { // setting part 1 of the licenseplate
+                    parts[0] = String.valueOf(kentekenChar[0]) + String.valueOf(kentekenChar[1]);
+                }
+                // setting part 2
+                if (Character.isAlphabetic(kentekenChar[2]) && Character.isAlphabetic(kentekenChar[3])) { // setting part 2 of the licenseplate
+                    parts[1] = String.valueOf(kentekenChar[2]) + String.valueOf(kentekenChar[3]);
+                }
+                // setting part 3;
+                if (Character.isAlphabetic(kentekenChar[4]) && Character.isAlphabetic(kentekenChar[5])) { // setting part 3 of the licenseplate.
+                    parts[2] = String.valueOf(kentekenChar[4]) + String.valueOf(kentekenChar[5]);
+                    kenteken = parts[0] + "-" + parts[1] + "-" + parts[2];
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        if (kenteken.length() == 0) {
+            kenteken = input;
+        }
+
+        return kenteken;
+    }
+
+    protected void createControlArray() {
         shownKeys.add("kenteken");
         shownKeys.add("merk");
         shownKeys.add("eerste_kleur");
@@ -69,16 +159,10 @@ public class Scan extends Activity {
         shownKeys.add("vervaldatum_apk");
         shownKeys.add("wacht_op_keuren");
         shownKeys.add("zuinigheidslabel");
+        shownKeys.add("datum_laatste_tenaamstelling");
+    }
 
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_scan);
-
-        button = findViewById(R.id.sendRequest);
-        result = findViewById(R.id.scroll);
-        progressBar = findViewById(R.id.progressBar);
-        final EditText text = findViewById(R.id.kenteken);
-        connection = new ConnectionDetector(this);
-
+    protected void getAds() {
         try {
             MobileAds.initialize(this, "ca-app-pub-4928043878967484~7828914059");
             //MobileAds.initialize(this, "ca-app-pub-3940256099942544/5224354917"); // test code
@@ -141,7 +225,64 @@ public class Scan extends Activity {
             e.getMessage();
             Log.println(Log.ERROR, TAG, "ERROR WITH AD - exception");
         }
+    }
 
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+
+        createControlArray();
+
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_scan);
+
+        button = findViewById(R.id.sendRequest);
+        result = findViewById(R.id.scroll);
+        progressBar = findViewById(R.id.progressBar);
+        final EditText text = findViewById(R.id.kenteken);
+        connection = new ConnectionDetector(this);
+
+        getAds();
+        text.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
+        text.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                if (text.getText().length() > 0) {
+                    text.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_cross, 0);
+                } else {
+                    text.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
+
+        text.setOnTouchListener(new View.OnTouchListener() {
+            final int DRAWABLE_LEFT = 0;
+            final int DRAWABLE_TOP = 1;
+            final int DRAWABLE_RIGHT = 2;
+            final int DRAWABLE_BOTTOM = 3;
+
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if (event.getAction() == MotionEvent.ACTION_UP) {
+                    int leftEdgeOfRightDrawable = text.getRight()-text.getCompoundDrawables()[DRAWABLE_RIGHT].getBounds().width();
+                    leftEdgeOfRightDrawable -= 20;
+                    if (event.getRawX() >= leftEdgeOfRightDrawable) {
+                        text.setText("");
+                        return true;
+                    }
+                }
+                return false;
+            }
+        });
 
         progressBar.setVisibility(View.INVISIBLE);
 
@@ -154,7 +295,7 @@ public class Scan extends Activity {
                             kenteken = kenteken.replace("-", "");
                             if (kenteken.length() > 0) {
                                 text.setBackground(getResources().getDrawable(R.drawable.border));
-                                text.setText(kenteken);
+                                text.setText(makeKenteken(kenteken));
                                 uri = "https://opendata.rdw.nl/resource/m9d7-ebf2.json?kenteken=" + kenteken;
                                 progressBar.setVisibility(View.VISIBLE);
                                 result.removeAllViews();
@@ -182,7 +323,7 @@ public class Scan extends Activity {
                                 kenteken = text.getText().toString().toUpperCase();
                                 kenteken = kenteken.replace("-", "");
                                 if (kenteken.length() > 0) {
-                                    text.setText(kenteken);
+                                    text.setText(makeKenteken(kenteken));
                                     uri = "https://opendata.rdw.nl/resource/m9d7-ebf2.json?kenteken=" + kenteken;
                                     progressBar.setVisibility(View.VISIBLE);
                                     result.removeAllViews();
@@ -249,17 +390,17 @@ public class Scan extends Activity {
                             TextView line = new TextView(Scan.this);
                             TextView line2 = new TextView(Scan.this);
 
-                            if (key.equals("vervaldatum_apk")){
+                            if (key.equals("vervaldatum_apk")) {
                                 try {
                                     if (new SimpleDateFormat("DD/MM/yyyy").parse(value).before(new Date())) {
                                         line2.setBackground(getResources().getDrawable(R.drawable.border_error_item));
-                                    }else{
+                                    } else {
                                         line2.setBackgroundColor(Color.parseColor("#616161"));
                                     }
-                                }catch (ParseException PE){
+                                } catch (ParseException PE) {
                                     PE.printStackTrace();
                                 }
-                            }else{
+                            } else {
                                 line2.setBackgroundColor(Color.parseColor("#616161"));
                             }
 
