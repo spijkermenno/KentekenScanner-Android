@@ -1,5 +1,22 @@
 <resources>
-    <string name="app_name">KentekenScanner</string>
+    <string name="app_name">Kenteken Scanner</string>
     <string name="edit_kenteken">Kenteken</string>
     <string name="button_send">Zoeken</string>
+    <string name="button_camera">Scannen</string>
+    <string name="ok">OK</string>
+    <string name="permission_camera_rationale">Wij hebben toegang tot je camera nodig pannenkoek!</string>
+    <string name="no_camera_permission">Omdat je ons geen toegang tot je camera hebt gegeven doen we nu lekker deze app uit. groetjes!</string>
+    <string name="low_storage_error">Gooi eens wat foto\'s weg joh, ik kan niet eens een paar benodigde dingen downloaden.</string>
+    <string name="ocr_header">Klik op een kenteken om hem te scannen.</string>
+    <string name="read_text">kentekens scannen.</string>
+    <string name="auto_focus">Auto Focus</string>
+    <string name="use_flash">flits lampje</string>
+    <string name="ocr_success">kenteken gelezen!</string>
+    <string name="ocr_failure">Geen kenteken gevonden,</string>
+    <string name="ocr_error">"Error reading text: %1$s"</string>
+    <string name="error_kenteken_scan">Dit is geen kenteken.</string>
+    <string name="no_internet_connection">Er is geen internet connectie.</string>
+    <string name="no_result">Dit kenteken gaf geen resultaat.</string>
+    <string name="save">Dit kenteken opslaan voor later.</string>
+    <string name="fixed">Ik heb mn internet gefixt gap!</string>
 </resources>

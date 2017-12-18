@@ -1,0 +1,9 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android">
+    <path
+        android:fillColor="@color/menu_background_color"
+        android:pathData="M1,1 h300 v50 h-300 z" />
+    <path
+        android:fillColor="@color/black_border_color"
+        android:pathData="M50,51 h300 z"
+        android:strokeWidth="1.5" />
+</vector>
