@@ -51,6 +51,7 @@
                 android:text="@string/fa_icon_search"
                 android:textColor="@color/white" />
 
+            <!-- todo: delete items individually-->
             <Button
                 android:id="@+id/recent"
                 style="@style/Base.Widget.AppCompat.Button.Borderless"
@@ -66,6 +67,7 @@
                 android:text="@string/fa_icon_recent"
                 android:textColor="@color/white" />
 
+            <!-- todo: correct camera input to highcase -->
             <Button
                 android:id="@+id/camera"
                 style="@style/Base.Widget.AppCompat.Button.Borderless"
