@@ -20,8 +20,8 @@ class Request {
     private static final String TAG = "Request";
     private static final String AUTHOR = "Author => Menno Spijker";
 
-    private ConnectionDetector connection;
-    private String uri;
+    private final ConnectionDetector connection;
+    private final String uri;
 
     Request(ConnectionDetector c, String u){
         connection = c;

@@ -32,26 +32,53 @@ class Async extends AsyncTask<String, String, String> {
     private static final String AUTHOR = "Author => Menno Spijker";
     private static final String NAMEFILE = "data.json";
 
+    private LinearLayout linearLayout;
+    private Button recent;
     private String kenteken, uri;
-    private ScrollView result;
+    private ScrollView resultView;
     private Context main;
     private ArrayList<String> shownKeys = new ArrayList<String>();
     private ConnectionDetector connection;
     public kentekenHandler Khandler;
     public AdView mAdView;
+    public ReqType reqtype;
+    public Async self;
 
 
-    Async(Context m, String k, ScrollView r, ArrayList<String> s, String u, ConnectionDetector c, Button re, kentekenHandler kh, AdView mad) {
+    Async(Context m, String k, ScrollView r, ArrayList<String> s, String u, ConnectionDetector c, Button re, kentekenHandler kh, AdView mad, ReqType type) {
         try {
             main = m;
             kenteken = k;
-            result = r;
+            resultView = r;
             shownKeys = s;
             uri = u;
             connection = c;
-            Button recent = re;
+            recent = re;
             Khandler = kh;
             mAdView = mad;
+            reqtype = type;
+            self = this;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    Async(Context m, String k, ScrollView r, ArrayList<String> s, String u, ConnectionDetector c, Button re, kentekenHandler kh, AdView mad, ReqType type, LinearLayout lin) {
+        try {
+            main = m;
+            kenteken = k;
+            resultView = r;
+            shownKeys = s;
+            uri = u;
+            connection = c;
+            recent = re;
+            Khandler = kh;
+            mAdView = mad;
+            reqtype = type;
+            linearLayout = lin;
+            self = this;
+
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -73,38 +100,87 @@ class Async extends AsyncTask<String, String, String> {
     }
 
     @Override
-    protected void onPostExecute(String Result) {
-        if (!Result.equals("No internet connection.")) {
+    protected void onPostExecute(String result) {
+        firstrequest(result);
+    }
+
+    private boolean inArray(String attr) {
+        return shownKeys.contains(attr);
+    }
+
+    @Override
+    protected void onPreExecute() {
+    }
+
+    @Override
+    protected void onProgressUpdate(String... text) {
+    }
+
+    synchronized void firstrequest(String result) {
+        if (!result.equals("No internet connection.")) {
             try {
-                JSONArray array = new JSONArray(Result);
+                JSONArray array = new JSONArray(result);
                 JSONObject object = array.getJSONObject(0);
 
                 try {
-                    result.removeAllViews();
+                    resultView.removeAllViews();
 
                     Iterator iterator = object.keys();
 
-                    result.setVisibility(View.VISIBLE);
+                    resultView.setVisibility(View.VISIBLE);
 
                     LinearLayout lin = new LinearLayout(main);
                     lin.setOrientation(LinearLayout.VERTICAL);
 
+                    Button save = new Button(main);
+                    save.setText(R.string.save);
+
+                    save.setOnClickListener(
+                            new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    Khandler.SaveKenteken(kenteken);
+                                    Khandler.openRecent();
+                                }
+                            });
+
+                    lin.addView(save);
+
                     while (iterator.hasNext()) {
                         String key = (String) iterator.next();
-                        //if (inArray(key)) {
+                        if (!key.contains("api")) {
                             String Filtered = key.replace("_", " ");
                             String value = object.getString(key);
 
                             TextView line = new TextView(main);
                             TextView line2 = new TextView(main);
 
+                            if (key.equals("datum_tenaamstelling")) {
+                                String date = value.substring(6, 8) + "-" + value.substring(4, 6) + "-" + value.substring(0, 4);
+                                value = date;
+                            }
+
+                            if (key.equals("datum_eerste_toelating")) {
+                                String date = value.substring(6, 8) + "-" + value.substring(4, 6) + "-" + value.substring(0, 4);
+                                value = date;
+                            }
+
+                            if (key.equals("datum_eerste_afgifte_nederland")) {
+                                String date = value.substring(6, 8) + "-" + value.substring(4, 6) + "-" + value.substring(0, 4);
+                                value = date;
+                            }
+
                             if (key.equals("vervaldatum_apk")) {
                                 try {
-                                    if (new SimpleDateFormat("DD/MM/yyyy").parse(value).before(new Date())) {
+                                    String date = value.substring(6, 8) + "-" + value.substring(4, 6) + "-" + value.substring(0, 4);
+                                    System.out.println(value);
+                                    if (new SimpleDateFormat("yyyyMMdd").parse(value).before(new Date())) {
                                         line2.setBackground(main.getResources().getDrawable(R.drawable.border_error_item));
                                     } else {
                                         line2.setBackgroundColor(Color.parseColor("#ffffff"));
                                     }
+
+                                    value = date;
                                 } catch (ParseException PE) {
                                     PE.printStackTrace();
                                 }
@@ -126,8 +202,8 @@ class Async extends AsyncTask<String, String, String> {
                             line.setVisibility(View.VISIBLE);
                             line2.setVisibility(View.VISIBLE);
 
-                            line.setPadding(10, 0, 0, 0);
-                            line2.setPadding(10, 0, 0, 0);
+                            line.setPadding(10, 10, 10, 0);
+                            line2.setPadding(10, 10, 10, 0);
 
                             line.setTextSize(15);
                             line2.setTextSize(15);
@@ -146,21 +222,9 @@ class Async extends AsyncTask<String, String, String> {
                                 e.getMessage();
                             }
                         }
-                    //}
-                    Button save = new Button(main);
-                    save.setText(R.string.save);
+                    }
 
-                    save.setOnClickListener(
-                            new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    Khandler.SaveKenteken(kenteken);
-                                    Khandler.openRecent();
-                                }
-                            });
-
-                    lin.addView(save);
-                    result.addView(lin);
+                    resultView.addView(lin);
 
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -179,7 +243,7 @@ class Async extends AsyncTask<String, String, String> {
                 line.setTextColor(Color.RED);
 
                 lin.addView(line);
-                result.addView(lin);
+                resultView.addView(lin);
             }
         } else {
             LinearLayout lin = new LinearLayout(main);
@@ -192,19 +256,7 @@ class Async extends AsyncTask<String, String, String> {
             line.setTextColor(Color.RED);
 
             lin.addView(line);
-            result.addView(lin);
+            resultView.addView(lin);
         }
     }
-
-    private boolean inArray(String attr) {
-        return shownKeys.contains(attr);
-    }
-
-    @Override
-    protected void onPreExecute() {}
-
-    @Override
-    protected void onProgressUpdate(String... text) {}
-
-
 }

@@ -27,7 +27,7 @@ import com.google.android.gms.vision.text.TextBlock;
  * as OcrGraphics.
  */
 class OcrDetectorProcessor implements Detector.Processor<TextBlock> {
-    private GraphicOverlay<OcrGraphic> mGraphicOverlay;
+    private final GraphicOverlay<OcrGraphic> mGraphicOverlay;
     private static final String TAG = "OcrDetectorProcessor";
 
     OcrDetectorProcessor(GraphicOverlay<OcrGraphic> ocrGraphicOverlay) {

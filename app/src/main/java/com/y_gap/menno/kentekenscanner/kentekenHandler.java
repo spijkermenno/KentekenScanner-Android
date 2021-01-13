@@ -24,15 +24,15 @@ import java.util.ArrayList;
 public class kentekenHandler {
     private static final String TAG = "kenteken scanner";
     private static final String NAMEFILE = "data.json";
-    private Button button3;
-    private Context context;
-    private ArrayList<String> shownKeys;
-    private ConnectionDetector connection;
+    private final Button button3;
+    private final Context context;
+    private final ArrayList<String> shownKeys;
+    private final ConnectionDetector connection;
     private String kenteken;
     private String uri;
     private Async runner;
-    private ScrollView result;
-    private TextView kentekenHolder;
+    private final ScrollView result;
+    private final TextView kentekenHolder;
     public AdView mAdView;
 
     kentekenHandler(Context c, ConnectionDetector co, Button b, ScrollView r, TextView kHold, AdView mad) {
@@ -67,7 +67,7 @@ public class kentekenHandler {
         kentekens = new ArrayList<String>();
         FileInputStream fis;
         int n;
-        StringBuffer fileContent = new StringBuffer("");
+        StringBuffer fileContent = new StringBuffer();
 
         try {
             fis = context.openFileInput(NAMEFILE);
@@ -233,7 +233,7 @@ public class kentekenHandler {
 
             // setting part 3;
             if (Character.isDigit(kentekenChar[4]) && Character.isDigit(kentekenChar[5])) {
-                parts[2] = String.valueOf(kentekenChar[4]) + String.valueOf(kentekenChar[5]);
+                parts[2] = String.valueOf(kentekenChar[4]) + kentekenChar[5];
             }
             // setting part 1;
             if (Character.isDigit(kentekenChar[0]) && parts[2].length() == 2) {
@@ -241,7 +241,7 @@ public class kentekenHandler {
             }
             // setting part 2;
             if (parts[0].length() == 1 && parts[2].length() == 2) {
-                parts[1] = String.valueOf(kentekenChar[1]) + String.valueOf(kentekenChar[2]) + String.valueOf(kentekenChar[3]);
+                parts[1] = String.valueOf(kentekenChar[1]) + kentekenChar[2] + kentekenChar[3];
                 kenteken = parts[0] + "-" + parts[1] + "-" + parts[2];
             }
         } catch (Exception e) {
@@ -258,11 +258,11 @@ public class kentekenHandler {
                 }
                 // setting part 1;
                 if (Character.isDigit(kentekenChar[0]) && Character.isDigit(kentekenChar[1]) && parts[2].length() == 1) { // setting part 1 of the licenseplate
-                    parts[0] = String.valueOf(kentekenChar[0]) + String.valueOf(kentekenChar[1]);
+                    parts[0] = String.valueOf(kentekenChar[0]) + kentekenChar[1];
                 }
                 // setting part 2;
                 if (parts[0].length() == 2 && parts[2].length() == 1) { // setting part 2 of the licenseplate
-                    parts[1] = String.valueOf(kentekenChar[2]) + String.valueOf(kentekenChar[3]) + String.valueOf(kentekenChar[4]);
+                    parts[1] = String.valueOf(kentekenChar[2]) + kentekenChar[3] + kentekenChar[4];
                     kenteken = parts[0] + "-" + parts[1] + "-" + parts[2];
                 }
             } catch (Exception e) {
@@ -279,11 +279,11 @@ public class kentekenHandler {
                 }
                 // setting part 1;
                 if (Character.isAlphabetic(kentekenChar[0]) && Character.isAlphabetic(kentekenChar[1]) && parts[2].length() == 1) { // setting part 1 of the licenseplate
-                    parts[0] = String.valueOf(kentekenChar[0]) + String.valueOf(kentekenChar[1]);
+                    parts[0] = String.valueOf(kentekenChar[0]) + kentekenChar[1];
                 }
                 // setting part 2;
                 if (parts[0].length() == 2 && parts[2].length() == 1) { // setting part 2 of the licenseplate
-                    parts[1] = String.valueOf(kentekenChar[2]) + String.valueOf(kentekenChar[3]) + String.valueOf(kentekenChar[4]);
+                    parts[1] = String.valueOf(kentekenChar[2]) + kentekenChar[3] + kentekenChar[4];
                     kenteken = parts[0] + "-" + parts[1] + "-" + parts[2];
                 }
             } catch (Exception e) {
@@ -296,15 +296,15 @@ public class kentekenHandler {
 
                 // setting part 1;
                 if (Character.isDigit(kentekenChar[0]) && Character.isDigit(kentekenChar[1])) { // setting part 1 of the licenseplate
-                    parts[0] = String.valueOf(kentekenChar[0]) + String.valueOf(kentekenChar[1]);
+                    parts[0] = String.valueOf(kentekenChar[0]) + kentekenChar[1];
                 }
                 // setting part 2
                 if (Character.isAlphabetic(kentekenChar[2]) && Character.isAlphabetic(kentekenChar[3])) { // setting part 2 of the licenseplate
-                    parts[1] = String.valueOf(kentekenChar[2]) + String.valueOf(kentekenChar[3]);
+                    parts[1] = String.valueOf(kentekenChar[2]) + kentekenChar[3];
                 }
                 // setting part 3;
                 if (Character.isAlphabetic(kentekenChar[4]) && Character.isAlphabetic(kentekenChar[5])) { // setting part 3 of the licenseplate.
-                    parts[2] = String.valueOf(kentekenChar[4]) + String.valueOf(kentekenChar[5]);
+                    parts[2] = String.valueOf(kentekenChar[4]) + kentekenChar[5];
                     kenteken = parts[0] + "-" + parts[1] + "-" + parts[2];
                 }
             } catch (Exception e) {
@@ -331,7 +331,7 @@ public class kentekenHandler {
                 textview.setText(makeKenteken(kenteken));
                 uri = "https://opendata.rdw.nl/resource/m9d7-ebf2.json?kenteken=" + kenteken;
                 result.removeAllViews();
-                runner = new Async(this.context, kenteken, result, shownKeys, uri, connection, button3, this, mAdView);
+                runner = new Async(this.context, kenteken, result, shownKeys, uri, connection, button3, this, mAdView, ReqType.FIRST_RDW_REQUEST);
                 runner.execute("1000");
             }
         } catch (Exception e) {
@@ -355,7 +355,7 @@ public class kentekenHandler {
 
                 result.removeAllViews();
 
-                runner = new Async(this.context, kenteken, result, shownKeys, uri, connection, button3, this, mAdView);
+                runner = new Async(this.context, kenteken, result, shownKeys, uri, connection, button3, this, mAdView, ReqType.FIRST_RDW_REQUEST);
                 runner.execute("1000");
             }
         } catch (Exception e) {

@@ -15,7 +15,7 @@ import static android.content.ContentValues.TAG;
 
  class ConnectionDetector {
 
-    private Context _context;
+    private final Context _context;
 
     public ConnectionDetector(Context context) {
         this._context = context;

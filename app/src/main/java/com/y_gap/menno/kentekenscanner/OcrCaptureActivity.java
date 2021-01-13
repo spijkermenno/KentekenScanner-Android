@@ -96,7 +96,7 @@ public final class OcrCaptureActivity extends AppCompatActivity {
         setContentView(R.layout.ocr_capture);
 
         Log.w(TAG, "1");
-        mPreview = (CameraSourcePreview) findViewById(R.id.preview);
+        mPreview = findViewById(R.id.preview);
         mGraphicOverlay = findViewById(R.id.graphicOverlay);
 
         Log.w(TAG, "2");
