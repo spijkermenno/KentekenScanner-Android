@@ -1,4 +1,4 @@
-package com.y_gap.menno.kentekenscanner;
+package com.MennoSpijker.kentekenscanner;
 
 import android.content.Context;
 import android.graphics.Color;
@@ -184,7 +184,7 @@ public class kentekenHandler {
                 aRecent = aRecent.replace("/", "");
 
                 Button line = new Button(context);
-                line.setText(aRecent);
+                line.setText(kentekenHandler.makeKenteken(aRecent));
                 final String recentA = aRecent;
 
                 line.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
@@ -215,7 +215,7 @@ public class kentekenHandler {
         }
     }
 
-    protected String makeKenteken(String input) {
+    protected static String makeKenteken(String input) {
         input = input.toUpperCase();
         int checkPrev = 0;
         int checkCur;
@@ -331,7 +331,7 @@ public class kentekenHandler {
                 textview.setText(makeKenteken(kenteken));
                 uri = "https://opendata.rdw.nl/resource/m9d7-ebf2.json?kenteken=" + kenteken;
                 result.removeAllViews();
-                runner = new Async(this.context, kenteken, result, shownKeys, uri, connection, button3, this, mAdView, ReqType.FIRST_RDW_REQUEST);
+                runner = new Async(this.context, kenteken, result, shownKeys, uri, connection, button3, this, mAdView);
                 runner.execute("1000");
             }
         } catch (Exception e) {
@@ -355,7 +355,7 @@ public class kentekenHandler {
 
                 result.removeAllViews();
 
-                runner = new Async(this.context, kenteken, result, shownKeys, uri, connection, button3, this, mAdView, ReqType.FIRST_RDW_REQUEST);
+                runner = new Async(this.context, kenteken, result, shownKeys, uri, connection, button3, this, mAdView);
                 runner.execute("1000");
             }
         } catch (Exception e) {

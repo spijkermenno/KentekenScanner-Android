@@ -1,4 +1,4 @@
-package com.y_gap.menno.kentekenscanner;
+package com.MennoSpijker.kentekenscanner;
 
 import android.Manifest;
 import android.app.Activity;
@@ -11,17 +11,22 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.view.KeyEvent;
 import android.view.View;
-import android.widget.*;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.ScrollView;
+import android.widget.Toast;
 
-import com.google.android.gms.ads.*;
+import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdSize;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.common.api.CommonStatusCodes;
 
 import org.json.JSONArray;
 
 import java.net.URL;
-
 import java.util.ArrayList;
 
 import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;

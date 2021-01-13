@@ -1,4 +1,4 @@
-package com.y_gap.menno.kentekenscanner;
+package com.MennoSpijker.kentekenscanner;
 
 import android.content.Context;
 import android.net.ConnectivityManager;

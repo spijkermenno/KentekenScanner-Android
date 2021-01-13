@@ -1,4 +1,4 @@
-package com.y_gap.menno.kentekenscanner;
+package com.MennoSpijker.kentekenscanner;
 
 import android.content.Context;
 import android.graphics.Color;
@@ -41,11 +41,10 @@ class Async extends AsyncTask<String, String, String> {
     private ConnectionDetector connection;
     public kentekenHandler Khandler;
     public AdView mAdView;
-    public ReqType reqtype;
     public Async self;
 
 
-    Async(Context m, String k, ScrollView r, ArrayList<String> s, String u, ConnectionDetector c, Button re, kentekenHandler kh, AdView mad, ReqType type) {
+    Async(Context m, String k, ScrollView r, ArrayList<String> s, String u, ConnectionDetector c, Button re, kentekenHandler kh, AdView mad) {
         try {
             main = m;
             kenteken = k;
@@ -56,7 +55,6 @@ class Async extends AsyncTask<String, String, String> {
             recent = re;
             Khandler = kh;
             mAdView = mad;
-            reqtype = type;
             self = this;
 
         } catch (Exception e) {
@@ -64,7 +62,7 @@ class Async extends AsyncTask<String, String, String> {
         }
     }
 
-    Async(Context m, String k, ScrollView r, ArrayList<String> s, String u, ConnectionDetector c, Button re, kentekenHandler kh, AdView mad, ReqType type, LinearLayout lin) {
+    Async(Context m, String k, ScrollView r, ArrayList<String> s, String u, ConnectionDetector c, Button re, kentekenHandler kh, AdView mad, LinearLayout lin) {
         try {
             main = m;
             kenteken = k;
@@ -75,7 +73,6 @@ class Async extends AsyncTask<String, String, String> {
             recent = re;
             Khandler = kh;
             mAdView = mad;
-            reqtype = type;
             linearLayout = lin;
             self = this;
 
