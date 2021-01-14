@@ -19,4 +19,5 @@
     <string name="no_result">Dit kenteken gaf geen resultaat.</string>
     <string name="save">Dit kenteken opslaan voor later.</string>
     <string name="fixed">Ik heb mn internet gefixt gap!</string>
+    <string name="kenteken_placeholder">00-XXX-0</string>
 </resources>

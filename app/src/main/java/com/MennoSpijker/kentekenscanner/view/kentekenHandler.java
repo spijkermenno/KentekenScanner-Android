@@ -217,13 +217,15 @@ public class kentekenHandler {
                 return licenseplate.substring(0, 1) + '-' + licenseplate.substring(1, 3) + '-' + licenseplate.substring(3, 6);
             }
 
+            // todo add sidecode 14
+
             System.out.println("licenceplate is: " + licenseplate);
 
             return licenseplate;
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return null;
+        return licenseplate;
     }
 
     public static int getSidecodeLicenseplate(String licenseplate) throws SideCodeException {

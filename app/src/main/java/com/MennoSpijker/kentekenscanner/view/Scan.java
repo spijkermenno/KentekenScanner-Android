@@ -7,8 +7,12 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Typeface;
 import android.os.Bundle;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
+
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
@@ -22,11 +26,12 @@ import com.MennoSpijker.kentekenscanner.FontManager;
 import com.MennoSpijker.kentekenscanner.OcrCaptureActivity;
 import com.MennoSpijker.kentekenscanner.R;
 import com.MennoSpijker.kentekenscanner.Request;
-import com.google.android.gms.ads.AdListener;
+
 import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.AdSize;
-import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.initialization.InitializationStatus;
+import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
+import com.google.android.gms.ads.AdView;
 import com.google.android.gms.common.api.CommonStatusCodes;
 
 import org.json.JSONArray;
@@ -69,52 +74,24 @@ public class Scan extends Activity {
 
     protected void getAds() {
 
-        MobileAds.initialize(this, "ca-app-pub-4928043878967484~7828914059");
+        //MobileAds.initialize(this, "ca-app-pub-4928043878967484~7828914059");
+
+        MobileAds.initialize(this, new OnInitializationCompleteListener() {
+            @Override
+            public void onInitializationComplete(InitializationStatus initializationStatus) {
+                System.out.println(initializationStatus);
+            }
+        });
 
         try {
 
             AdView adView = new AdView(this);
-            adView.setAdSize(AdSize.BANNER);
-            adView.setAdUnitId("ca-app-pub-4928043878967484~7828914059");
 
+            adView.setAdUnitId("ca-app-pub-4928043878967484/5146910390");
             mAdView = this.findViewById(R.id.ad1);
-
-            mAdView.setAdListener(new AdListener() {
-                @Override
-                public void onAdLoaded() {
-                    mAdView.setVisibility(View.VISIBLE);
-                    ads = 1;
-                }
-
-                @Override
-                public void onAdFailedToLoad(int errorCode) {
-                    if (ads != 1) {
-                        try {
-                            mAdView.setVisibility(View.GONE);
-                            ads = 0;
-                            throw new Exception("Geen internet");
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }
-
-                @Override
-                public void onAdOpened() {
-                }
-
-                @Override
-                public void onAdLeftApplication() {
-                }
-
-                @Override
-                public void onAdClosed() {
-                    AdRequest adRequest = new AdRequest.Builder().build();
-                    mAdView.loadAd(adRequest);
-                }
-            });
             AdRequest adRequest = new AdRequest.Builder().build();
             mAdView.loadAd(adRequest);
+
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -129,6 +106,30 @@ public class Scan extends Activity {
         setContentView(R.layout.activity_scan);
 
         final EditText text = findViewById(R.id.kenteken);
+
+        text.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (text.getText().length() == 6) {
+                    String temp = kentekenHandler.formatLicenseplate(text.getText().toString());
+                    if (!text.getText().toString().equals(temp)) {
+                        text.setText(temp);
+                    }
+                }
+
+                if (text.getText().toString().replace("-", "").length() > 6) {
+                    text.setText(text.getText().toString().substring(0,6));
+                }
+            }
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                // TODO Auto-generated method stub
+            }
+            @Override
+            public void afterTextChanged(Editable s) {
+                // TODO Auto-generated method stub
+            }
+        });
 
         button = findViewById(R.id.sendRequest);
         button2 = findViewById(R.id.camera);
