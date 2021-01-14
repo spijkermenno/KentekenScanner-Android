@@ -34,6 +34,8 @@ public class FileHandling {
             FNF.printStackTrace();
         }
 
+        System.out.println(fileContent.toString());
+
         return fileContent.toString();
     }
 

@@ -13,7 +13,6 @@ import android.widget.TextView;
 import com.MennoSpijker.kentekenscanner.ConnectionDetector;
 import com.MennoSpijker.kentekenscanner.R;
 import com.MennoSpijker.kentekenscanner.Request;
-import com.MennoSpijker.kentekenscanner.kentekenHandler;
 import com.google.android.gms.ads.AdView;
 
 import org.json.JSONArray;
@@ -22,7 +21,6 @@ import org.json.JSONObject;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 

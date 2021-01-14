@@ -1,7 +1,9 @@
-package com.MennoSpijker.kentekenscanner;
+package com.MennoSpijker.kentekenscanner.view;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.Typeface;
+import android.util.TypedValue;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
@@ -9,17 +11,16 @@ import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
+import com.MennoSpijker.kentekenscanner.ConnectionDetector;
+import com.MennoSpijker.kentekenscanner.FontManager;
+import com.MennoSpijker.kentekenscanner.R;
 import com.MennoSpijker.kentekenscanner.util.FileHandling;
-import com.MennoSpijker.kentekenscanner.view.Async;
 import com.google.android.gms.ads.AdView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 
 public class kentekenHandler {
@@ -84,13 +85,57 @@ public class kentekenHandler {
 
         result.removeAllViews();
 
+        final float scale = context.getResources().getDisplayMetrics().density;
+        int width = (int) (283 * scale + 0.5f);
+        int height = (int) (64 * scale + 0.5f);
+
         try {
-            final ArrayList<String> recent = getRecentKenteken();
+            final ArrayList<String> recents = getRecentKenteken();
 
             LinearLayout lin = new LinearLayout(context);
             lin.setOrientation(LinearLayout.VERTICAL);
 
-            if (recent.size() > 0) {
+            for (String recent : recents) {
+                recent = recent.replace("/", "");
+
+                Button line = new Button(context);
+                line.setText(kentekenHandler.formatLicenseplate(recent));
+                final String finalRecent = recent;
+
+                line.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+
+                line.setOnClickListener(
+                        new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                runCamera(finalRecent, kentekenHolder);
+                            }
+                        });
+
+                line.setBackground(context.getDrawable(R.drawable.kenteken_v2));
+
+                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                        width,
+                        height
+                );
+                params.setMargins(0, 10, 0, 10);
+                params.gravity = 17;
+                line.setLayoutParams(params);
+
+                line.setTextSize(TypedValue.COMPLEX_UNIT_SP, 36);
+                line.setTypeface(Typeface.defaultFromStyle(Typeface.BOLD));
+
+                int left = (int) (20 * scale + 0.5f);
+                int right = (int) (10 * scale + 0.5f);
+                int top = (int) (0 * scale + 0.5f);
+                int bottom = (int) (0 * scale + 0.5f);
+
+                line.setPadding(left, top, right, bottom);
+
+                lin.addView(line);
+            }
+
+            if (recents.size() > 0) {
                 Button clear = new Button(context);
 
                 clear.setTypeface(FontManager.getTypeface(context, FontManager.FONTAWESOME));
@@ -103,36 +148,18 @@ public class kentekenHandler {
                                 openRecent();
                             }
                         });
+
+                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                        width,
+                        height
+                );
+
+                params.gravity = 17;
+                clear.setLayoutParams(params);
+
                 lin.addView(clear);
             }
 
-            int x = 0;
-            for (String aRecent : recent) {
-                aRecent = aRecent.replace("/", "");
-
-                Button line = new Button(context);
-                line.setText(kentekenHandler.formatLicenseplate(aRecent));
-                final String recentA = aRecent;
-
-                line.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
-
-                line.setOnClickListener(
-                        new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                runCamera(recentA, kentekenHolder);
-                            }
-                        });
-
-                if (x % 2 == 0) {
-                    line.setBackgroundColor(Color.LTGRAY);
-                } else {
-                    line.setBackgroundColor(Color.WHITE);
-                }
-
-                lin.addView(line);
-                x++;
-            }
             result.addView(lin);
 
         } catch (Exception e) {
