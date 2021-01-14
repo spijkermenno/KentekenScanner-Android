@@ -17,7 +17,6 @@ package com.MennoSpijker.kentekenscanner;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
-import android.app.ActionBar;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -29,7 +28,6 @@ import android.content.pm.PackageManager;
 import android.hardware.Camera;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Vibrator;
 import android.support.annotation.NonNull;
@@ -44,10 +42,12 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.Toast;
 
+import com.MennoSpijker.kentekenscanner.camera.CameraSource;
+import com.MennoSpijker.kentekenscanner.camera.CameraSourcePreview;
+import com.MennoSpijker.kentekenscanner.camera.GraphicOverlay;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.api.CommonStatusCodes;
-import com.y_gap.menno.kentekenscanner.ui.camera.*;
 
 import com.google.android.gms.vision.text.TextBlock;
 import com.google.android.gms.vision.text.TextRecognizer;

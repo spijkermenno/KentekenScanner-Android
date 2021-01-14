@@ -22,7 +22,7 @@
         android:killAfterRestore="true"
         android:hardwareAccelerated="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".Scan">
+        <activity android:name=".view.Scan">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

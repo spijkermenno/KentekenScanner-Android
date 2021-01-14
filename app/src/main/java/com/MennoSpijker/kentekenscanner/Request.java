@@ -14,7 +14,7 @@ import java.net.URL;
  * Created by Menno on 08/12/2017.
  */
 
-class Request {
+public class Request {
 
     public static final String EXTRA_MESSAGE = "com.example.myfirstapp.MESSAGE";
     private static final String TAG = "Request";
@@ -23,7 +23,7 @@ class Request {
     private final ConnectionDetector connection;
     private final String uri;
 
-    Request(ConnectionDetector c, String u){
+    public Request(ConnectionDetector c, String u){
         connection = c;
         uri = u;
     }

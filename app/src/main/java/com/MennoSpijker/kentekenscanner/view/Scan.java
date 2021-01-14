@@ -1,4 +1,4 @@
-package com.MennoSpijker.kentekenscanner;
+package com.MennoSpijker.kentekenscanner.view;
 
 import android.Manifest;
 import android.app.Activity;
@@ -17,6 +17,12 @@ import android.widget.ImageView;
 import android.widget.ScrollView;
 import android.widget.Toast;
 
+import com.MennoSpijker.kentekenscanner.ConnectionDetector;
+import com.MennoSpijker.kentekenscanner.FontManager;
+import com.MennoSpijker.kentekenscanner.OcrCaptureActivity;
+import com.MennoSpijker.kentekenscanner.R;
+import com.MennoSpijker.kentekenscanner.Request;
+import com.MennoSpijker.kentekenscanner.kentekenHandler;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdSize;

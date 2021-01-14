@@ -1,4 +1,4 @@
-package com.MennoSpijker.kentekenscanner;
+package com.MennoSpijker.kentekenscanner.view;
 
 import android.content.Context;
 import android.graphics.Color;
@@ -10,6 +10,10 @@ import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
+import com.MennoSpijker.kentekenscanner.ConnectionDetector;
+import com.MennoSpijker.kentekenscanner.R;
+import com.MennoSpijker.kentekenscanner.Request;
+import com.MennoSpijker.kentekenscanner.kentekenHandler;
 import com.google.android.gms.ads.AdView;
 
 import org.json.JSONArray;
@@ -26,7 +30,7 @@ import java.util.Iterator;
  * Created by Menno on 08/12/2017.
  */
 
-class Async extends AsyncTask<String, String, String> {
+public class Async extends AsyncTask<String, String, String> {
     public static final String EXTRA_MESSAGE = "com.example.myfirstapp.MESSAGE";
     private static final String TAG = "Async";
     private static final String AUTHOR = "Author => Menno Spijker";
@@ -37,43 +41,22 @@ class Async extends AsyncTask<String, String, String> {
     private String kenteken, uri;
     private ScrollView resultView;
     private Context main;
-    private ArrayList<String> shownKeys = new ArrayList<String>();
     private ConnectionDetector connection;
     public kentekenHandler Khandler;
     public AdView mAdView;
     public Async self;
 
 
-    Async(Context m, String k, ScrollView r, ArrayList<String> s, String u, ConnectionDetector c, Button re, kentekenHandler kh, AdView mad) {
+    public Async(Context m, String k, ScrollView r, String u, ConnectionDetector c, Button re, kentekenHandler kh, AdView mad) {
         try {
             main = m;
             kenteken = k;
             resultView = r;
-            shownKeys = s;
             uri = u;
             connection = c;
             recent = re;
             Khandler = kh;
             mAdView = mad;
-            self = this;
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    Async(Context m, String k, ScrollView r, ArrayList<String> s, String u, ConnectionDetector c, Button re, kentekenHandler kh, AdView mad, LinearLayout lin) {
-        try {
-            main = m;
-            kenteken = k;
-            resultView = r;
-            shownKeys = s;
-            uri = u;
-            connection = c;
-            recent = re;
-            Khandler = kh;
-            mAdView = mad;
-            linearLayout = lin;
             self = this;
 
         } catch (Exception e) {
@@ -99,10 +82,6 @@ class Async extends AsyncTask<String, String, String> {
     @Override
     protected void onPostExecute(String result) {
         firstrequest(result);
-    }
-
-    private boolean inArray(String attr) {
-        return shownKeys.contains(attr);
     }
 
     @Override

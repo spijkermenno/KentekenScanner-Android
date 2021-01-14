@@ -21,7 +21,7 @@ import android.graphics.Paint;
 import android.graphics.RectF;
 import android.util.Log;
 
-import com.y_gap.menno.kentekenscanner.ui.camera.GraphicOverlay;
+import com.MennoSpijker.kentekenscanner.camera.GraphicOverlay;
 import com.google.android.gms.vision.text.Text;
 import com.google.android.gms.vision.text.TextBlock;
 

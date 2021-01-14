@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.y_gap.menno.kentekenscanner.ui.camera;
+package com.MennoSpijker.kentekenscanner.camera;
 
 import android.Manifest;
 import android.content.Context;

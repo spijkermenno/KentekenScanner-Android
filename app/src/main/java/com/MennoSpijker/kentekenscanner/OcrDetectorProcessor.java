@@ -18,7 +18,7 @@ package com.MennoSpijker.kentekenscanner;
 import android.util.Log;
 import android.util.SparseArray;
 
-import com.y_gap.menno.kentekenscanner.ui.camera.GraphicOverlay;
+import com.MennoSpijker.kentekenscanner.camera.GraphicOverlay;
 import com.google.android.gms.vision.Detector;
 import com.google.android.gms.vision.text.TextBlock;
 
