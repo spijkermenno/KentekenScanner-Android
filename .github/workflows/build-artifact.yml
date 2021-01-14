@@ -15,11 +15,12 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
-    
-    - name: Building android
-      uses: sparkfabrik/android-build-action@v1.0.0
-      with:
-        project-path: app
-        output-path: my-app.apk
+      - name: Grant permission
+      - run: chmod +x gradlew
+
+      - name: Building android
+        uses: sparkfabrik/android-build-action@v1.0.0
+        with:
+          project-path: app
+          output-path: my-app.apk
 
