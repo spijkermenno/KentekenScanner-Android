@@ -20,6 +20,6 @@ jobs:
     - name: Building android
       uses: sparkfabrik/android-build-action@v1.0.0
       with:
-        project-path: App
+        project-path: app
         output-path: my-app.apk
 
