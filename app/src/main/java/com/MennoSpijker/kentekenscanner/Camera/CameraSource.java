@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.MennoSpijker.kentekenscanner.camera;
+package com.MennoSpijker.kentekenscanner.Camera;
 
 import android.Manifest;
 import android.annotation.SuppressLint;

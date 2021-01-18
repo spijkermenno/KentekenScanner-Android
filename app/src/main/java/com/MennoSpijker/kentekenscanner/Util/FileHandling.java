@@ -1,4 +1,4 @@
-package com.MennoSpijker.kentekenscanner.util;
+package com.MennoSpijker.kentekenscanner.Util;
 
 import android.content.Context;
 
@@ -33,8 +33,6 @@ public class FileHandling {
         } catch (FileNotFoundException FNF) {
             FNF.printStackTrace();
         }
-
-        System.out.println(fileContent.toString());
 
         return fileContent.toString();
     }

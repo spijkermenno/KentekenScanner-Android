@@ -42,9 +42,9 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.Toast;
 
-import com.MennoSpijker.kentekenscanner.camera.CameraSource;
-import com.MennoSpijker.kentekenscanner.camera.CameraSourcePreview;
-import com.MennoSpijker.kentekenscanner.camera.GraphicOverlay;
+import com.MennoSpijker.kentekenscanner.Camera.CameraSource;
+import com.MennoSpijker.kentekenscanner.Camera.CameraSourcePreview;
+import com.MennoSpijker.kentekenscanner.Camera.GraphicOverlay;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.api.CommonStatusCodes;
@@ -94,16 +94,13 @@ public final class OcrCaptureActivity extends AppCompatActivity {
         super.onCreate(icicle);
         setContentView(R.layout.ocr_capture);
 
-        Log.w(TAG, "1");
         mPreview = findViewById(R.id.preview);
         mGraphicOverlay = findViewById(R.id.graphicOverlay);
 
-        Log.w(TAG, "2");
         // read parameters from the intent used to launch the activity.
         boolean autoFocus = getIntent().getBooleanExtra(AutoFocus, false);
         boolean useFlash = getIntent().getBooleanExtra(UseFlash, false);
 
-        Log.w(TAG, "3");
         // Check for the camera permission before accessing the camera.  If the
         // permission is not granted yet, request permission.
         int rc = ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA);
@@ -113,7 +110,6 @@ public final class OcrCaptureActivity extends AppCompatActivity {
             requestCameraPermission();
         }
 
-        Log.w(TAG, "4");
         gestureDetector = new GestureDetector(this, new CaptureGestureListener());
         scaleGestureDetector = new ScaleGestureDetector(this, new ScaleListener());
 
@@ -128,7 +124,6 @@ public final class OcrCaptureActivity extends AppCompatActivity {
      * sending the request.
      */
     private void requestCameraPermission() {
-        Log.w(TAG, "Camera permission is not granted. Requesting permission");
 
         final String[] permissions = new String[]{Manifest.permission.CAMERA};
 
@@ -179,8 +174,7 @@ public final class OcrCaptureActivity extends AppCompatActivity {
 
         // Create the TextRecognizer
         TextRecognizer textRecognizer = new TextRecognizer.Builder(context).build();
-        // TODO: Set the TextRecognizer's Processor.
-        textRecognizer.setProcessor(new OcrDetectorProcessor(mGraphicOverlay));
+        textRecognizer.setProcessor(new OcrDetectorProcessor(mGraphicOverlay, this));
 
         // Check if the TextRecognizer is operational.
         if (!textRecognizer.isOperational()) {

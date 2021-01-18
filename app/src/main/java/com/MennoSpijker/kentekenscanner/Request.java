@@ -33,7 +33,7 @@ public class Request {
         String message;
         if (connection.isConnectingToInternet()) {
             try {
-                if (kenteken != "" || kenteken != null) {
+                if (!kenteken.equals("")) {
                     try {
                         URL url = new URL(uri);
                         HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();

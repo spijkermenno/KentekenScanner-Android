@@ -4,4 +4,5 @@
     <string name="fa_icon_camera">&#xf030;</string>
     <string name="fa_icon_recent">&#xf13a;</string>
     <string name="fa_icon_trash">&#xf014;</string>
+    <string name="fa_icon_saved">&#xf02e;</string>
 </resources>

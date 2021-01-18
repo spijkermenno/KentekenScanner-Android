@@ -7,16 +7,16 @@
     android:baselineAligned="false"
     android:keepScreenOn="true">
 
-    <com.MennoSpijker.kentekenscanner.camera.CameraSourcePreview
+    <com.MennoSpijker.kentekenscanner.Camera.CameraSourcePreview
         android:id="@+id/preview"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <com.MennoSpijker.kentekenscanner.camera.GraphicOverlay xmlns:android="http://schemas.android.com/apk/res/android"
+        <com.MennoSpijker.kentekenscanner.Camera.GraphicOverlay xmlns:android="http://schemas.android.com/apk/res/android"
             android:id="@+id/graphicOverlay"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
 
-    </com.MennoSpijker.kentekenscanner.camera.CameraSourcePreview>
+    </com.MennoSpijker.kentekenscanner.Camera.CameraSourcePreview>
 
 </LinearLayout>

@@ -72,7 +72,7 @@
                 android:layout_weight="2"
                 android:background="@color/light_border_color"
                 android:onClick=""
-                android:text="@string/fa_icon_recent"
+                android:text="@string/fa_icon_saved"
                 android:textColor="@color/dark_background_color" />
 
             <Button

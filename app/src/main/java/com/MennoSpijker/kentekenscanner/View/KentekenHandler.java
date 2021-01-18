@@ -1,8 +1,8 @@
-package com.MennoSpijker.kentekenscanner.view;
+package com.MennoSpijker.kentekenscanner.View;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.graphics.Typeface;
+import android.os.Bundle;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -12,10 +12,12 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.MennoSpijker.kentekenscanner.ConnectionDetector;
+import com.MennoSpijker.kentekenscanner.Factory.KentekenDataFactory;
 import com.MennoSpijker.kentekenscanner.FontManager;
 import com.MennoSpijker.kentekenscanner.R;
-import com.MennoSpijker.kentekenscanner.util.FileHandling;
+import com.MennoSpijker.kentekenscanner.Util.FileHandling;
 import com.google.android.gms.ads.AdView;
+import com.google.firebase.analytics.FirebaseAnalytics;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -23,10 +25,10 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
-public class kentekenHandler {
+public class KentekenHandler {
     private static final String NAMEFILE = "data.json";
     private final Button button3;
-    private final Context context;
+    private final MainActivity context;
 
     private final ConnectionDetector connection;
     private String uri;
@@ -34,14 +36,17 @@ public class kentekenHandler {
     private final ScrollView result;
     private final TextView kentekenHolder;
     public AdView mAdView;
+    private KentekenDataFactory kentekenDataFactory = new KentekenDataFactory();
+    private Bundle bundle;
 
-    public kentekenHandler(Context c, ConnectionDetector co, Button b, ScrollView r, TextView kHold, AdView mad) {
+    public KentekenHandler(MainActivity c, ConnectionDetector co, Button b, ScrollView r, TextView kHold, AdView mad) {
         this.context = c;
         this.connection = co;
         this.button3 = b;
         this.result = r;
         this.kentekenHolder = kHold;
         this.mAdView = mad;
+        bundle = new Bundle();
     }
 
     public ArrayList<String> getRecentKenteken() {
@@ -99,7 +104,7 @@ public class kentekenHandler {
                 recent = recent.replace("/", "");
 
                 Button line = new Button(context);
-                line.setText(kentekenHandler.formatLicenseplate(recent));
+                line.setText(KentekenHandler.formatLicenseplate(recent));
                 final String finalRecent = recent;
 
                 line.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
@@ -173,16 +178,22 @@ public class kentekenHandler {
     }
 
     public void runCamera(String kenteken, TextView textview) {
+        bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, formatLicenseplate(kenteken));
+        context.mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SEARCH, bundle);
+
         try {
             kenteken = kenteken.replace("-", "");
             kenteken = kenteken.replace(" ", "");
             kenteken = kenteken.replace("\n", "");
             if (kenteken.length() > 0) {
+                kentekenDataFactory.emptyArray();
+
                 textview.setText(formatLicenseplate(kenteken));
-                uri = "https://opendata.rdw.nl/resource/m9d7-ebf2.json?kenteken=" + kenteken;
                 result.removeAllViews();
-                runner = new Async(this.context, kenteken, result, uri, connection, button3, this, mAdView);
-                runner.execute("1000");
+
+                uri = "https://opendata.rdw.nl/resource/m9d7-ebf2.json?kenteken=" + kenteken;
+                runner = new Async(this.context, kenteken, result, uri, connection, button3, this, kentekenDataFactory);
+                runner.execute();
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -192,14 +203,16 @@ public class kentekenHandler {
         inputManager.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0);
     }
 
-    public static String formatLicenseplate(String licenseplate) {
+    public static String formatLicenseplate(String alicenseplate) {
 
         try {
-            int sidecode = getSidecodeLicenseplate(licenseplate);
+            int sidecode = getSidecodeLicenseplate(alicenseplate);
 
-            System.out.println("sidecode is: " + sidecode);
+            String licenseplate = alicenseplate.replace("-", "").toUpperCase();
 
-            licenseplate = licenseplate.replace("-", "").toUpperCase();
+            if (sidecode == -2) {
+                return alicenseplate;
+            }
 
             if (sidecode <= 6) {
                 return licenseplate.substring(0, 2) + '-' + licenseplate.substring(2, 4) + '-' + licenseplate.substring(4, 6);
@@ -219,22 +232,18 @@ public class kentekenHandler {
 
             // todo add sidecode 14
 
-            System.out.println("licenceplate is: " + licenseplate);
-
-            return licenseplate;
+            return alicenseplate;
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return licenseplate;
+        return alicenseplate;
     }
 
-    public static int getSidecodeLicenseplate(String licenseplate) throws SideCodeException {
+    public static int getSidecodeLicenseplate(String licenseplate) {
 
         String[] patterns = new String[14];
 
         licenseplate = licenseplate.replace("-", "").toUpperCase();
-
-        System.out.println(licenseplate);
 
         patterns[0] = "^[a-zA-Z]{2}[0-9]{2}[0-9]{2}$"; // 1 XX-99-99
         patterns[1] = "^[0-9]{2}[0-9]{2}[a-zA-Z]{2}$"; // 2 99-99-XX
@@ -263,12 +272,10 @@ public class kentekenHandler {
             return -1;
         }
 
-        throw new SideCodeException(licenseplate);
+        return -2;
     }
 
-    private static class SideCodeException extends Exception {
-        public SideCodeException(String licenseplate) {
-            super("No sidecode found for licenceplate: " + licenseplate);
-        }
+    public static boolean kentekenValid(String s) {
+        return KentekenHandler.getSidecodeLicenseplate(s) >= -1;
     }
 }

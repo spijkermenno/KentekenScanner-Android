@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "888526514980",
+    "project_id": "kenteken-scanner-fdcd5",
+    "storage_bucket": "kenteken-scanner-fdcd5.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:888526514980:android:2aae03dc17d5098083e1b1",
+        "android_client_info": {
+          "package_name": "com.y_gap.menno.kentekenscanner"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "888526514980-bqcadgrv9tjhjfct5dvqdapgfknv59pk.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCuJLk2U5FNj1fggerLGDa4zFRhL3N_jMg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "888526514980-bqcadgrv9tjhjfct5dvqdapgfknv59pk.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
