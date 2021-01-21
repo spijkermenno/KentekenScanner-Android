@@ -1,92 +1,172 @@
 package com.MennoSpijker.kentekenscanner.Util;
 
 import android.content.Context;
+import android.os.Environment;
+import android.util.Log;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.Locale;
 
 public class FileHandling {
+    private static final String TAG = "PERMISSION";
+    private final String storageDir = Environment.getExternalStorageDirectory().getAbsolutePath() + "/";
+
     public String readFile(Context context, String filename) {
+
         FileInputStream fis;
         int n;
         StringBuilder fileContent = new StringBuilder();
 
-        try {
-            fis = context.openFileInput(filename);
-
-            byte[] buffer = new byte[1024];
-
+        File file = new File(storageDir + filename);
+        if (file.exists()) {
             try {
-                while ((n = fis.read(buffer)) != -1) {
-                    fileContent.append(new String(buffer, 0, n));
-                }
-            } catch (IOException IE) {
-                IE.printStackTrace();
-            }
-        } catch (FileNotFoundException FNF) {
-            FNF.printStackTrace();
-        }
+                fis = new FileInputStream(file);
 
-        return fileContent.toString();
+                byte[] buffer = new byte[1024];
+
+                try {
+                    while ((n = fis.read(buffer)) != -1) {
+                        fileContent.append(new String(buffer, 0, n));
+                    }
+                } catch (IOException IE) {
+                    IE.printStackTrace();
+                }
+            } catch (FileNotFoundException FNF) {
+                FNF.printStackTrace();
+            }
+
+            Log.d(TAG, "readFile() returned: " + fileContent.toString());
+            return fileContent.toString();
+        } else {
+            try {
+                file.createNewFile();
+                return readFile(context, filename);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return null;
     }
 
-    public void writeToFile(Context context, String filename, String newKenteken, ArrayList<String> otherKentekens) {
-        JSONArray arr = new JSONArray();
-        JSONArray arrobj = new JSONArray();
-        JSONObject obj = new JSONObject();
+    public void writeToFile(Context context, String filename, String newKenteken, String newKentekenDate, JSONObject otherKentekens) {
+        JSONObject mainObject = new JSONObject();
 
-        try {
-            FileOutputStream fOut = context.openFileOutput(filename, Context.MODE_PRIVATE);
+        File file = new File(storageDir + filename);
+        if (file.exists()) {
             try {
-                try {
-                    JSONArray jsontemp = new JSONArray(otherKentekens);
-                    int myJsonArraySize = jsontemp.length();
+                FileOutputStream fileOutputStream = new FileOutputStream(file);
 
-                    int proceed = 1;
-                    for (int i = 0; i < myJsonArraySize; i++) {
-                        Object myObj = jsontemp.get(i);
-                        if (myObj.toString().equals(newKenteken)) {
-                            proceed = 0;
+                // defining previous saved kentekens
+                System.out.println("other kentekens: " + otherKentekens);
+                JSONArray previousSavedData = new JSONArray().put(otherKentekens);
+
+                int amountOfDates = previousSavedData.getJSONObject(0).length();
+
+                // Making sure no kentekens are double saved.
+                int proceed = 1;
+                boolean dateChecked = false;
+                if (amountOfDates > 0) {
+
+                    JSONObject object = otherKentekens;
+
+                    Iterator iterator = object.keys();
+
+                    while (iterator.hasNext()) {
+                        String key = (String) iterator.next();
+                        JSONArray values = new JSONArray(object.getString(key));
+                        System.out.println("main object at begin:" + mainObject);
+                        System.out.println(values);
+                        System.out.println(values.length());
+
+                        if (key.equals(newKentekenDate)) {
+                            dateChecked = true;
+                            for (int i = 0; i < values.length(); i++) {
+                                String value = values.getString(i);
+
+                                JSONArray currentDateKentekens = new JSONArray();
+                                JSONArray currentDateKentekensNew = new JSONArray();
+
+                                SimpleDateFormat s = new SimpleDateFormat("dd/MM/yyyy", Locale.ENGLISH);
+                                String currentDate = s.parse(key).toString();
+
+                                // retrieve dates saved
+                                JSONArray kentekensSavedOnDate = object.getJSONArray(key);
+                                int amountOfKentekens = kentekensSavedOnDate.length();
+
+                                // retrieve kentekens saved on certain date
+                                for (int j = 0; j < amountOfKentekens; j++) {
+                                    String previousKenteken = kentekensSavedOnDate.getString(j);
+
+                                    if (previousKenteken.equals(newKenteken)) {
+                                        proceed = 0;
+                                    }
+                                    currentDateKentekens.put(previousKenteken);
+                                }
+
+                                if (proceed == 1) {
+                                    currentDateKentekensNew.put(newKenteken);
+                                }
+
+                                for (int x = 0; x < currentDateKentekens.length(); x++) {
+                                    currentDateKentekensNew.put(currentDateKentekens.getString(x));
+                                }
+
+                                mainObject.put(key, currentDateKentekensNew);
+                            }
+                        } else {
+                            if (!dateChecked) {
+                                mainObject.put(newKentekenDate, new JSONArray().put(newKenteken));
+                            }
+                            mainObject.put(key, object.getJSONArray(key));
                         }
-                        arrobj.put(myObj.toString());
                     }
-                    if (proceed == 1) {
-                        arrobj.put(newKenteken);
-                    }
-                    obj.put("kenteken", arrobj);
-                    arr.put(obj);
-                } catch (JSONException JE) {
-                    JE.printStackTrace();
+                } else {
+                    System.out.println("ERROR");
+                    mainObject.put(newKentekenDate, new JSONArray().put(newKenteken));
                 }
-                fOut.write(arr.toString().getBytes());
-                fOut.close();
-            } catch (IOException IE) {
-                IE.printStackTrace();
+
+                System.out.println("before write: " + mainObject);
+                fileOutputStream.write(mainObject.toString().getBytes());
+
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-        } catch (FileNotFoundException FNFE) {
-            FNFE.printStackTrace();
+        } else {
+            try {
+                System.out.println(file.createNewFile());
+                writeToFile(context, filename, newKenteken, newKentekenDate, otherKentekens);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
     public void emptyFile(Context context, String filename) {
         String empty = "";
-        try {
-            FileOutputStream fOut = context.openFileOutput(filename, Context.MODE_PRIVATE);
+        File file = new File(storageDir + filename);
+        if (file.exists()) {
             try {
-                fOut.write(empty.getBytes());
-                fOut.close();
-            } catch (IOException IE) {
-                IE.printStackTrace();
+                FileOutputStream fOut = new FileOutputStream(file);
+                try {
+                    fOut.write(empty.getBytes());
+                    fOut.close();
+                } catch (IOException IE) {
+                    IE.printStackTrace();
+                }
+            } catch (FileNotFoundException FNFE) {
+                FNFE.printStackTrace();
             }
-        } catch (FileNotFoundException FNFE) {
-            FNFE.printStackTrace();
         }
     }
 }

@@ -23,21 +23,25 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.Locale;
 
 public class KentekenHandler {
-    private static final String NAMEFILE = "data.json";
+    private static final String RecentKentekensFile = "recent.json";
+    private static final String SavedKentekensFile = "favorites.json";
+
     private final Button button3;
     private final MainActivity context;
 
     private final ConnectionDetector connection;
-    private String uri;
-    private Async runner;
     private final ScrollView result;
     private final TextView kentekenHolder;
     public AdView mAdView;
-    private KentekenDataFactory kentekenDataFactory = new KentekenDataFactory();
-    private Bundle bundle;
+    private final KentekenDataFactory kentekenDataFactory = new KentekenDataFactory();
+    private final Bundle bundle;
 
     public KentekenHandler(MainActivity c, ConnectionDetector co, Button b, ScrollView r, TextView kHold, AdView mad) {
         this.context = c;
@@ -49,10 +53,41 @@ public class KentekenHandler {
         bundle = new Bundle();
     }
 
-    public ArrayList<String> getRecentKenteken() {
+    public void run(TextView textview) {
+        String kenteken = textview.getText().toString().toUpperCase();
+        runCamera(kenteken, textview);
+    }
+
+    public void runCamera(String kenteken, TextView textview) {
+        bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, formatLicenseplate(kenteken));
+        context.mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SEARCH, bundle);
+
+        try {
+            kenteken = kenteken.replace("-", "");
+            kenteken = kenteken.replace(" ", "");
+            kenteken = kenteken.replace("\n", "");
+            if (kenteken.length() > 0) {
+                kentekenDataFactory.emptyArray();
+
+                textview.setText(formatLicenseplate(kenteken));
+                result.removeAllViews();
+
+                String uri = "https://opendata.rdw.nl/resource/m9d7-ebf2.json?kenteken=" + kenteken;
+                Async runner = new Async(this.context, kenteken, result, uri, connection, button3, this, kentekenDataFactory);
+                runner.execute();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            e.getMessage();
+        }
+        InputMethodManager inputManager = (InputMethodManager) this.context.getSystemService(Context.INPUT_METHOD_SERVICE);
+        inputManager.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0);
+    }
+
+    public ArrayList<String> getSavedKentekens() {
         ArrayList<String> kentekens = new ArrayList<>();
 
-        String fileContent = new FileHandling().readFile(context, NAMEFILE);
+        String fileContent = new FileHandling().readFile(context, SavedKentekensFile);
 
         try {
             JSONArray arr = new JSONArray(fileContent);
@@ -75,10 +110,30 @@ public class KentekenHandler {
         return kentekens;
     }
 
-    public void SaveKenteken(String kenteken) {
-        ArrayList<String> otherKentekens = getRecentKenteken();
+    public JSONObject getRecentKenteken() {
+        ArrayList<JSONArray> kentekens = new ArrayList<>();
 
-        new FileHandling().writeToFile(context, NAMEFILE, kenteken, otherKentekens);
+        String fileContent = new FileHandling().readFile(context, RecentKentekensFile);
+
+        JSONObject mainObject = new JSONObject();
+        try {
+            mainObject = new JSONObject(fileContent);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        //return kentekens;
+        return mainObject;
+    }
+
+    public void saveRecentKenteken(String kenteken) {
+        JSONObject otherKentekens = getRecentKenteken();
+
+        SimpleDateFormat wantedFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.ENGLISH);
+        String date = wantedFormat.format(new Date());
+
+        new FileHandling().writeToFile(context, RecentKentekensFile, kenteken, date, otherKentekens);
+
     }
 
     public void openRecent() {
@@ -95,52 +150,67 @@ public class KentekenHandler {
         int height = (int) (64 * scale + 0.5f);
 
         try {
-            final ArrayList<String> recents = getRecentKenteken();
+            final JSONObject recents = getRecentKenteken();
 
             LinearLayout lin = new LinearLayout(context);
             lin.setOrientation(LinearLayout.VERTICAL);
 
-            for (String recent : recents) {
-                recent = recent.replace("/", "");
+            Iterator iterator = recents.keys();
 
-                Button line = new Button(context);
-                line.setText(KentekenHandler.formatLicenseplate(recent));
-                final String finalRecent = recent;
+            while (iterator.hasNext()) {
+                String key = (String) iterator.next();
+                JSONArray values = recents.getJSONArray(key);
 
-                line.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+                TextView dateView = new TextView(context);
+                dateView.setText(key);
+                dateView.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
 
-                line.setOnClickListener(
-                        new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                runCamera(finalRecent, kentekenHolder);
-                            }
-                        });
+                lin.addView(dateView);
 
-                line.setBackground(context.getDrawable(R.drawable.kenteken_v2));
+                for (int i = 0; i < values.length(); i++) {
+                    String recent = values.getString(i);
 
-                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
-                        width,
-                        height
-                );
-                params.setMargins(0, 10, 0, 10);
-                params.gravity = 17;
-                line.setLayoutParams(params);
+                    recent = recent.replace("/", "");
 
-                line.setTextSize(TypedValue.COMPLEX_UNIT_SP, 36);
-                line.setTypeface(Typeface.defaultFromStyle(Typeface.BOLD));
+                    Button line = new Button(context);
+                    line.setText(KentekenHandler.formatLicenseplate(recent));
+                    final String finalRecent = recent;
 
-                int left = (int) (20 * scale + 0.5f);
-                int right = (int) (10 * scale + 0.5f);
-                int top = (int) (0 * scale + 0.5f);
-                int bottom = (int) (0 * scale + 0.5f);
+                    line.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
 
-                line.setPadding(left, top, right, bottom);
+                    line.setOnClickListener(
+                            new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    runCamera(finalRecent, kentekenHolder);
+                                }
+                            });
 
-                lin.addView(line);
+                    line.setBackground(context.getDrawable(R.drawable.kenteken_v2));
+
+                    LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                            width,
+                            height
+                    );
+                    params.setMargins(0, 10, 0, 10);
+                    params.gravity = 17;
+                    line.setLayoutParams(params);
+
+                    line.setTextSize(TypedValue.COMPLEX_UNIT_SP, 36);
+                    line.setTypeface(Typeface.defaultFromStyle(Typeface.BOLD));
+
+                    int left = (int) (20 * scale + 0.5f);
+                    int right = (int) (10 * scale + 0.5f);
+                    int top = (int) (0 * scale + 0.5f);
+                    int bottom = (int) (0 * scale + 0.5f);
+
+                    line.setPadding(left, top, right, bottom);
+
+                    lin.addView(line);
+                }
             }
 
-            if (recents.size() > 0) {
+            if (recents.length() > 0) {
                 Button clear = new Button(context);
 
                 clear.setTypeface(FontManager.getTypeface(context, FontManager.FONTAWESOME));
@@ -149,7 +219,7 @@ public class KentekenHandler {
                         new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                new FileHandling().emptyFile(context, NAMEFILE);
+                                new FileHandling().emptyFile(context, RecentKentekensFile);
                                 openRecent();
                             }
                         });
@@ -172,35 +242,7 @@ public class KentekenHandler {
         }
     }
 
-    public void run(TextView textview) {
-        String kenteken = textview.getText().toString().toUpperCase();
-        runCamera(kenteken, textview);
-    }
-
-    public void runCamera(String kenteken, TextView textview) {
-        bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, formatLicenseplate(kenteken));
-        context.mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SEARCH, bundle);
-
-        try {
-            kenteken = kenteken.replace("-", "");
-            kenteken = kenteken.replace(" ", "");
-            kenteken = kenteken.replace("\n", "");
-            if (kenteken.length() > 0) {
-                kentekenDataFactory.emptyArray();
-
-                textview.setText(formatLicenseplate(kenteken));
-                result.removeAllViews();
-
-                uri = "https://opendata.rdw.nl/resource/m9d7-ebf2.json?kenteken=" + kenteken;
-                runner = new Async(this.context, kenteken, result, uri, connection, button3, this, kentekenDataFactory);
-                runner.execute();
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            e.getMessage();
-        }
-        InputMethodManager inputManager = (InputMethodManager) this.context.getSystemService(Context.INPUT_METHOD_SERVICE);
-        inputManager.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0);
+    public void openSaved() {
     }
 
     public static String formatLicenseplate(String alicenseplate) {

@@ -54,6 +54,8 @@ public class KentekenDataFactory {
             this.kentekenHandler = Khandler;
             this.connection = connection;
             this.recentButton = recentButton;
+
+            this.kentekenHandler.saveRecentKenteken(kenteken);
         }
     }
 
@@ -124,7 +126,7 @@ public class KentekenDataFactory {
                     new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            kentekenHandler.SaveKenteken(kenteken);
+                            kentekenHandler.saveRecentKenteken(kenteken);
                         }
                     });
 

@@ -1,19 +1,25 @@
 package com.MennoSpijker.kentekenscanner.View;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Typeface;
+import android.os.Build;
 import android.os.Bundle;
 
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ScrollView;
 import android.widget.Toast;
+
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import com.MennoSpijker.kentekenscanner.ConnectionDetector;
 import com.MennoSpijker.kentekenscanner.FontManager;
@@ -30,12 +36,17 @@ import com.google.android.gms.ads.AdView;
 import com.google.android.gms.common.api.CommonStatusCodes;
 import com.google.firebase.analytics.FirebaseAnalytics;
 
+import static android.view.View.*;
+
+import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
+
 public class MainActivity extends Activity {
+    private static final String TAG = "MainActivity";
     public FirebaseAnalytics mFirebaseAnalytics;
 
     private static final int RC_OCR_CAPTURE = 9003;
-    public Button button, button2, button3;
-    public ScrollView result;
+    public Button searchButton, openCameraButton, openRecents, openSaved;
+    public ScrollView resultScrollView;
     public String kenteken;
     private ConnectionDetector connection;
     public KentekenHandler Khandler;
@@ -53,20 +64,20 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_scan);
 
-        final EditText text = findViewById(R.id.kenteken);
+        final EditText kentekenTextField = findViewById(R.id.kenteken);
 
-        text.addTextChangedListener(new TextWatcher() {
+        kentekenTextField.addTextChangedListener(new TextWatcher() {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if (text.getText().length() == 6) {
-                    String temp = KentekenHandler.formatLicenseplate(text.getText().toString());
-                    if (!text.getText().toString().equals(temp)) {
-                        text.setText(temp);
+                if (kentekenTextField.getText().length() == 6) {
+                    String temp = KentekenHandler.formatLicenseplate(kentekenTextField.getText().toString());
+                    if (!kentekenTextField.getText().toString().equals(temp)) {
+                        kentekenTextField.setText(temp);
                     }
                 }
 
-                if (text.getText().toString().replace("-", "").length() > 6) {
-                    text.setText(text.getText().toString().substring(0,6));
+                if (kentekenTextField.getText().toString().replace("-", "").length() > 6) {
+                    kentekenTextField.setText(kentekenTextField.getText().toString().substring(0,6));
                 }
             }
             @Override
@@ -79,58 +90,64 @@ public class MainActivity extends Activity {
             }
         });
 
-        button = findViewById(R.id.sendRequest);
-        button2 = findViewById(R.id.camera);
-        button3 = findViewById(R.id.recent);
+        searchButton = findViewById(R.id.sendRequest);
+        openCameraButton = findViewById(R.id.camera);
+        openRecents = findViewById(R.id.recent);
+        openSaved = findViewById(R.id.saved);
 
-        result = findViewById(R.id.scroll);
+        resultScrollView = findViewById(R.id.scroll);
         connection = new ConnectionDetector(this);
 
         getAds();
 
-        Khandler = new KentekenHandler(MainActivity.this, connection, button3, result, text, mAdView);
+        Khandler = new KentekenHandler(MainActivity.this, connection, openRecents, resultScrollView, kentekenTextField, mAdView);
 
-        button.setTypeface(FontManager.getTypeface(this, FontManager.FONTAWESOME));
-        button2.setTypeface(FontManager.getTypeface(this, FontManager.FONTAWESOME));
-        button3.setTypeface(FontManager.getTypeface(this, FontManager.FONTAWESOME));
+        searchButton.setTypeface(FontManager.getTypeface(this, FontManager.FONTAWESOME));
+        openCameraButton.setTypeface(FontManager.getTypeface(this, FontManager.FONTAWESOME));
+        openRecents.setTypeface(FontManager.getTypeface(this, FontManager.FONTAWESOME));
+        openSaved.setTypeface(FontManager.getTypeface(this, FontManager.FONTAWESOME));
 
         performPermissionCheck();
 
-        button.setOnClickListener(
-                new View.OnClickListener()
+        // Setting Button handlers.
 
+        searchButton.setOnClickListener(new OnClickListener()
                 {
                     @Override
                     public void onClick(View v) {
-                        Khandler.run(text);
+                        Khandler.run(kentekenTextField);
                     }
                 });
-        button2.setOnClickListener(
-                new View.OnClickListener()
 
-                {
+        openCameraButton.setOnClickListener(new OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         startCameraIntent();
                     }
                 });
-        button3.setOnClickListener(
-                new View.OnClickListener()
 
+        openRecents.setOnClickListener(new OnClickListener()
                 {
                     @Override
                     public void onClick(View v) {
                         Khandler.openRecent();
                     }
                 });
-        text.setOnKeyListener(new View.OnKeyListener()
 
+        openSaved.setOnClickListener(new OnClickListener()
+        {
+            @Override
+            public void onClick(View v) {
+                Khandler.openSaved();
+            }
+        });
+        kentekenTextField.setOnKeyListener(new OnKeyListener()
         {
             public boolean onKey(View v, int keyCode, KeyEvent event) {
                 if (event.getAction() == KeyEvent.ACTION_DOWN) {
                     switch (keyCode) {
                         case KeyEvent.KEYCODE_ENTER:
-                            Khandler.run(text);
+                            Khandler.run(kentekenTextField);
                             return true;
                         default:
                             break;
@@ -241,7 +258,17 @@ public class MainActivity extends Activity {
         }
     }
 
-    public void performPermissionCheck(){
 
-    }
+    public void performPermissionCheck(){
+            int permissionCheckWriteToStorage = ContextCompat.checkSelfPermission(this, WRITE_EXTERNAL_STORAGE);
+            int permissionCheckReadFromStorage = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE);
+
+
+            if (permissionCheckWriteToStorage != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this, new String[]{WRITE_EXTERNAL_STORAGE}, 1);
+            }
+            if (permissionCheckReadFromStorage != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
+            }
+     }
 }
