@@ -126,7 +126,7 @@ public class KentekenDataFactory {
                     new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            kentekenHandler.saveRecentKenteken(kenteken);
+                            kentekenHandler.saveFavoriteKenteken(kenteken);
                         }
                     });
 

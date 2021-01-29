@@ -5,6 +5,7 @@ import android.os.Environment;
 import android.util.Log;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
@@ -13,8 +14,6 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.Locale;
 
@@ -23,12 +22,12 @@ public class FileHandling {
     private final String storageDir = Environment.getExternalStorageDirectory().getAbsolutePath() + "/";
 
     public String readFile(Context context, String filename) {
-
         FileInputStream fis;
         int n;
         StringBuilder fileContent = new StringBuilder();
 
         File file = new File(storageDir + filename);
+        System.out.println("FILENAME: " + file);
         if (file.exists()) {
             try {
                 fis = new FileInputStream(file);
@@ -59,7 +58,7 @@ public class FileHandling {
         return null;
     }
 
-    public void writeToFile(Context context, String filename, String newKenteken, String newKentekenDate, JSONObject otherKentekens) {
+    public void writeToFileOnDate(Context context, String filename, String newKenteken, String newKentekenDate, JSONObject otherKentekens) {
         JSONObject mainObject = new JSONObject();
 
         File file = new File(storageDir + filename);
@@ -132,7 +131,7 @@ public class FileHandling {
                         }
                     }
                 } else {
-                    System.out.println("ERROR");
+                    System.out.println("No dates saved.");
                     mainObject.put(newKentekenDate, new JSONArray().put(newKenteken));
                 }
 
@@ -145,11 +144,82 @@ public class FileHandling {
         } else {
             try {
                 System.out.println(file.createNewFile());
-                writeToFile(context, filename, newKenteken, newKentekenDate, otherKentekens);
+                writeToFileOnDate(context, filename, newKenteken, newKentekenDate, otherKentekens);
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
+    }
+
+    public void writeToFile(Context context, String filename, String newKenteken, JSONObject otherKentekens) {
+        JSONObject mainObject = new JSONObject();
+
+        File file = new File(storageDir + filename);
+        if (file.exists()) {
+            try {
+                FileOutputStream fileOutputStream = new FileOutputStream(file);
+
+                // Making sure no kentekens are double saved.
+                int proceed = 1;
+                boolean dateChecked = false;
+
+                String key = "cars";
+
+                if (otherKentekens.length() > 0) {
+                    JSONArray values = new JSONArray(otherKentekens.getString(key));
+
+                    if (values.length() == 0) {
+                        System.out.println("add new one");
+                    }
+
+                    for (int i = 0; i < values.length(); i++) {
+                        String value = values.getString(i);
+
+                        JSONArray currentDateKentekens = new JSONArray();
+                        JSONArray currentDateKentekensNew = new JSONArray();
+
+                        // retrieve dates saved
+                        JSONArray kentekensSavedOnDate = otherKentekens.getJSONArray(key);
+                        int amountOfKentekens = kentekensSavedOnDate.length();
+
+                        // retrieve kentekens saved on certain date
+                        for (int j = 0; j < amountOfKentekens; j++) {
+                            String previousKenteken = kentekensSavedOnDate.getString(j);
+
+                            if (previousKenteken.equals(newKenteken)) {
+                                proceed = 0;
+                            }
+                            currentDateKentekens.put(previousKenteken);
+                        }
+
+                        if (proceed == 1) {
+                            currentDateKentekensNew.put(newKenteken);
+                        }
+
+                        for (int x = 0; x < currentDateKentekens.length(); x++) {
+                            currentDateKentekensNew.put(currentDateKentekens.getString(x));
+                        }
+
+                        mainObject.put(key, currentDateKentekensNew);
+                    }
+
+                } else {
+                    mainObject.put(key, new JSONArray().put(newKenteken));
+                }
+                System.out.println("before write: " + mainObject);
+                fileOutputStream.write(mainObject.toString().getBytes());
+            } catch (JSONException | IOException e) {
+                e.printStackTrace();
+            }
+        } else {
+            try {
+                System.out.println(file.createNewFile());
+                writeToFile(context, filename, newKenteken, otherKentekens);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
     }
 
     public void emptyFile(Context context, String filename) {

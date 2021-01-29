@@ -17,7 +17,9 @@
     <string name="error_kenteken_scan">Dit is geen kenteken</string>
     <string name="no_internet_connection">Er is geen internet connectie</string>
     <string name="no_result">Dit kenteken gaf geen resultaat</string>
-    <string name="save">Dit kenteken opslaan voor later</string>
+    <string name="save">Dit is mijn auto</string>
     <string name="fixed">Ik heb mn internet gefixt gap!</string>
     <string name="kenteken_placeholder">00-XXX-0</string>
+    <string name="eigen_auto">Jouw auto</string>
+    <string name="eigen_autos">Jouw auto\'s</string>
 </resources>

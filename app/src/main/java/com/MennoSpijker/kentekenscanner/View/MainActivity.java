@@ -70,14 +70,10 @@ public class MainActivity extends Activity {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 if (kentekenTextField.getText().length() == 6) {
-                    String temp = KentekenHandler.formatLicenseplate(kentekenTextField.getText().toString());
-                    if (!kentekenTextField.getText().toString().equals(temp)) {
-                        kentekenTextField.setText(temp);
+                    String formatedLicenceplate = KentekenHandler.formatLicenseplate(kentekenTextField.getText().toString());
+                    if (!kentekenTextField.getText().toString().equals(formatedLicenceplate)) {
+                        kentekenTextField.setText(formatedLicenceplate);
                     }
-                }
-
-                if (kentekenTextField.getText().toString().replace("-", "").length() > 6) {
-                    kentekenTextField.setText(kentekenTextField.getText().toString().substring(0,6));
                 }
             }
             @Override
@@ -194,7 +190,7 @@ public class MainActivity extends Activity {
                 @Override
                 public void onAdClicked() {
                     bundle = new Bundle();
-                    mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.AD_IMPRESSION, bundle);
+                    mFirebaseAnalytics.logEvent("AD_CLICK", bundle);
                 }
 
                 @Override
@@ -260,15 +256,22 @@ public class MainActivity extends Activity {
 
 
     public void performPermissionCheck(){
-            int permissionCheckWriteToStorage = ContextCompat.checkSelfPermission(this, WRITE_EXTERNAL_STORAGE);
-            int permissionCheckReadFromStorage = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE);
+        if (checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+            Log.v(TAG,"Permission is granted");
+        } else {
+            Log.v(TAG,"Permission is revoked");
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
+        }
 
-
-            if (permissionCheckWriteToStorage != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(this, new String[]{WRITE_EXTERNAL_STORAGE}, 1);
-            }
-            if (permissionCheckReadFromStorage != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
-            }
+//            int permissionCheckWriteToStorage = ContextCompat.checkSelfPermission(this, WRITE_EXTERNAL_STORAGE);
+//            int permissionCheckReadFromStorage = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE);
+//
+//
+//            if (permissionCheckWriteToStorage != PackageManager.PERMISSION_GRANTED) {
+//                ActivityCompat.requestPermissions(this, new String[]{WRITE_EXTERNAL_STORAGE}, 1);
+//            }
+//            if (permissionCheckReadFromStorage != PackageManager.PERMISSION_GRANTED) {
+//                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
+//            }
      }
 }
