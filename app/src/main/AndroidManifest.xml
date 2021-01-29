@@ -37,6 +37,7 @@
                 <category android:name="android.intent.category.EMBED" />
             </intent-filter>
         </activity>
+        <receiver android:name="com.MennoSpijker.kentekenscanner.Factory.NotificationPublisher" />
     </application>
 
 </manifest>

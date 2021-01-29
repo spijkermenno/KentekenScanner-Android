@@ -23,7 +23,7 @@ import android.widget.Toast;
 import androidx.core.app.ActivityCompat;
 
 import com.MennoSpijker.kentekenscanner.ConnectionDetector;
-import com.MennoSpijker.kentekenscanner.Factory.NotifcationFactory;
+import com.MennoSpijker.kentekenscanner.Factory.NotificationPublisher;
 import com.MennoSpijker.kentekenscanner.FontManager;
 import com.MennoSpijker.kentekenscanner.OcrCaptureActivity;
 import com.MennoSpijker.kentekenscanner.R;
@@ -49,7 +49,7 @@ public class MainActivity extends Activity {
     public ScrollView resultScrollView;
     public String kenteken;
     private ConnectionDetector connection;
-    public KentekenHandler Khandler;
+    public SearchHandler Khandler;
     private static AdView mAdView;
     private Bundle bundle;
 
@@ -72,7 +72,7 @@ public class MainActivity extends Activity {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 if (kentekenTextField.getText().length() == 6) {
-                    String formatedLicenceplate = KentekenHandler.formatLicenseplate(kentekenTextField.getText().toString());
+                    String formatedLicenceplate = SearchHandler.formatLicenseplate(kentekenTextField.getText().toString());
                     if (!kentekenTextField.getText().toString().equals(formatedLicenceplate)) {
                         kentekenTextField.setText(formatedLicenceplate);
                     }
@@ -98,7 +98,7 @@ public class MainActivity extends Activity {
 
         //getAds();
 
-        Khandler = new KentekenHandler(MainActivity.this, connection, openRecents, resultScrollView, kentekenTextField, mAdView);
+        Khandler = new SearchHandler(MainActivity.this, connection, openRecents, resultScrollView, kentekenTextField, mAdView);
 
         searchButton.setTypeface(FontManager.getTypeface(this, FontManager.FONTAWESOME));
         openCameraButton.setTypeface(FontManager.getTypeface(this, FontManager.FONTAWESOME));
@@ -158,16 +158,12 @@ public class MainActivity extends Activity {
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
             String notificationMessage = extras.getString("kenteken", "UNDEFINED");
-            System.out.println(notificationMessage);
             if (notificationMessage != "UNDEFINED") {
                 Khandler.runIntent(kentekenTextField, notificationMessage);
             }
         } else {
             System.out.println("No extra's");
         }
-
-        NotifcationFactory notifcationFactory = new NotifcationFactory(this);
-        notifcationFactory.createNotificationWithExtra();
     }
 
     private void createNotificationChannel() {
@@ -177,7 +173,7 @@ public class MainActivity extends Activity {
             CharSequence name = getString(R.string.channel_name);
             String description = getString(R.string.channel_description);
             int importance = NotificationManager.IMPORTANCE_DEFAULT;
-            NotificationChannel channel = new NotificationChannel(NotifcationFactory.CHANNEL_ID, name, importance);
+            NotificationChannel channel = new NotificationChannel(NotificationPublisher.CHANNEL_ID, name, importance);
             channel.setDescription(description);
             // Register the channel with the system; you can't change the importance
             // or other notification behaviors after this

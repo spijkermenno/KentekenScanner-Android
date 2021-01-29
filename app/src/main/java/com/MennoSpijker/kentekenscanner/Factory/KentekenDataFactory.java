@@ -13,8 +13,7 @@ import android.widget.TextView;
 import com.MennoSpijker.kentekenscanner.ConnectionDetector;
 import com.MennoSpijker.kentekenscanner.R;
 import com.MennoSpijker.kentekenscanner.View.Async;
-import com.MennoSpijker.kentekenscanner.View.KentekenHandler;
-import com.google.firebase.analytics.FirebaseAnalytics;
+import com.MennoSpijker.kentekenscanner.View.SearchHandler;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -28,13 +27,14 @@ import java.util.Iterator;
 public class KentekenDataFactory {
 
     private JSONArray array = new JSONArray();
-    private KentekenHandler kentekenHandler;
+    private SearchHandler searchHandler;
     private String kenteken;
     private ScrollView resultView;
     private Context context;
     private ConnectionDetector connection;
     private Button recentButton;
     private Bundle bundle;
+    private Date apkDate = null;
 
     public KentekenDataFactory() {
         array.put(new JSONObject());
@@ -46,16 +46,16 @@ public class KentekenDataFactory {
         array.put(new JSONObject());
     }
 
-    public void addParams(Context main, ScrollView resultView, String kenteken, KentekenHandler Khandler, ConnectionDetector connection, Button recentButton) {
+    public void addParams(Context main, ScrollView resultView, String kenteken, SearchHandler Khandler, ConnectionDetector connection, Button recentButton) {
         if (context == null || !this.kenteken.equals(kenteken)) {
             this.context = main;
             this.resultView = resultView;
             this.kenteken = kenteken;
-            this.kentekenHandler = Khandler;
+            this.searchHandler = Khandler;
             this.connection = connection;
             this.recentButton = recentButton;
 
-            this.kentekenHandler.saveRecentKenteken(kenteken);
+            this.searchHandler.saveRecentKenteken(kenteken);
         }
     }
 
@@ -75,7 +75,7 @@ public class KentekenDataFactory {
 
                     if (key.contains("api")) {
                         String uri2 = value + "?kenteken=" + kenteken;
-                        Async runner = new Async(context, kenteken, resultView, uri2, connection, recentButton, kentekenHandler, this);
+                        Async runner = new Async(context, kenteken, resultView, uri2, connection, recentButton, searchHandler, this);
                         runner.execute();
                     }
                 }
@@ -122,14 +122,6 @@ public class KentekenDataFactory {
             Button save = new Button(context);
             save.setText(R.string.save);
 
-            save.setOnClickListener(
-                    new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            kentekenHandler.saveFavoriteKenteken(kenteken);
-                        }
-                    });
-
             lin.addView(save);
 
             JSONObject object = array.getJSONObject(0);
@@ -146,7 +138,7 @@ public class KentekenDataFactory {
                     TextView line2 = new TextView(context);
 
                     if (key.equals("kenteken")) {
-                        value = KentekenHandler.formatLicenseplate(value);
+                        value = SearchHandler.formatLicenseplate(value);
                     }
 
                     if (key.equals("datum_tenaamstelling")) {
@@ -164,7 +156,8 @@ public class KentekenDataFactory {
                     if (key.equals("vervaldatum_apk")) {
                         try {
                             String date = value.substring(6, 8) + "-" + value.substring(4, 6) + "-" + value.substring(0, 4);
-                            if (new SimpleDateFormat("yyyyMMdd").parse(value).before(new Date())) {
+                            apkDate = new SimpleDateFormat("yyyyMMdd").parse(value);
+                            if (apkDate.before(new Date())) {
                                 line2.setBackground(context.getResources().getDrawable(R.drawable.border_error_item));
                             } else {
                                 line2.setBackgroundColor(Color.parseColor("#ffffff"));
@@ -212,6 +205,20 @@ public class KentekenDataFactory {
                         e.getMessage();
                     }
                 }
+            }
+
+
+            if (apkDate != null) {
+                final Date finalApkDate = apkDate;
+                save.setOnClickListener(
+                        new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                searchHandler.saveFavoriteKenteken(kenteken, finalApkDate);
+                            }
+                        });
+            } else {
+                save.setVisibility(View.INVISIBLE);
             }
 
             resultView.addView(lin);

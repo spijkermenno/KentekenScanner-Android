@@ -27,7 +27,6 @@ public class FileHandling {
         StringBuilder fileContent = new StringBuilder();
 
         File file = new File(storageDir + filename);
-        System.out.println("FILENAME: " + file);
         if (file.exists()) {
             try {
                 fis = new FileInputStream(file);
@@ -67,7 +66,6 @@ public class FileHandling {
                 FileOutputStream fileOutputStream = new FileOutputStream(file);
 
                 // defining previous saved kentekens
-                System.out.println("other kentekens: " + otherKentekens);
                 JSONArray previousSavedData = new JSONArray().put(otherKentekens);
 
                 int amountOfDates = previousSavedData.getJSONObject(0).length();
@@ -84,9 +82,6 @@ public class FileHandling {
                     while (iterator.hasNext()) {
                         String key = (String) iterator.next();
                         JSONArray values = new JSONArray(object.getString(key));
-                        System.out.println("main object at begin:" + mainObject);
-                        System.out.println(values);
-                        System.out.println(values.length());
 
                         if (key.equals(newKentekenDate)) {
                             dateChecked = true;
@@ -131,11 +126,9 @@ public class FileHandling {
                         }
                     }
                 } else {
-                    System.out.println("No dates saved.");
                     mainObject.put(newKentekenDate, new JSONArray().put(newKenteken));
                 }
 
-                System.out.println("before write: " + mainObject);
                 fileOutputStream.write(mainObject.toString().getBytes());
 
             } catch (Exception e) {
@@ -143,7 +136,7 @@ public class FileHandling {
             }
         } else {
             try {
-                System.out.println(file.createNewFile());
+                file.createNewFile();
                 writeToFileOnDate(context, filename, newKenteken, newKentekenDate, otherKentekens);
             } catch (IOException e) {
                 e.printStackTrace();
@@ -206,14 +199,13 @@ public class FileHandling {
                 } else {
                     mainObject.put(key, new JSONArray().put(newKenteken));
                 }
-                System.out.println("before write: " + mainObject);
                 fileOutputStream.write(mainObject.toString().getBytes());
             } catch (JSONException | IOException e) {
                 e.printStackTrace();
             }
         } else {
             try {
-                System.out.println(file.createNewFile());
+                file.createNewFile();
                 writeToFile(context, filename, newKenteken, otherKentekens);
             } catch (IOException e) {
                 e.printStackTrace();

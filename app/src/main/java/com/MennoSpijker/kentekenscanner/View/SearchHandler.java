@@ -13,6 +13,8 @@ import android.widget.TextView;
 
 import com.MennoSpijker.kentekenscanner.ConnectionDetector;
 import com.MennoSpijker.kentekenscanner.Factory.KentekenDataFactory;
+import com.MennoSpijker.kentekenscanner.Factory.NotificationFactory;
+import com.MennoSpijker.kentekenscanner.Factory.NotificationPublisher;
 import com.MennoSpijker.kentekenscanner.FontManager;
 import com.MennoSpijker.kentekenscanner.R;
 import com.MennoSpijker.kentekenscanner.Util.FileHandling;
@@ -23,13 +25,15 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.Locale;
 
-public class KentekenHandler {
+public class SearchHandler {
     private static final String RecentKentekensFile = "recent.json";
     private static final String SavedKentekensFile = "favorites.json";
 
@@ -43,7 +47,7 @@ public class KentekenHandler {
     private final KentekenDataFactory kentekenDataFactory = new KentekenDataFactory();
     private final Bundle bundle;
 
-    public KentekenHandler(MainActivity c, ConnectionDetector co, Button b, ScrollView r, TextView kHold, AdView mad) {
+    public SearchHandler(MainActivity c, ConnectionDetector co, Button b, ScrollView r, TextView kHold, AdView mad) {
         this.context = c;
         this.connection = co;
         this.button3 = b;
@@ -130,13 +134,30 @@ public class KentekenHandler {
 
     }
 
-    public void saveFavoriteKenteken(String kenteken) {
+    public void saveFavoriteKenteken(String kenteken, Date apkDate) {
         JSONObject otherKentekens = getSavedKentekens();
 
-        System.out.println(otherKentekens);
+        System.out.println(apkDate);
 
         new FileHandling().writeToFile(context, SavedKentekensFile, kenteken, otherKentekens);
 
+        System.out.println("apk verval datum is: " + apkDate);
+        long delay = calculateTimeTillDate(apkDate);
+
+        NotificationFactory notificationFactory = new NotificationFactory(context);
+        notificationFactory.scheduleNotification(notificationFactory.getNotification("Kenteken Scanner"), 1000);
+    }
+
+    private long calculateTimeTillDate(Date apkDate) {
+        int timeToSubstract = 30 * 1000 * 60 * 60 * 24;
+
+        Calendar c = Calendar.getInstance();
+        c.setTime(apkDate);
+        c.add(Calendar.DATE, -30);
+        Date d = c.getTime();
+
+        System.out.println("Notificatie datum is: " + new Date(d.getTime()));
+        return d.getTime();
     }
 
     public void openRecent() {
@@ -176,7 +197,7 @@ public class KentekenHandler {
                     recent = recent.replace("/", "");
 
                     Button line = new Button(context);
-                    line.setText(KentekenHandler.formatLicenseplate(recent));
+                    line.setText(SearchHandler.formatLicenseplate(recent));
                     final String finalRecent = recent;
 
                     line.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
@@ -270,7 +291,6 @@ public class KentekenHandler {
             textView.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
             textView.setText(R.string.eigen_auto);
 
-            System.out.println(recents.names());
             if (recents.getJSONArray(recents.names().getString(0)).length() > 1) {
                 textView.setText(R.string.eigen_autos);
             }
@@ -288,7 +308,7 @@ public class KentekenHandler {
                     recent = recent.replace("/", "");
 
                     Button line = new Button(context);
-                    line.setText(KentekenHandler.formatLicenseplate(recent));
+                    line.setText(SearchHandler.formatLicenseplate(recent));
                     final String finalRecent = recent;
 
                     line.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
@@ -369,24 +389,19 @@ public class KentekenHandler {
             }
 
             if (sidecode <= 6) {
-                System.out.println("sidecode 6");
                 return licenseplate.substring(0, 2) + '-' + licenseplate.substring(2, 4) + '-' + licenseplate.substring(4, 6);
             }
             if (sidecode == 7 || sidecode == 9) {
-                System.out.println("sidecode 7");
                 String s = licenseplate.substring(0, 2) + '-' + licenseplate.substring(2, 5) + '-' + licenseplate.substring(5, 6);
                 return s;
             }
             if (sidecode == 8 || sidecode == 10) {
-                System.out.println("sidecode 8");
                 return licenseplate.substring(0, 1) + '-' + licenseplate.substring(1, 4) + '-' + licenseplate.substring(4, 6);
             }
             if (sidecode == 11 || sidecode == 14) {
-                System.out.println("sidecode 11");
                 return licenseplate.substring(0, 3) + '-' + licenseplate.substring(3, 5) + '-' + licenseplate.substring(5, 6);
             }
             if (sidecode == 12 || sidecode == 13) {
-                System.out.println("sidecode 12");
                 return licenseplate.substring(0, 1) + '-' + licenseplate.substring(1, 3) + '-' + licenseplate.substring(3, 6);
             }
 
@@ -434,6 +449,6 @@ public class KentekenHandler {
     }
 
     public static boolean kentekenValid(String s) {
-        return KentekenHandler.getSidecodeLicenseplate(s) >= -1;
+        return SearchHandler.getSidecodeLicenseplate(s) >= -1;
     }
 }
