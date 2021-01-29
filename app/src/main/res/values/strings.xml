@@ -22,4 +22,6 @@
     <string name="kenteken_placeholder">00-XXX-0</string>
     <string name="eigen_auto">Jouw auto</string>
     <string name="eigen_autos">Jouw auto\'s</string>
+    <string name="channel_name">Kenteken Scanner</string>
+    <string name="channel_description">Kenteken Scanner</string>
 </resources>

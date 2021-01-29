@@ -58,6 +58,10 @@ public class KentekenHandler {
         runCamera(kenteken, textview);
     }
 
+    public void runIntent(TextView textview, String kenteken) {
+        runCamera(kenteken, textview);
+    }
+
     public void runCamera(String kenteken, TextView textview) {
         bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, formatLicenseplate(kenteken));
         context.mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SEARCH, bundle);

@@ -2,6 +2,8 @@ package com.MennoSpijker.kentekenscanner.View;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Typeface;
@@ -19,9 +21,9 @@ import android.widget.ScrollView;
 import android.widget.Toast;
 
 import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 
 import com.MennoSpijker.kentekenscanner.ConnectionDetector;
+import com.MennoSpijker.kentekenscanner.Factory.NotifcationFactory;
 import com.MennoSpijker.kentekenscanner.FontManager;
 import com.MennoSpijker.kentekenscanner.OcrCaptureActivity;
 import com.MennoSpijker.kentekenscanner.R;
@@ -37,8 +39,6 @@ import com.google.android.gms.common.api.CommonStatusCodes;
 import com.google.firebase.analytics.FirebaseAnalytics;
 
 import static android.view.View.*;
-
-import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 
 public class MainActivity extends Activity {
     private static final String TAG = "MainActivity";
@@ -57,6 +57,8 @@ public class MainActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
+
+        createNotificationChannel();
 
         Typeface iconFont = FontManager.getTypeface(getApplicationContext(), FontManager.FONTAWESOME);
         FontManager.markAsIconContainer(findViewById(R.id.icons_container), iconFont);
@@ -94,7 +96,7 @@ public class MainActivity extends Activity {
         resultScrollView = findViewById(R.id.scroll);
         connection = new ConnectionDetector(this);
 
-        getAds();
+        //getAds();
 
         Khandler = new KentekenHandler(MainActivity.this, connection, openRecents, resultScrollView, kentekenTextField, mAdView);
 
@@ -152,6 +154,36 @@ public class MainActivity extends Activity {
                 return false;
             }
         });
+
+        Bundle extras = getIntent().getExtras();
+        if (extras != null) {
+            String notificationMessage = extras.getString("kenteken", "UNDEFINED");
+            System.out.println(notificationMessage);
+            if (notificationMessage != "UNDEFINED") {
+                Khandler.runIntent(kentekenTextField, notificationMessage);
+            }
+        } else {
+            System.out.println("No extra's");
+        }
+
+        NotifcationFactory notifcationFactory = new NotifcationFactory(this);
+        notifcationFactory.createNotificationWithExtra();
+    }
+
+    private void createNotificationChannel() {
+        // Create the NotificationChannel, but only on API 26+ because
+        // the NotificationChannel class is new and not in the support library
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence name = getString(R.string.channel_name);
+            String description = getString(R.string.channel_description);
+            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            NotificationChannel channel = new NotificationChannel(NotifcationFactory.CHANNEL_ID, name, importance);
+            channel.setDescription(description);
+            // Register the channel with the system; you can't change the importance
+            // or other notification behaviors after this
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(channel);
+        }
     }
 
     protected void getAds() {
