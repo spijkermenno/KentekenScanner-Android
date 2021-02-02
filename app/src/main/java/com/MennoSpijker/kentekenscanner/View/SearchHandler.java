@@ -142,15 +142,28 @@ public class SearchHandler {
         new FileHandling().writeToFile(context, SavedKentekensFile, kenteken, otherKentekens);
 
         System.out.println("apk verval datum is: " + apkDate);
-        long delay = calculateTimeTillDate(apkDate);
+        long notificationTimeStamp = calculateTimeTillDate(apkDate);
+
+        Date currentDate = new Date();
+        Date notficationDate = new Date();
+        notficationDate.setTime(notificationTimeStamp);
+
+        long diff = notficationDate.getTime() - currentDate.getTime();
+        long seconds = diff / 1000;
+        long minutes = seconds / 60;
+        long hours = minutes / 60;
+        long days = hours / 24;
+
+        System.out.println("Days till notification" + days);
+
+        String longContent = "Pas op, de APK van jou favoriete auto met kenteken " + formatLicenseplate(kenteken) + " verloopt over " + days + " dagen.";
+        String shortContent = "APK Alert!";
 
         NotificationFactory notificationFactory = new NotificationFactory(context);
-        notificationFactory.scheduleNotification(notificationFactory.getNotification("Kenteken Scanner"), 1000);
+        notificationFactory.scheduleNotification(notificationFactory.getNotification(shortContent, longContent), 1000);
     }
 
     private long calculateTimeTillDate(Date apkDate) {
-        int timeToSubstract = 30 * 1000 * 60 * 60 * 24;
-
         Calendar c = Calendar.getInstance();
         c.setTime(apkDate);
         c.add(Calendar.DATE, -30);
@@ -261,6 +274,7 @@ public class SearchHandler {
 
             result.addView(lin);
 
+            context.closeKeyboard();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -372,6 +386,7 @@ public class SearchHandler {
 
             result.addView(lin);
 
+            context.closeKeyboard();
         } catch (Exception e) {
             e.printStackTrace();
         }

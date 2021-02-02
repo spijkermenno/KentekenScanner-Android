@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.Activity;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Typeface;
@@ -15,6 +16,7 @@ import android.text.TextWatcher;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ScrollView;
@@ -24,6 +26,7 @@ import androidx.core.app.ActivityCompat;
 
 import com.MennoSpijker.kentekenscanner.ConnectionDetector;
 import com.MennoSpijker.kentekenscanner.Factory.NotificationPublisher;
+import com.MennoSpijker.kentekenscanner.Factory.NotificationService;
 import com.MennoSpijker.kentekenscanner.FontManager;
 import com.MennoSpijker.kentekenscanner.OcrCaptureActivity;
 import com.MennoSpijker.kentekenscanner.R;
@@ -78,10 +81,12 @@ public class MainActivity extends Activity {
                     }
                 }
             }
+
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
                 // TODO Auto-generated method stub
             }
+
             @Override
             public void afterTextChanged(Editable s) {
                 // TODO Auto-generated method stub
@@ -109,38 +114,34 @@ public class MainActivity extends Activity {
 
         // Setting Button handlers.
 
-        searchButton.setOnClickListener(new OnClickListener()
-                {
-                    @Override
-                    public void onClick(View v) {
-                        Khandler.run(kentekenTextField);
-                    }
-                });
+        searchButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Khandler.run(kentekenTextField);
+            }
+        });
 
         openCameraButton.setOnClickListener(new OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        startCameraIntent();
-                    }
-                });
+            @Override
+            public void onClick(View v) {
+                startCameraIntent();
+            }
+        });
 
-        openRecents.setOnClickListener(new OnClickListener()
-                {
-                    @Override
-                    public void onClick(View v) {
-                        Khandler.openRecent();
-                    }
-                });
+        openRecents.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Khandler.openRecent();
+            }
+        });
 
-        openSaved.setOnClickListener(new OnClickListener()
-        {
+        openSaved.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 Khandler.openSaved();
             }
         });
-        kentekenTextField.setOnKeyListener(new OnKeyListener()
-        {
+        kentekenTextField.setOnKeyListener(new OnKeyListener() {
             public boolean onKey(View v, int keyCode, KeyEvent event) {
                 if (event.getAction() == KeyEvent.ACTION_DOWN) {
                     switch (keyCode) {
@@ -282,24 +283,28 @@ public class MainActivity extends Activity {
         }
     }
 
+    public void closeKeyboard() {
+        InputMethodManager inputManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        inputManager.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0);
+    }
 
-    public void performPermissionCheck(){
+
+    public void performPermissionCheck() {
         if (checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
-            Log.v(TAG,"Permission is granted");
+            Log.v(TAG, "Permission is granted");
         } else {
-            Log.v(TAG,"Permission is revoked");
+            Log.v(TAG, "Permission is revoked");
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
         }
+    }
 
-//            int permissionCheckWriteToStorage = ContextCompat.checkSelfPermission(this, WRITE_EXTERNAL_STORAGE);
-//            int permissionCheckReadFromStorage = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE);
-//
-//
-//            if (permissionCheckWriteToStorage != PackageManager.PERMISSION_GRANTED) {
-//                ActivityCompat.requestPermissions(this, new String[]{WRITE_EXTERNAL_STORAGE}, 1);
-//            }
-//            if (permissionCheckReadFromStorage != PackageManager.PERMISSION_GRANTED) {
-//                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
-//            }
-     }
+    @Override
+    protected void onStop() {
+        super.onStop();
+        startService(new Intent(this, NotificationService.class));
+    }
+
+    public void closeApp(View view) {
+        finish();
+    }
 }

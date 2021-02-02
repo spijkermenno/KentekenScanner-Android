@@ -69,10 +69,7 @@ public class Async extends AsyncTask<String, String, String> {
     @Override
     protected void onPostExecute(String result) {
         kentekenDataFactory.addParams(main, resultView, kenteken, Khandler, connection, recent);
-
-        if (result.length() > 3) {
-            kentekenDataFactory.fillArray(result);
-        }
+        kentekenDataFactory.fillArray(result);
     }
 
 
