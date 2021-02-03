@@ -13,11 +13,14 @@ import android.widget.TextView;
 import com.MennoSpijker.kentekenscanner.ConnectionDetector;
 import com.MennoSpijker.kentekenscanner.R;
 import com.MennoSpijker.kentekenscanner.View.Async;
+import com.MennoSpijker.kentekenscanner.View.MainActivity;
 import com.MennoSpijker.kentekenscanner.View.SearchHandler;
+import com.google.android.gms.ads.AdSize;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.w3c.dom.Text;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -30,11 +33,12 @@ public class KentekenDataFactory {
     private SearchHandler searchHandler;
     private String kenteken;
     private ScrollView resultView;
-    private Context context;
+    private MainActivity context;
     private ConnectionDetector connection;
     private Button recentButton;
     private Bundle bundle;
     private Date apkDate = null;
+    private boolean newApiCall = false;
 
     public KentekenDataFactory() {
         array.put(new JSONObject());
@@ -46,7 +50,7 @@ public class KentekenDataFactory {
         array.put(new JSONObject());
     }
 
-    public void addParams(Context main, ScrollView resultView, String kenteken, SearchHandler Khandler, ConnectionDetector connection, Button recentButton) {
+    public void addParams(MainActivity main, ScrollView resultView, String kenteken, SearchHandler Khandler, ConnectionDetector connection, Button recentButton) {
         if (context == null || !this.kenteken.equals(kenteken)) {
             this.context = main;
             this.resultView = resultView;
@@ -74,6 +78,7 @@ public class KentekenDataFactory {
                     array.getJSONObject(0).put(key, value);
 
                     if (key.contains("api")) {
+                        newApiCall = true;
                         String uri2 = value + "?kenteken=" + kenteken;
                         Async runner = new Async(context, kenteken, resultView, uri2, connection, recentButton, searchHandler, this);
                         runner.execute();
@@ -84,6 +89,7 @@ public class KentekenDataFactory {
                 e.printStackTrace();
             }
             fillResultView();
+            newApiCall = false;
         } else {
             try {
                 if (array.getJSONObject(0).length() == 0) {
@@ -110,134 +116,162 @@ public class KentekenDataFactory {
         return array;
     }
 
+    public TextView defaultTextview(int loopnumber, String value, boolean title) {
+        TextView t = new TextView(context);
+
+        t.setTextColor(Color.BLACK);
+
+        t.setBackgroundColor(Color.parseColor("#eaeaea"));
+
+        if (loopnumber % 2 == 0) {
+            t.setBackgroundColor(Color.parseColor("#dddddd"));
+        }
+
+        t.setTextColor(Color.parseColor("#222222"));
+
+        t.setVisibility(View.VISIBLE);
+
+        t.setTextSize(15);
+        t.setTextSize(15);
+
+        if (title) {
+            t.setTypeface(null, Typeface.BOLD);
+            t.setPadding(10, 10, 10, 0);
+        } else {
+            t.setTypeface(null, Typeface.ITALIC);
+            t.setPadding(10, 10, 10, 10);
+        }
+
+        t.setWidth(100);
+
+        t.setText(value);
+
+        return t;
+    }
+
 
     public void fillResultView() {
-        try {
-            resultView.removeAllViews();
-            resultView.setVisibility(View.VISIBLE);
+        if (!newApiCall) {
+            try {
+                resultView.removeAllViews();
+                resultView.setVisibility(View.VISIBLE);
 
-            LinearLayout lin = new LinearLayout(context);
-            lin.setOrientation(LinearLayout.VERTICAL);
+                LinearLayout lin = new LinearLayout(context);
+                lin.setOrientation(LinearLayout.VERTICAL);
 
-            Button save = new Button(context);
-            save.setText(R.string.save);
+                Button save = new Button(context);
+                save.setText(R.string.save);
 
-            lin.addView(save);
+                lin.addView(save);
 
-            JSONObject object = array.getJSONObject(0);
-            Iterator iterator = object.keys();
+                JSONObject object = array.getJSONObject(0);
+                Iterator iterator = object.keys();
+
+                int loopNumber = 0;
+                while (iterator.hasNext()) {
+                    loopNumber++;
+                    String key = (String) iterator.next();
 
 
-            while (iterator.hasNext()) {
-                String key = (String) iterator.next();
+                    if (!key.contains("api")) {
+                        String title = key.replace("_", " ");
+                        String value = object.getString(key);
 
-                if (!key.contains("api")) {
-                    String Filtered = key.replace("_", " ");
-                    String value = object.getString(key);
-
-                    TextView line = new TextView(context);
-                    TextView line2 = new TextView(context);
-
-                    if (key.equals("kenteken")) {
-                        value = SearchHandler.formatLicenseplate(value);
-                    }
-
-                    if (key.equals("datum_tenaamstelling")) {
-                        value = value.substring(6, 8) + "-" + value.substring(4, 6) + "-" + value.substring(0, 4);
-                    }
-
-                    if (key.equals("datum_eerste_toelating")) {
-                        value = value.substring(6, 8) + "-" + value.substring(4, 6) + "-" + value.substring(0, 4);
-                    }
-
-                    if (key.equals("datum_eerste_afgifte_nederland")) {
-                        value = value.substring(6, 8) + "-" + value.substring(4, 6) + "-" + value.substring(0, 4);
-                    }
-
-                    if (key.equals("vervaldatum_apk")) {
-                        try {
-                            String date = value.substring(6, 8) + "-" + value.substring(4, 6) + "-" + value.substring(0, 4);
-                            apkDate = new SimpleDateFormat("yyyyMMdd").parse(value);
-                            if (apkDate.before(new Date())) {
-                                line2.setBackground(context.getResources().getDrawable(R.drawable.border_error_item));
-                            } else {
-                                line2.setBackgroundColor(Color.parseColor("#ffffff"));
-                            }
-
-                            value = date;
-                        } catch (ParseException PE) {
-                            PE.printStackTrace();
+                        if (key.equals("kenteken")) {
+                            value = SearchHandler.formatLicenseplate(value);
                         }
-                    } else {
-                        line2.setBackgroundColor(Color.parseColor("#ffffff"));
-                    }
 
-                    line.setText(Filtered);
-                    line2.setText(value);
+                        if (key.equals("datum_tenaamstelling")) {
+                            value = value.substring(6, 8) + "-" + value.substring(4, 6) + "-" + value.substring(0, 4);
+                        }
 
-                    line.setTextColor(Color.BLACK);
-                    line2.setTextColor(Color.BLACK);
+                        if (key.equals("datum_eerste_toelating")) {
+                            value = value.substring(6, 8) + "-" + value.substring(4, 6) + "-" + value.substring(0, 4);
+                        }
 
-                    line.setBackgroundColor(Color.parseColor("#eeeeee"));
+                        if (key.equals("datum_eerste_afgifte_nederland")) {
+                            value = value.substring(6, 8) + "-" + value.substring(4, 6) + "-" + value.substring(0, 4);
+                        }
 
-                    line.setTextColor(Color.parseColor("#222222"));
-                    line2.setTextColor(Color.parseColor("#222222"));
+                        if (key.equals("nettomaximumvermogen")) {
+                            String titleTemp = "Vermogen PK";
+                            String contentTemp = "" + (int) (Float.parseFloat(value) * 1.362);
 
-                    line.setVisibility(View.VISIBLE);
-                    line2.setVisibility(View.VISIBLE);
+                            TextView titleViewTemp = defaultTextview(loopNumber, titleTemp, true);
+                            TextView contentViewTemp = defaultTextview(loopNumber, contentTemp, false);
 
-                    line.setPadding(10, 10, 10, 0);
-                    line2.setPadding(10, 10, 10, 0);
+                            lin.addView(titleViewTemp);
+                            lin.addView(contentViewTemp);
+                            loopNumber++;
+                        }
 
-                    line.setTextSize(15);
-                    line2.setTextSize(15);
+                        TextView titleView = defaultTextview(loopNumber, title, true);
+                        TextView contentView = defaultTextview(loopNumber, value, false);
 
-                    line.setTypeface(null, Typeface.BOLD);
-                    line2.setTypeface(null, Typeface.ITALIC);
+                        if (key.equals("nettomaximumvermogen")) {
+                            // 0.734
+                            titleView.setText("Vermogen KW");
+                            contentView.setText("" + ((int) Float.parseFloat(value)));
+                        }
 
-                    line.setWidth(100);
-                    line2.setWidth(100);
+                        if (key.equals("vervaldatum_apk")) {
+                            try {
+                                String date = value.substring(6, 8) + "-" + value.substring(4, 6) + "-" + value.substring(0, 4);
+                                apkDate = new SimpleDateFormat("yyyyMMdd").parse(value);
+                                if (apkDate.before(new Date())) {
+                                    contentView.setBackground(context.getResources().getDrawable(R.drawable.border_error_item));
+                                }
+                                value = date;
+                            } catch (ParseException PE) {
+                                PE.printStackTrace();
+                            }
+                        }
 
-                    try {
-                        lin.addView(line);
-                        lin.addView(line2);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        e.getMessage();
+                        if (loopNumber % 20 == 0) {
+                            lin.addView(context.factory.createBanner(AdSize.SMART_BANNER));
+                        }
+
+                        lin.addView(titleView);
+                        lin.addView(contentView);
+
                     }
                 }
+
+                lin.addView(context.factory.createBanner(AdSize.SMART_BANNER));
+
+                if (apkDate != null) {
+                    final Date finalApkDate = apkDate;
+                    save.setOnClickListener(
+                            new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    searchHandler.saveFavoriteKenteken(kenteken, finalApkDate);
+                                }
+                            });
+                } else {
+                    save.setVisibility(View.INVISIBLE);
+                }
+
+                resultView.addView(lin);
+            } catch (JSONException je) {
+                je.printStackTrace();
+                je.getMessage();
+
+                LinearLayout lin = new LinearLayout(context);
+                lin.setOrientation(LinearLayout.VERTICAL);
+
+                TextView line = new TextView(context);
+
+                line.setText(R.string.no_result);
+
+                line.setTextColor(Color.RED);
+
+                lin.addView(line);
+                resultView.addView(lin);
             }
-
-
-            if (apkDate != null) {
-                final Date finalApkDate = apkDate;
-                save.setOnClickListener(
-                        new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                searchHandler.saveFavoriteKenteken(kenteken, finalApkDate);
-                            }
-                        });
-            } else {
-                save.setVisibility(View.INVISIBLE);
-            }
-
-            resultView.addView(lin);
-        } catch (JSONException je) {
-            je.printStackTrace();
-            je.getMessage();
-
-            LinearLayout lin = new LinearLayout(context);
-            lin.setOrientation(LinearLayout.VERTICAL);
-
-            TextView line = new TextView(context);
-
-            line.setText(R.string.no_result);
-
-            line.setTextColor(Color.RED);
-
-            lin.addView(line);
-            resultView.addView(lin);
+        } else {
+            // TODO show loading icon
+            System.out.println("loading...");
         }
     }
 }

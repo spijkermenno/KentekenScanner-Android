@@ -25,7 +25,7 @@ public class Async extends AsyncTask<String, String, String> {
     private Button recent;
     private String kenteken, uri;
     private ScrollView resultView;
-    private Context main;
+    private MainActivity main;
     private ConnectionDetector connection;
     public SearchHandler Khandler;
     public AdView mAdView;
@@ -36,7 +36,7 @@ public class Async extends AsyncTask<String, String, String> {
 
 
 
-    public Async(Context m, String k, ScrollView r, String u, ConnectionDetector c, Button re, SearchHandler kh, KentekenDataFactory kdf) {
+    public Async(MainActivity m, String k, ScrollView r, String u, ConnectionDetector c, Button re, SearchHandler kh, KentekenDataFactory kdf) {
         try {
             main = m;
             kenteken = k;

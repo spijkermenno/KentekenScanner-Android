@@ -11,7 +11,6 @@ import android.content.pm.PackageManager;
 import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Bundle;
-
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -26,25 +25,22 @@ import android.widget.Toast;
 import androidx.core.app.ActivityCompat;
 
 import com.MennoSpijker.kentekenscanner.ConnectionDetector;
+import com.MennoSpijker.kentekenscanner.Factory.GoogleAdFactory;
 import com.MennoSpijker.kentekenscanner.Factory.NotificationPublisher;
 import com.MennoSpijker.kentekenscanner.FontManager;
 import com.MennoSpijker.kentekenscanner.OcrCaptureActivity;
 import com.MennoSpijker.kentekenscanner.R;
-
-import com.google.android.gms.ads.AdListener;
-import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.LoadAdError;
-import com.google.android.gms.ads.MobileAds;
-import com.google.android.gms.ads.initialization.InitializationStatus;
-import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
+import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.common.api.CommonStatusCodes;
 import com.google.firebase.analytics.FirebaseAnalytics;
 
-import static android.view.View.*;
+import static android.view.View.OnClickListener;
+import static android.view.View.OnKeyListener;
 
 public class MainActivity extends Activity {
     private static final String TAG = "MainActivity";
+    private static final boolean DEBUG = true;
     public FirebaseAnalytics mFirebaseAnalytics;
 
     private static final int RC_OCR_CAPTURE = 9003;
@@ -55,32 +51,14 @@ public class MainActivity extends Activity {
     public SearchHandler Khandler;
     private static AdView mAdView;
     private Bundle bundle;
-
+    public GoogleAdFactory factory;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
+        factory = new GoogleAdFactory(this);
 
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_NOSENSOR);
-
-//        FirebaseMessaging.getInstance().getToken()
-//                .addOnCompleteListener(new OnCompleteListener<String>() {
-//                    @Override
-//                    public void onComplete(@NonNull Task<String> task) {
-//                        if (!task.isSuccessful()) {
-//                            Log.w(TAG, "Fetching FCM registration token failed", task.getException());
-//                            return;
-//                        }
-//
-//                        // Get new FCM registration token
-//                        String token = task.getResult();
-//
-//                        // Log and toast
-//                        String msg = getString(R.string.msg_token_fmt, token);
-//                        Log.d(TAG, msg);
-//                        Toast.makeText(MainActivity.this, msg, Toast.LENGTH_SHORT).show();
-//                    }
-//                });
 
         createNotificationChannel();
 
@@ -122,7 +100,10 @@ public class MainActivity extends Activity {
         resultScrollView = findViewById(R.id.scroll);
         connection = new ConnectionDetector(this);
 
-        //getAds();
+        if (!DEBUG) {
+            //resultScrollView.removeAllViews();
+            resultScrollView.addView(factory.createBanner(AdSize.BANNER));
+        }
 
         Khandler = new SearchHandler(MainActivity.this, connection, openRecents, resultScrollView, kentekenTextField, mAdView);
 
@@ -180,7 +161,7 @@ public class MainActivity extends Activity {
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
             String notificationMessage = extras.getString("kenteken", "UNDEFINED");
-            if (notificationMessage != "UNDEFINED") {
+            if (!notificationMessage.equals("UNDEFINED")) {
                 Khandler.runIntent(kentekenTextField, notificationMessage);
             }
         } else {
@@ -201,65 +182,6 @@ public class MainActivity extends Activity {
             // or other notification behaviors after this
             NotificationManager notificationManager = getSystemService(NotificationManager.class);
             notificationManager.createNotificationChannel(channel);
-        }
-    }
-
-    protected void getAds() {
-        MobileAds.initialize(this, new OnInitializationCompleteListener() {
-            @Override
-            public void onInitializationComplete(InitializationStatus initializationStatus) {
-            }
-        });
-
-        try {
-            AdView adView = new AdView(this);
-
-            adView.setAdUnitId("ca-app-pub-4928043878967484/5146910390");
-            adView = this.findViewById(R.id.ad1);
-
-            adView.setAdListener(new AdListener() {
-                @Override
-                public void onAdLoaded() {
-                    bundle = new Bundle();
-                    mFirebaseAnalytics.logEvent("Ad_loaded", bundle);
-                }
-
-                @Override
-                public void onAdFailedToLoad(LoadAdError adError) {
-                    bundle = new Bundle();
-                    bundle.putString("Message", adError.getMessage());
-                    mFirebaseAnalytics.logEvent("Ad_error", bundle);
-                }
-
-                @Override
-                public void onAdOpened() {
-                    // Code to be executed when an ad opens an overlay that
-                    // covers the screen.
-                }
-
-                @Override
-                public void onAdClicked() {
-                    bundle = new Bundle();
-                    mFirebaseAnalytics.logEvent("AD_CLICK", bundle);
-                }
-
-                @Override
-                public void onAdLeftApplication() {
-                    // Code to be executed when the user has left the app.
-                }
-
-                @Override
-                public void onAdClosed() {
-                    // Code to be executed when the user is about to return
-                    // to the app after tapping on an ad.
-                }
-            });
-
-            AdRequest adRequest = new AdRequest.Builder().build();
-            adView.loadAd(adRequest);
-
-        } catch (Exception e) {
-            e.printStackTrace();
         }
     }
 
@@ -293,13 +215,10 @@ public class MainActivity extends Activity {
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        switch (requestCode) {
-            case 1: {
-                // If request is cancelled, the result arrays are empty.
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                } else {
-                    Toast.makeText(MainActivity.this, "Permission denied to read your External storage", Toast.LENGTH_SHORT).show();
-                }
+        if (requestCode == 1) {// If request is cancelled, the result arrays are empty.
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            } else {
+                Toast.makeText(MainActivity.this, "Permission denied to read your External storage", Toast.LENGTH_SHORT).show();
             }
         }
     }
