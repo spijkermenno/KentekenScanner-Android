@@ -127,7 +127,6 @@ public class KentekenDataFactory {
             JSONObject object = array.getJSONObject(0);
             Iterator iterator = object.keys();
 
-            System.out.println("WTF " + array);
 
             while (iterator.hasNext()) {
                 String key = (String) iterator.next();

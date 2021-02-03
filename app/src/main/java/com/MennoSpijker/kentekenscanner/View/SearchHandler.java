@@ -137,16 +137,14 @@ public class SearchHandler {
     public void saveFavoriteKenteken(String kenteken, Date apkDate) {
         JSONObject otherKentekens = getSavedKentekens();
 
-        System.out.println(apkDate);
-
         new FileHandling().writeToFile(context, SavedKentekensFile, kenteken, otherKentekens);
 
-        System.out.println("apk verval datum is: " + apkDate);
         long notificationTimeStamp = calculateTimeTillDate(apkDate);
 
         Date currentDate = new Date();
         Date notficationDate = new Date();
         notficationDate.setTime(notificationTimeStamp);
+
 
         long diff = notficationDate.getTime() - currentDate.getTime();
         long seconds = diff / 1000;
@@ -154,13 +152,21 @@ public class SearchHandler {
         long hours = minutes / 60;
         long days = hours / 24;
 
-        System.out.println("Days till notification" + days);
+        if (days < 0) {
+            notificationTimeStamp = new Date().getTime() + 10000;
+        }
+
+        diff = apkDate.getTime() - currentDate.getTime();
+        seconds = diff / 1000;
+        minutes = seconds / 60;
+        hours = minutes / 60;
+        days = hours / 24;
 
         String longContent = "Pas op, de APK van jou favoriete auto met kenteken " + formatLicenseplate(kenteken) + " verloopt over " + days + " dagen.";
         String shortContent = "APK Alert!";
 
         NotificationFactory notificationFactory = new NotificationFactory(context);
-        notificationFactory.scheduleNotification(notificationFactory.getNotification(shortContent, longContent), 1000);
+        notificationFactory.scheduleNotification(notificationFactory.getNotification(shortContent, longContent), notificationTimeStamp);
     }
 
     private long calculateTimeTillDate(Date apkDate) {
@@ -168,8 +174,6 @@ public class SearchHandler {
         c.setTime(apkDate);
         c.add(Calendar.DATE, -30);
         Date d = c.getTime();
-
-        System.out.println("Notificatie datum is: " + new Date(d.getTime()));
         return d.getTime();
     }
 

@@ -16,6 +16,8 @@ import androidx.core.app.NotificationCompat;
 
 import com.MennoSpijker.kentekenscanner.R;
 
+import java.util.Date;
+
 public class NotificationFactory {
     Context context;
 
@@ -23,19 +25,16 @@ public class NotificationFactory {
         context = ctx;
     }
 
-    public void scheduleNotification(Notification notification, long DateOfExecution) {
+    public void scheduleNotification(Notification notification, long dateOfExecution) {
+        System.out.println("Scheduling notifcation at: " + new Date(dateOfExecution));
 
         Intent notificationIntent = new Intent(context, NotificationPublisher.class);
         notificationIntent.putExtra(NotificationPublisher.NOTIFICATION_ID, 1);
         notificationIntent.putExtra(NotificationPublisher.NOTIFICATION, notification);
         PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
-        long futureInMillis = DateOfExecution;
-
         AlarmManager alarmManager = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
-        alarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, futureInMillis, pendingIntent);
-
-        System.out.println(alarmManager.getNextAlarmClock());
+        alarmManager.set(AlarmManager.RTC_WAKEUP, dateOfExecution, pendingIntent);
     }
 
     public Notification getNotification(String shortContent, String longContent) {
