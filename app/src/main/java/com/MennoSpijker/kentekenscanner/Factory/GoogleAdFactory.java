@@ -2,6 +2,7 @@ package com.MennoSpijker.kentekenscanner.Factory;
 
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
@@ -14,6 +15,9 @@ import com.google.android.gms.ads.LoadAdError;
 import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.ads.initialization.InitializationStatus;
 import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
+import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
+
+import static android.content.ContentValues.TAG;
 
 public class GoogleAdFactory {
     private final String publishID = "ca-app-pub-4928043878967484/5146910390";
@@ -32,54 +36,63 @@ public class GoogleAdFactory {
     }
 
     public AdView createBanner(AdSize size) {
+        FirebaseRemoteConfig mFirebaseRemoteConfig = FirebaseRemoteConfig.getInstance();
+        Boolean showAds = mFirebaseRemoteConfig.getBoolean("show_ads");
+        String show = mFirebaseRemoteConfig.getString("show_ads");
         AdView adView = new AdView(context);
 
-        adView.setAdSize(size);
-        adView.setAdUnitId(publishID);
+        Log.d(TAG, "createBanner: " + showAds);
 
-        adView.setBackgroundColor(Color.parseColor("#ffffff"));
+        //show = show.toUpperCase();
+        //if (show.equals("TRUE")) {
+        if (showAds) {
+            adView.setAdSize(size);
+            adView.setAdUnitId(publishID);
 
-        adView.setAdListener(new AdListener() {
-            @Override
-            public void onAdLoaded() {
-                Bundle bundle = new Bundle();
-                context.mFirebaseAnalytics.logEvent("Ad_loaded", bundle);
-            }
+            adView.setBackgroundColor(Color.parseColor("#ffffff"));
 
-            @Override
-            public void onAdFailedToLoad(LoadAdError adError) {
-                Bundle bundle = new Bundle();
-                bundle.putString("Message", adError.getMessage());
-                context.mFirebaseAnalytics.logEvent("Ad_error", bundle);
-            }
+            adView.setAdListener(new AdListener() {
+                @Override
+                public void onAdLoaded() {
+                    Bundle bundle = new Bundle();
+                    context.mFirebaseAnalytics.logEvent("Ad_loaded", bundle);
+                }
 
-            @Override
-            public void onAdOpened() {
-                // Code to be executed when an ad opens an overlay that
-                // covers the screen.
-            }
+                @Override
+                public void onAdFailedToLoad(LoadAdError adError) {
+                    Bundle bundle = new Bundle();
+                    bundle.putString("Message", adError.getMessage());
+                    context.mFirebaseAnalytics.logEvent("Ad_error", bundle);
+                }
 
-            @Override
-            public void onAdClicked() {
-                Bundle bundle = new Bundle();
-                context.mFirebaseAnalytics.logEvent("AD_CLICK", bundle);
-            }
+                @Override
+                public void onAdOpened() {
+                    // Code to be executed when an ad opens an overlay that
+                    // covers the screen.
+                }
 
-            @Override
-            public void onAdLeftApplication() {
-                // Code to be executed when the user has left the app.
-            }
+                @Override
+                public void onAdClicked() {
+                    Bundle bundle = new Bundle();
+                    context.mFirebaseAnalytics.logEvent("AD_CLICK", bundle);
+                }
 
-            @Override
-            public void onAdClosed() {
-                // Code to be executed when the user is about to return
-                // to the app after tapping on an ad.
-            }
-        });
+                @Override
+                public void onAdLeftApplication() {
+                    // Code to be executed when the user has left the app.
+                }
 
-        AdRequest adRequest = new AdRequest.Builder().build();
-        adView.loadAd(adRequest);
+                @Override
+                public void onAdClosed() {
+                    // Code to be executed when the user is about to return
+                    // to the app after tapping on an ad.
+                }
+            });
 
+            AdRequest adRequest = new AdRequest.Builder().build();
+            adView.loadAd(adRequest);
+
+        }
         return adView;
     }
 }

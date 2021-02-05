@@ -81,9 +81,9 @@
                 android:layout_marginTop="5dp"
                 android:layout_marginEnd="5dp"
                 android:layout_marginBottom="5dp"
-                android:background="@color/light_border_color"
-                android:text="@string/fa_icon_saved"
                 android:layout_weight="1"
+                android:background="@color/light_border_color"
+                android:text="@string/fa_icon_star"
                 android:textColor="@color/dark_background_color" />
 
             <Button

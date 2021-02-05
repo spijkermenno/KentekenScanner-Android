@@ -1,16 +1,18 @@
 package com.MennoSpijker.kentekenscanner.Factory;
 
-import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.MennoSpijker.kentekenscanner.ConnectionDetector;
+import com.MennoSpijker.kentekenscanner.Font.FontManager;
+import com.MennoSpijker.kentekenscanner.Font.IconType;
 import com.MennoSpijker.kentekenscanner.R;
 import com.MennoSpijker.kentekenscanner.View.Async;
 import com.MennoSpijker.kentekenscanner.View.MainActivity;
@@ -20,7 +22,6 @@ import com.google.android.gms.ads.AdSize;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.w3c.dom.Text;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -160,7 +161,22 @@ public class KentekenDataFactory {
                 lin.setOrientation(LinearLayout.VERTICAL);
 
                 Button save = new Button(context);
-                save.setText(R.string.save);
+                save.setTypeface(FontManager.getTypeface(context, FontManager.setIconType(IconType.REGULAR)));
+                save.setText(R.string.fa_icon_star);
+
+                // TODO see if kenteken is favorite.
+                if (searchHandler.isFavoriteKenteken(kenteken)) {
+                    save.setTypeface(FontManager.getTypeface(context, FontManager.setIconType(IconType.SOLID)));
+                }
+
+                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
+                        LinearLayout.LayoutParams.WRAP_CONTENT);
+
+                params.gravity = RelativeLayout.ALIGN_PARENT_END;
+
+                save.setLayoutParams(params);
+
+                save.setBackgroundResource(R.drawable.transparent);
 
                 lin.addView(save);
 

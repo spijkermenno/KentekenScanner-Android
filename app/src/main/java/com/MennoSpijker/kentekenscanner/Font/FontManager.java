@@ -1,4 +1,4 @@
-package com.MennoSpijker.kentekenscanner;
+package com.MennoSpijker.kentekenscanner.Font;
 
 import android.content.Context;
 import android.graphics.Typeface;
@@ -12,8 +12,18 @@ import android.widget.TextView;
 
 public class FontManager {
 
-    public static final String ROOT = "",
-            FONTAWESOME = ROOT + "fontawesome-webfont.ttf";
+    public static final String ROOT = "";
+    private static String FONTAWESOME;
+
+    public static String setIconType(IconType iconType) {
+        if (iconType.equals(IconType.REGULAR)) {
+            FONTAWESOME = ROOT + "Font Awesome 5 Free-Regular-400.otf";
+        } else {
+            FONTAWESOME = ROOT + "Font Awesome 5 Free-Solid-900.otf";
+        }
+
+        return FONTAWESOME;
+    }
 
     public static Typeface getTypeface(Context context, String font) {
         return Typeface.createFromAsset(context.getAssets(), font);
@@ -30,5 +40,5 @@ public class FontManager {
             ((TextView) v).setTypeface(typeface);
         }
     }
-
 }
+

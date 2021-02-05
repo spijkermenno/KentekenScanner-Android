@@ -3,6 +3,7 @@ package com.MennoSpijker.kentekenscanner.View;
 import android.content.Context;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -14,8 +15,8 @@ import android.widget.TextView;
 import com.MennoSpijker.kentekenscanner.ConnectionDetector;
 import com.MennoSpijker.kentekenscanner.Factory.KentekenDataFactory;
 import com.MennoSpijker.kentekenscanner.Factory.NotificationFactory;
-import com.MennoSpijker.kentekenscanner.Factory.NotificationPublisher;
-import com.MennoSpijker.kentekenscanner.FontManager;
+import com.MennoSpijker.kentekenscanner.Font.FontManager;
+import com.MennoSpijker.kentekenscanner.Font.IconType;
 import com.MennoSpijker.kentekenscanner.R;
 import com.MennoSpijker.kentekenscanner.Util.FileHandling;
 import com.google.android.gms.ads.AdView;
@@ -25,7 +26,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -36,6 +36,7 @@ import java.util.Locale;
 public class SearchHandler {
     private static final String RecentKentekensFile = "recent.json";
     private static final String SavedKentekensFile = "favorites.json";
+    private static final String TAG = "SEARCH HANDLER";
 
     private final Button button3;
     private final MainActivity context;
@@ -46,6 +47,8 @@ public class SearchHandler {
     public AdView mAdView;
     private final KentekenDataFactory kentekenDataFactory = new KentekenDataFactory();
     private final Bundle bundle;
+
+    private ArrayList<String> favoriteKentekens = new ArrayList<>();
 
     public SearchHandler(MainActivity c, ConnectionDetector co, Button b, ScrollView r, TextView kHold, AdView mad) {
         this.context = c;
@@ -93,6 +96,8 @@ public class SearchHandler {
     }
 
     public JSONObject getSavedKentekens() {
+        favoriteKentekens.clear();
+
         ArrayList<JSONArray> kentekens = new ArrayList<>();
 
         String fileContent = new FileHandling().readFile(context, SavedKentekensFile);
@@ -104,8 +109,22 @@ public class SearchHandler {
             System.out.println("error empty mainObject");
         }
 
-        //return kentekens;
+        try {
+            JSONArray favorites = mainObject.getJSONArray("cars");
+            for (int i = 0; i < favorites.length(); i++) {
+                favoriteKentekens.add(favorites.getString(i));
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        System.out.println(favoriteKentekens);
         return mainObject;
+    }
+
+    public boolean isFavoriteKenteken(String kenteken) {
+        Log.d(TAG, "isFavoriteKenteken: " + favoriteKentekens.contains(kenteken));
+        return favoriteKentekens.contains(kenteken);
     }
 
     public JSONObject getRecentKenteken() {
@@ -254,7 +273,7 @@ public class SearchHandler {
             if (recents.length() > 0) {
                 Button clear = new Button(context);
 
-                clear.setTypeface(FontManager.getTypeface(context, FontManager.FONTAWESOME));
+                clear.setTypeface(FontManager.getTypeface(context, FontManager.setIconType(IconType.REGULAR)));
                 clear.setText(R.string.fa_icon_trash);
                 clear.setOnClickListener(
                         new View.OnClickListener() {
@@ -366,7 +385,7 @@ public class SearchHandler {
             if (recents.length() > 0) {
                 Button clear = new Button(context);
 
-                clear.setTypeface(FontManager.getTypeface(context, FontManager.FONTAWESOME));
+                clear.setTypeface(FontManager.getTypeface(context, FontManager.setIconType(IconType.REGULAR)));
                 clear.setText(R.string.fa_icon_trash);
                 clear.setOnClickListener(
                         new View.OnClickListener() {

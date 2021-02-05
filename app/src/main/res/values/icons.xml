@@ -2,7 +2,8 @@
 <resources>
     <string name="fa_icon_search">&#xf002;</string>
     <string name="fa_icon_camera">&#xf030;</string>
-    <string name="fa_icon_recent">&#xf13a;</string>
+    <string name="fa_icon_recent">&#xf1da;</string>
     <string name="fa_icon_trash">&#xf014;</string>
     <string name="fa_icon_saved">&#xf02e;</string>
+    <string name="fa_icon_star">&#xf005;</string>
 </resources>

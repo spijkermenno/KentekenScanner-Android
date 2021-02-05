@@ -22,4 +22,6 @@
     <color name="recent_background_color">#4CAF50</color>
     <color name="menu_background_color">#607D8B</color>
     <color name="save_background_color">#673AB7</color>
+
+<!--    <color name="transparent">#100FFFFFF</color>-->
 </resources>

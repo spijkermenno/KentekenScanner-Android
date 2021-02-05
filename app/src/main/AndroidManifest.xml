@@ -56,14 +56,6 @@
 
         <receiver android:name="com.MennoSpijker.kentekenscanner.Factory.NotificationPublisher" />
 
-        <!--        <service-->
-        <!--            android:name=".Factory.NotificationService"-->
-        <!--            android:exported="false">-->
-        <!--            <intent-filter>-->
-        <!--                <action android:name="com.google.firebase.MESSAGING_EVENT" />-->
-        <!--            </intent-filter>-->
-        <!--        </service>-->
-
     </application>
 
 </manifest>

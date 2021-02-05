@@ -22,18 +22,25 @@ import android.widget.EditText;
 import android.widget.ScrollView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 
 import com.MennoSpijker.kentekenscanner.ConnectionDetector;
 import com.MennoSpijker.kentekenscanner.Factory.GoogleAdFactory;
 import com.MennoSpijker.kentekenscanner.Factory.NotificationPublisher;
-import com.MennoSpijker.kentekenscanner.FontManager;
+import com.MennoSpijker.kentekenscanner.Font.FontManager;
+import com.MennoSpijker.kentekenscanner.Font.IconType;
 import com.MennoSpijker.kentekenscanner.OcrCaptureActivity;
 import com.MennoSpijker.kentekenscanner.R;
 import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.common.api.CommonStatusCodes;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.analytics.FirebaseAnalytics;
+import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
+import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings;
 
 import static android.view.View.OnClickListener;
 import static android.view.View.OnKeyListener;
@@ -52,17 +59,44 @@ public class MainActivity extends Activity {
     private static AdView mAdView;
     private Bundle bundle;
     public GoogleAdFactory factory;
+    public FirebaseRemoteConfig mFirebaseRemoteConfig;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
+        mFirebaseRemoteConfig = FirebaseRemoteConfig.getInstance();
+        FirebaseRemoteConfigSettings configSettings = new FirebaseRemoteConfigSettings.Builder()
+                .setMinimumFetchIntervalInSeconds(1)
+                .build();
+        mFirebaseRemoteConfig.setConfigSettingsAsync(configSettings);
+
+        mFirebaseRemoteConfig.setDefaultsAsync(R.xml.remote_config_defaults_backup);
+
+        mFirebaseRemoteConfig.fetch(60);
+        mFirebaseRemoteConfig.activate()
+                .addOnCompleteListener(this, new OnCompleteListener<Boolean>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Boolean> task) {
+                        if (task.isSuccessful()) {
+                            Boolean updated = task.getResult();
+                            Log.d(TAG, "Config params updated: " + updated);
+                        }
+                    }
+                })
+        .addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                e.printStackTrace();
+            }
+        });
+        
         factory = new GoogleAdFactory(this);
 
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_NOSENSOR);
 
         createNotificationChannel();
 
-        Typeface iconFont = FontManager.getTypeface(getApplicationContext(), FontManager.FONTAWESOME);
+        Typeface iconFont = FontManager.getTypeface(getApplicationContext(), FontManager.setIconType(IconType.REGULAR));
         FontManager.markAsIconContainer(findViewById(R.id.icons_container), iconFont);
 
         super.onCreate(savedInstanceState);
@@ -107,10 +141,10 @@ public class MainActivity extends Activity {
 
         Khandler = new SearchHandler(MainActivity.this, connection, openRecents, resultScrollView, kentekenTextField, mAdView);
 
-        searchButton.setTypeface(FontManager.getTypeface(this, FontManager.FONTAWESOME));
-        openCameraButton.setTypeface(FontManager.getTypeface(this, FontManager.FONTAWESOME));
-        openRecents.setTypeface(FontManager.getTypeface(this, FontManager.FONTAWESOME));
-        openSaved.setTypeface(FontManager.getTypeface(this, FontManager.FONTAWESOME));
+        searchButton.setTypeface(FontManager.getTypeface(this, FontManager.setIconType(IconType.SOLID)));
+        openCameraButton.setTypeface(FontManager.getTypeface(this, FontManager.setIconType(IconType.SOLID)));
+        openRecents.setTypeface(FontManager.getTypeface(this, FontManager.setIconType(IconType.SOLID)));
+        openSaved.setTypeface(FontManager.getTypeface(this, FontManager.setIconType(IconType.REGULAR)));
 
         performPermissionCheck();
 
