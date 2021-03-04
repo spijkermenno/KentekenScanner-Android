@@ -129,7 +129,7 @@ public class KentekenHandler {
     public void saveFavoriteKenteken(String kenteken) {
         JSONObject otherKentekens = getSavedKentekens();
 
-        System.out.println(otherKentekens);
+        context.mFirebaseAnalytics.setUserProperty("kenteken", kenteken);
 
         new FileHandling().writeToFile(context, SavedKentekensFile, kenteken, otherKentekens);
 
