@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/light_background"
+    android:background="@color/white"
     android:orientation="vertical">
 
     <LinearLayout
@@ -19,18 +19,18 @@
         <EditText
             android:id="@+id/kenteken"
             android:layout_width="283dp"
-            android:layout_height="64dp"
+            android:layout_height="75dp"
             android:layout_gravity="center"
             android:layout_marginTop="20dp"
             android:layout_marginBottom="5dp"
             android:layout_weight="1"
-            android:background="@drawable/kenteken_v2"
+            android:background="@drawable/kentekenplaat3"
             android:gravity="center_horizontal"
             android:hint="@string/kenteken_placeholder"
             android:textAllCaps="true"
             android:inputType="textCapCharacters"
-            android:paddingStart="20dp"
-            android:paddingTop="5dp"
+            android:paddingStart="45dp"
+            android:paddingTop="12dp"
             android:paddingEnd="10dp"
             android:textAlignment="center"
             android:textSize="36sp"
@@ -47,19 +47,19 @@
             android:orientation="horizontal">
 
             <Button
-                android:id="@+id/sendRequest"
+                android:id="@+id/showHistory"
                 style="@style/Base.Widget.AppCompat.Button.Borderless"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:layout_gravity="end"
                 android:layout_marginEnd="5dp"
-                android:background="@color/light_border_color"
-                android:text="@string/fa_icon_search"
+                android:background="@color/white"
+                android:text="@string/fa_icon_history"
                 android:layout_weight="1"
                 android:textColor="@color/dark_background_color" />
 
             <Button
-                android:id="@+id/recent"
+                android:id="@+id/showFavorites"
                 style="@style/Base.Widget.AppCompat.Button.Borderless"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
@@ -67,13 +67,13 @@
                 android:layout_marginTop="5dp"
                 android:layout_marginEnd="5dp"
                 android:layout_marginBottom="5dp"
-                android:background="@color/light_border_color"
-                android:text="@string/fa_icon_recent"
+                android:background="@color/white"
+                android:text="@string/fa_icon_star"
                 android:layout_weight="1"
                 android:textColor="@color/dark_background_color" />
 
             <Button
-                android:id="@+id/saved"
+                android:id="@+id/showAlerts"
                 style="@style/Base.Widget.AppCompat.Button.Borderless"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
@@ -81,10 +81,11 @@
                 android:layout_marginTop="5dp"
                 android:layout_marginEnd="5dp"
                 android:layout_marginBottom="5dp"
-                android:background="@color/light_border_color"
-                android:text="@string/fa_icon_saved"
+                android:background="@color/white"
+                android:text="@string/fa_icon_bell"
                 android:layout_weight="1"
-                android:textColor="@color/dark_background_color" />
+                android:enabled="false"
+                android:textColor="@color/browser_actions_bg_grey" />
 
             <Button
                 android:id="@+id/camera"
@@ -94,7 +95,7 @@
                 android:layout_gravity="end"
                 android:layout_marginTop="5dp"
                 android:layout_marginBottom="5dp"
-                android:background="@color/light_border_color"
+                android:background="@color/white"
                 android:text="@string/fa_icon_camera"
                 android:layout_weight="1"
                 android:textColor="@color/dark_background_color" />

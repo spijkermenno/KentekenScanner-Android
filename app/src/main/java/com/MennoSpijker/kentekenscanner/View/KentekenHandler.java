@@ -3,6 +3,7 @@ package com.MennoSpijker.kentekenscanner.View;
 import android.content.Context;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -23,6 +24,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.Console;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -32,6 +34,7 @@ import java.util.Locale;
 public class KentekenHandler {
     private static final String RecentKentekensFile = "recent.json";
     private static final String SavedKentekensFile = "favorites.json";
+    private static final String TAG = "KentekenHandler";
 
     private final Button button3;
     private final MainActivity context;
@@ -84,55 +87,42 @@ public class KentekenHandler {
         inputManager.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0);
     }
 
-    public JSONObject getSavedKentekens() {
-        ArrayList<JSONArray> kentekens = new ArrayList<>();
-
-        String fileContent = new FileHandling().readFile(context, SavedKentekensFile);
-
-        JSONObject mainObject = new JSONObject();
-        try {
-            mainObject = new JSONObject(fileContent);
-        } catch (JSONException e) {
-            System.out.println("error empty mainObject");
-        }
-
-        //return kentekens;
-        return mainObject;
-    }
-
-    public JSONObject getRecentKenteken() {
-        ArrayList<JSONArray> kentekens = new ArrayList<>();
-
-        String fileContent = new FileHandling().readFile(context, RecentKentekensFile);
-
-        JSONObject mainObject = new JSONObject();
-        try {
-            mainObject = new JSONObject(fileContent);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        //return kentekens;
-        return mainObject;
-    }
-
     public void saveRecentKenteken(String kenteken) {
-        JSONObject otherKentekens = getRecentKenteken();
+        JSONObject otherKentekens = new FileHandling(context).getRecentKenteken();
 
         SimpleDateFormat wantedFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.ENGLISH);
         String date = wantedFormat.format(new Date());
 
-        new FileHandling().writeToFileOnDate(context, RecentKentekensFile, kenteken, date, otherKentekens);
+        new FileHandling(context).writeToFileOnDate(RecentKentekensFile, kenteken, date, otherKentekens);
 
     }
 
     public void saveFavoriteKenteken(String kenteken) {
-        JSONObject otherKentekens = getSavedKentekens();
+        JSONObject otherKentekens = new FileHandling(context).getSavedKentekens();
 
         context.mFirebaseAnalytics.setUserProperty("kenteken", kenteken);
 
-        new FileHandling().writeToFile(context, SavedKentekensFile, kenteken, otherKentekens);
+        new FileHandling(context).writeToFile(SavedKentekensFile, kenteken, otherKentekens);
 
+    }
+
+    public void deleteFavoriteKenteken(String kenteken) throws JSONException {
+        JSONObject otherKentekens = new FileHandling(context).getSavedKentekens();
+
+        context.mFirebaseAnalytics.setUserProperty("kenteken", kenteken);
+
+        JSONObject temp = new JSONObject();
+        temp.put("cars", new JSONArray());
+
+        for (int i = 0; i < otherKentekens.getJSONArray("cars").length(); i++) {
+            if (!otherKentekens.getJSONArray("cars").getString(i).equals(kenteken)) {
+                temp.getJSONArray("cars").put(otherKentekens.getJSONArray("cars").getString(i));
+            }
+        }
+
+        Log.d(TAG, "deleteFavoriteKenteken: " + temp);
+
+        new FileHandling(context).writeToFile(SavedKentekensFile, temp);
     }
 
     public void openRecent() {
@@ -146,10 +136,10 @@ public class KentekenHandler {
 
         final float scale = context.getResources().getDisplayMetrics().density;
         int width = (int) (283 * scale + 0.5f);
-        int height = (int) (64 * scale + 0.5f);
+        int height = (int) (75 * scale + 0.5f);
 
         try {
-            final JSONObject recents = getRecentKenteken();
+            final JSONObject recents = new FileHandling(context).getRecentKenteken();
 
             LinearLayout lin = new LinearLayout(context);
             lin.setOrientation(LinearLayout.VERTICAL);
@@ -185,7 +175,7 @@ public class KentekenHandler {
                                 }
                             });
 
-                    line.setBackground(context.getDrawable(R.drawable.kenteken_v2));
+                    line.setBackground(context.getDrawable(R.drawable.kentekenplaat3));
 
                     LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
                             width,
@@ -195,10 +185,10 @@ public class KentekenHandler {
                     params.gravity = 17;
                     line.setLayoutParams(params);
 
-                    line.setTextSize(TypedValue.COMPLEX_UNIT_SP, 36);
+                    line.setTextSize(TypedValue.COMPLEX_UNIT_SP, 32);
                     line.setTypeface(Typeface.defaultFromStyle(Typeface.BOLD));
 
-                    int left = (int) (20 * scale + 0.5f);
+                    int left = (int) (45 * scale + 0.5f);
                     int right = (int) (10 * scale + 0.5f);
                     int top = (int) (0 * scale + 0.5f);
                     int bottom = (int) (0 * scale + 0.5f);
@@ -207,31 +197,6 @@ public class KentekenHandler {
 
                     lin.addView(line);
                 }
-            }
-
-            if (recents.length() > 0) {
-                Button clear = new Button(context);
-
-                clear.setTypeface(FontManager.getTypeface(context, FontManager.FONTAWESOME));
-                clear.setText(R.string.fa_icon_trash);
-                clear.setOnClickListener(
-                        new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                new FileHandling().emptyFile(context, RecentKentekensFile);
-                                openRecent();
-                            }
-                        });
-
-                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
-                        width,
-                        height
-                );
-
-                params.gravity = 17;
-                clear.setLayoutParams(params);
-
-                lin.addView(clear);
             }
 
             result.addView(lin);
@@ -252,10 +217,10 @@ public class KentekenHandler {
 
         final float scale = context.getResources().getDisplayMetrics().density;
         int width = (int) (283 * scale + 0.5f);
-        int height = (int) (64 * scale + 0.5f);
+        int height = (int) (75 * scale + 0.5f);
 
         try {
-            final JSONObject recents = getSavedKentekens();
+            final JSONObject recents = new FileHandling(context).getSavedKentekens();
 
             LinearLayout lin = new LinearLayout(context);
             lin.setOrientation(LinearLayout.VERTICAL);
@@ -267,7 +232,7 @@ public class KentekenHandler {
             textView.setText(R.string.eigen_auto);
 
             System.out.println(recents.names());
-            if (recents.getJSONArray(recents.names().getString(0)).length() > 1) {
+            if (recents == null && recents.getJSONArray(recents.names().getString(0)).length() > 1) {
                 textView.setText(R.string.eigen_autos);
             }
 
@@ -297,7 +262,7 @@ public class KentekenHandler {
                                 }
                             });
 
-                    line.setBackground(context.getDrawable(R.drawable.kenteken_v2));
+                    line.setBackground(context.getDrawable(R.drawable.kentekenplaat3));
 
                     LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
                             width,
@@ -307,10 +272,10 @@ public class KentekenHandler {
                     params.gravity = 17;
                     line.setLayoutParams(params);
 
-                    line.setTextSize(TypedValue.COMPLEX_UNIT_SP, 36);
+                    line.setTextSize(TypedValue.COMPLEX_UNIT_SP, 32);
                     line.setTypeface(Typeface.defaultFromStyle(Typeface.BOLD));
 
-                    int left = (int) (20 * scale + 0.5f);
+                    int left = (int) (45 * scale + 0.5f);
                     int right = (int) (10 * scale + 0.5f);
                     int top = (int) (0 * scale + 0.5f);
                     int bottom = (int) (0 * scale + 0.5f);
@@ -319,31 +284,6 @@ public class KentekenHandler {
 
                     lin.addView(line);
                 }
-            }
-
-            if (recents.length() > 0) {
-                Button clear = new Button(context);
-
-                clear.setTypeface(FontManager.getTypeface(context, FontManager.FONTAWESOME));
-                clear.setText(R.string.fa_icon_trash);
-                clear.setOnClickListener(
-                        new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                new FileHandling().emptyFile(context, SavedKentekensFile);
-                                openRecent();
-                            }
-                        });
-
-                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
-                        width,
-                        height
-                );
-
-                params.gravity = 17;
-                clear.setLayoutParams(params);
-
-                lin.addView(clear);
             }
 
             result.addView(lin);

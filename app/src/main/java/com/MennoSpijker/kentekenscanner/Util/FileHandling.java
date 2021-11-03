@@ -8,20 +8,31 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Locale;
 
 public class FileHandling {
     private static final String TAG = "PERMISSION";
-    private final String storageDir = Environment.getExternalStorageDirectory().getAbsolutePath() + "/";
+    private Context context;
+    private final String storageDir;
+    private static final String RecentKentekensFile = "recent.json";
+    private static final String SavedKentekensFile = "favorites.json";
 
-    public String readFile(Context context, String filename) {
+    public FileHandling(Context context) {
+        this.context = context;
+        this.storageDir = context.getFilesDir() + "/";
+    }
+
+    public String readFile(String filename) {
         FileInputStream fis;
         int n;
         StringBuilder fileContent = new StringBuilder();
@@ -29,6 +40,7 @@ public class FileHandling {
         File file = new File(storageDir + filename);
         System.out.println("FILENAME: " + file);
         if (file.exists()) {
+            Log.d(TAG, "readFile: File exists.");
             try {
                 fis = new FileInputStream(file);
 
@@ -48,9 +60,11 @@ public class FileHandling {
             Log.d(TAG, "readFile() returned: " + fileContent.toString());
             return fileContent.toString();
         } else {
+            Log.d(TAG, "readFile: File doesn't exist, try to create");
             try {
-                file.createNewFile();
-                return readFile(context, filename);
+                Boolean var = file.createNewFile();
+                writeToFile(filename, new JSONObject());
+                return readFile(filename);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -58,7 +72,7 @@ public class FileHandling {
         return null;
     }
 
-    public void writeToFileOnDate(Context context, String filename, String newKenteken, String newKentekenDate, JSONObject otherKentekens) {
+    public void writeToFileOnDate(String filename, String newKenteken, String newKentekenDate, JSONObject otherKentekens) {
         JSONObject mainObject = new JSONObject();
 
         File file = new File(storageDir + filename);
@@ -144,14 +158,14 @@ public class FileHandling {
         } else {
             try {
                 System.out.println(file.createNewFile());
-                writeToFileOnDate(context, filename, newKenteken, newKentekenDate, otherKentekens);
+                writeToFileOnDate(filename, newKenteken, newKentekenDate, otherKentekens);
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
     }
 
-    public void writeToFile(Context context, String filename, String newKenteken, JSONObject otherKentekens) {
+    public void writeToFile(String filename, String newKenteken, JSONObject otherKentekens) {
         JSONObject mainObject = new JSONObject();
 
         File file = new File(storageDir + filename);
@@ -214,7 +228,7 @@ public class FileHandling {
         } else {
             try {
                 System.out.println(file.createNewFile());
-                writeToFile(context, filename, newKenteken, otherKentekens);
+                writeToFile(filename, newKenteken, otherKentekens);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -222,7 +236,7 @@ public class FileHandling {
 
     }
 
-    public void emptyFile(Context context, String filename) {
+    public void emptyFile(String filename) {
         String empty = "";
         File file = new File(storageDir + filename);
         if (file.exists()) {
@@ -238,5 +252,68 @@ public class FileHandling {
                 FNFE.printStackTrace();
             }
         }
+    }
+
+    public JSONObject getSavedKentekens() {
+        ArrayList<JSONArray> kentekens = new ArrayList<>();
+
+        String fileContent = readFile(SavedKentekensFile);
+
+        JSONObject mainObject = new JSONObject();
+        try {
+            mainObject = new JSONObject(fileContent);
+        } catch (JSONException e) {
+            System.out.println("error empty mainObject");
+        }
+
+        //return kentekens;
+        return mainObject;
+    }
+
+    public JSONObject getRecentKenteken() {
+        ArrayList<JSONArray> kentekens = new ArrayList<>();
+
+        String fileContent = readFile(RecentKentekensFile);
+
+        JSONObject mainObject = new JSONObject();
+        try {
+            mainObject = new JSONObject(fileContent);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        //return kentekens;
+        return mainObject;
+    }
+
+    public void writeToFile(String savedKentekensFile, JSONObject otherKentekens) {
+        JSONObject mainObject = new JSONObject();
+
+        File file = new File(storageDir + savedKentekensFile);
+        if (file.exists()) {
+            try {
+                FileOutputStream fileOutputStream = new FileOutputStream(file);
+
+                String key = "cars";
+
+                if (otherKentekens.length() > 0) {
+                    JSONArray values = new JSONArray(otherKentekens.getString(key));
+                    mainObject.put(key, otherKentekens.getJSONArray("cars"));
+                }
+
+                System.out.println("before write: " + mainObject);
+                fileOutputStream.write(mainObject.toString().getBytes());
+            } catch (JSONException | IOException e) {
+                e.printStackTrace();
+            }
+        } else {
+            try {
+                System.out.println(file.createNewFile());
+                writeToFile(savedKentekensFile, otherKentekens);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
     }
 }

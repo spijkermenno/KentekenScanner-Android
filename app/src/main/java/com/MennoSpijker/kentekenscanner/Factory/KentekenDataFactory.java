@@ -3,7 +3,9 @@ package com.MennoSpijker.kentekenscanner.Factory;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
@@ -12,6 +14,7 @@ import android.widget.TextView;
 
 import com.MennoSpijker.kentekenscanner.ConnectionDetector;
 import com.MennoSpijker.kentekenscanner.R;
+import com.MennoSpijker.kentekenscanner.Util.FileHandling;
 import com.MennoSpijker.kentekenscanner.View.Async;
 import com.MennoSpijker.kentekenscanner.View.KentekenHandler;
 import com.google.firebase.analytics.FirebaseAnalytics;
@@ -27,6 +30,7 @@ import java.util.Iterator;
 
 public class KentekenDataFactory {
 
+    private static final String TAG = "KentekenDataFactory";
     private JSONArray array = new JSONArray();
     private KentekenHandler kentekenHandler;
     private String kenteken;
@@ -119,16 +123,60 @@ public class KentekenDataFactory {
             LinearLayout lin = new LinearLayout(context);
             lin.setOrientation(LinearLayout.VERTICAL);
 
-            Button save = new Button(context);
-            save.setText(R.string.save);
+            final Button save = new Button(context);
 
-            save.setOnClickListener(
-                    new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            kentekenHandler.saveFavoriteKenteken(kenteken);
-                        }
-                    });
+            JSONObject kentekens = new FileHandling(context).getSavedKentekens();
+
+            if (kentekens.length() != 0) {
+
+
+                Boolean inArray = false;
+                for (int i = 0; i < kentekens.getJSONArray("cars").length(); i++) {
+                    if (kentekens.getJSONArray("cars").getString(i).equals(kenteken)) {
+                        inArray = true;
+                    }
+                    ;
+                }
+
+                if (inArray) {
+                    save.setText(R.string.delete);
+
+                    save.setOnClickListener(
+                            new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    try {
+                                        kentekenHandler.deleteFavoriteKenteken(kenteken);
+                                        kentekenHandler.openSaved();
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                            });
+                } else {
+                    save.setText(R.string.save);
+
+                    save.setOnClickListener(
+                            new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    kentekenHandler.saveFavoriteKenteken(kenteken);
+                                    kentekenHandler.openSaved();
+                                }
+                            });
+                }
+            } else {
+                save.setText(R.string.save);
+
+                save.setOnClickListener(
+                        new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                kentekenHandler.saveFavoriteKenteken(kenteken);
+                                kentekenHandler.openSaved();
+                            }
+                        });
+            }
 
             lin.addView(save);
 
@@ -144,6 +192,7 @@ public class KentekenDataFactory {
 
                     TextView line = new TextView(context);
                     TextView line2 = new TextView(context);
+                    View line3 = new View(context);
 
                     if (key.equals("kenteken")) {
                         value = KentekenHandler.formatLicenseplate(value);
@@ -174,8 +223,6 @@ public class KentekenDataFactory {
                         } catch (ParseException PE) {
                             PE.printStackTrace();
                         }
-                    } else {
-                        line2.setBackgroundColor(Color.parseColor("#ffffff"));
                     }
 
                     line.setText(Filtered);
@@ -184,18 +231,16 @@ public class KentekenDataFactory {
                     line.setTextColor(Color.BLACK);
                     line2.setTextColor(Color.BLACK);
 
-                    line.setBackgroundColor(Color.parseColor("#eeeeee"));
-
                     line.setTextColor(Color.parseColor("#222222"));
                     line2.setTextColor(Color.parseColor("#222222"));
 
                     line.setVisibility(View.VISIBLE);
                     line2.setVisibility(View.VISIBLE);
 
-                    line.setPadding(10, 10, 10, 0);
-                    line2.setPadding(10, 10, 10, 0);
+                    line.setPadding(10, 25, 10, 0);
+                    line2.setPadding(10, 10, 10, 25);
 
-                    line.setTextSize(15);
+                    line.setTextSize(17);
                     line2.setTextSize(15);
 
                     line.setTypeface(null, Typeface.BOLD);
@@ -204,9 +249,13 @@ public class KentekenDataFactory {
                     line.setWidth(100);
                     line2.setWidth(100);
 
+                    line3.setBackgroundColor(Color.parseColor("#aaaaaa"));
+                    line3.setMinimumHeight(1);
+
                     try {
                         lin.addView(line);
                         lin.addView(line2);
+                        lin.addView(line3);
                     } catch (Exception e) {
                         e.printStackTrace();
                         e.getMessage();

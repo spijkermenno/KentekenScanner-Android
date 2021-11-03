@@ -5,7 +5,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Typeface;
-import android.os.Build;
 import android.os.Bundle;
 
 import android.text.Editable;
@@ -19,7 +18,6 @@ import android.widget.ScrollView;
 import android.widget.Toast;
 
 import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 
 import com.MennoSpijker.kentekenscanner.ConnectionDetector;
 import com.MennoSpijker.kentekenscanner.FontManager;
@@ -38,14 +36,12 @@ import com.google.firebase.analytics.FirebaseAnalytics;
 
 import static android.view.View.*;
 
-import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
-
 public class MainActivity extends Activity {
     private static final String TAG = "MainActivity";
     public FirebaseAnalytics mFirebaseAnalytics;
 
     private static final int RC_OCR_CAPTURE = 9003;
-    public Button searchButton, openCameraButton, openRecents, openSaved;
+    public Button showHistoryButton, openCameraButton, showFavoritesButton, showAlertsButton;
     public ScrollView resultScrollView;
     public String kenteken;
     private ConnectionDetector connection;
@@ -60,6 +56,8 @@ public class MainActivity extends Activity {
 
         Typeface iconFont = FontManager.getTypeface(getApplicationContext(), FontManager.FONTAWESOME);
         FontManager.markAsIconContainer(findViewById(R.id.icons_container), iconFont);
+
+        Log.d(TAG, "writeToFileOnDate: " + this.getFilesDir());
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_scan);
@@ -86,34 +84,36 @@ public class MainActivity extends Activity {
             }
         });
 
-        searchButton = findViewById(R.id.sendRequest);
+        showHistoryButton = findViewById(R.id.showHistory);
         openCameraButton = findViewById(R.id.camera);
-        openRecents = findViewById(R.id.recent);
-        openSaved = findViewById(R.id.saved);
+        showFavoritesButton = findViewById(R.id.showFavorites);
+        showAlertsButton = findViewById(R.id.showAlerts);
 
         resultScrollView = findViewById(R.id.scroll);
         connection = new ConnectionDetector(this);
 
         getAds();
 
-        Khandler = new KentekenHandler(MainActivity.this, connection, openRecents, resultScrollView, kentekenTextField, mAdView);
+        Khandler = new KentekenHandler(MainActivity.this, connection, showFavoritesButton, resultScrollView, kentekenTextField, mAdView);
 
-        searchButton.setTypeface(FontManager.getTypeface(this, FontManager.FONTAWESOME));
+        showHistoryButton.setTypeface(FontManager.getTypeface(this, FontManager.FONTAWESOME));
+        showHistoryButton.setTextSize(20);
         openCameraButton.setTypeface(FontManager.getTypeface(this, FontManager.FONTAWESOME));
-        openRecents.setTypeface(FontManager.getTypeface(this, FontManager.FONTAWESOME));
-        openSaved.setTypeface(FontManager.getTypeface(this, FontManager.FONTAWESOME));
+        openCameraButton.setTextSize(20);
+        showFavoritesButton.setTypeface(FontManager.getTypeface(this, FontManager.FONTAWESOME));
+        showFavoritesButton.setTextSize(20);
+        showAlertsButton.setTypeface(FontManager.getTypeface(this, FontManager.FONTAWESOME));
+        showAlertsButton.setTextSize(20);
 
         performPermissionCheck();
 
-        // Setting Button handlers.
-
-        searchButton.setOnClickListener(new OnClickListener()
-                {
-                    @Override
-                    public void onClick(View v) {
-                        Khandler.run(kentekenTextField);
-                    }
-                });
+        showHistoryButton.setOnClickListener(new OnClickListener()
+        {
+            @Override
+            public void onClick(View v) {
+                Khandler.openRecent();
+            }
+        });
 
         openCameraButton.setOnClickListener(new OnClickListener() {
                     @Override
@@ -122,24 +122,31 @@ public class MainActivity extends Activity {
                     }
                 });
 
-        openRecents.setOnClickListener(new OnClickListener()
+        showFavoritesButton.setOnClickListener(new OnClickListener()
                 {
                     @Override
                     public void onClick(View v) {
-                        Khandler.openRecent();
+                        Khandler.openSaved();
                     }
                 });
 
-        openSaved.setOnClickListener(new OnClickListener()
+        showAlertsButton.setOnClickListener(new OnClickListener()
         {
             @Override
             public void onClick(View v) {
-                Khandler.openSaved();
+                //Khandler.openSaved();
             }
         });
+        
         kentekenTextField.setOnKeyListener(new OnKeyListener()
         {
             public boolean onKey(View v, int keyCode, KeyEvent event) {
+                if(KentekenHandler.getSidecodeLicenseplate(kentekenTextField.getText().toString().toUpperCase()) != -1 && KentekenHandler.getSidecodeLicenseplate(kentekenTextField.getText().toString().toUpperCase()) != -2) {
+                    Log.d(TAG, "onKey: BINGO");
+                    Khandler.run(kentekenTextField);
+                    return true;
+                } 
+                
                 if (event.getAction() == KeyEvent.ACTION_DOWN) {
                     switch (keyCode) {
                         case KeyEvent.KEYCODE_ENTER:
@@ -243,6 +250,7 @@ public class MainActivity extends Activity {
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        Log.d(TAG, "onRequestPermissionsResult: " + requestCode);
         switch (requestCode) {
             case 1: {
                 // If request is cancelled, the result arrays are empty.
@@ -256,6 +264,7 @@ public class MainActivity extends Activity {
 
 
     public void performPermissionCheck(){
+
         if (checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
             Log.v(TAG,"Permission is granted");
         } else {
