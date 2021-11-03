@@ -36,6 +36,7 @@ public class Request {
                 if (!kenteken.equals("")) {
                     try {
                         URL url = new URL(uri);
+                        Log.d(TAG, "PerformRequest: " + url);
                         HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
                         try {
                             InputStream in = new BufferedInputStream(urlConnection.getInputStream());

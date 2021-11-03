@@ -141,21 +141,38 @@ public class MainActivity extends Activity {
         kentekenTextField.setOnKeyListener(new OnKeyListener()
         {
             public boolean onKey(View v, int keyCode, KeyEvent event) {
-                if(KentekenHandler.getSidecodeLicenseplate(kentekenTextField.getText().toString().toUpperCase()) != -1 && KentekenHandler.getSidecodeLicenseplate(kentekenTextField.getText().toString().toUpperCase()) != -2) {
-                    Log.d(TAG, "onKey: BINGO");
-                    Khandler.run(kentekenTextField);
-                    return true;
-                } 
-                
+                Log.d(TAG, "onKey: " + keyCode);
                 if (event.getAction() == KeyEvent.ACTION_DOWN) {
                     switch (keyCode) {
                         case KeyEvent.KEYCODE_ENTER:
                             Khandler.run(kentekenTextField);
                             return true;
+
+                        case KeyEvent.KEYCODE_DEL:
+                            Log.d(TAG, "onKey: KEY EVENT");
+                            String text = kentekenTextField.getText().toString();
+                            text = text.replace("-", "");
+
+                            String newText = text;
+
+                            if (text != null && (text.length() > 0)) {
+                                newText = text.substring(0, text.length() - 1);
+                            }
+
+                            kentekenTextField.setText(newText);
+                            kentekenTextField.setSelection(kentekenTextField.getText().length());
+                            return true;
                         default:
                             break;
                     }
                 }
+
+                if(KentekenHandler.getSidecodeLicenseplate(kentekenTextField.getText().toString().toUpperCase()) != -1 && KentekenHandler.getSidecodeLicenseplate(kentekenTextField.getText().toString().toUpperCase()) != -2) {
+                    Log.d(TAG, "onKey: BINGO");
+                    Khandler.run(kentekenTextField);
+                    return true;
+                } 
+
                 return false;
             }
         });

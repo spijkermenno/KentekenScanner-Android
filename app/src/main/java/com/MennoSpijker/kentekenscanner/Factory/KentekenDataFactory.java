@@ -76,12 +76,6 @@ public class KentekenDataFactory {
                     String value = object.getString(key);
 
                     array.getJSONObject(0).put(key, value);
-
-                    if (key.contains("api")) {
-                        String uri2 = value + "?kenteken=" + kenteken;
-                        Async runner = new Async(context, kenteken, resultView, uri2, connection, recentButton, kentekenHandler, this);
-                        runner.execute();
-                    }
                 }
 
             } catch (Exception e) {
@@ -198,28 +192,13 @@ public class KentekenDataFactory {
                         value = KentekenHandler.formatLicenseplate(value);
                     }
 
-                    if (key.equals("datum_tenaamstelling")) {
-                        value = value.substring(6, 8) + "-" + value.substring(4, 6) + "-" + value.substring(0, 4);
-                    }
-
-                    if (key.equals("datum_eerste_toelating")) {
-                        value = value.substring(6, 8) + "-" + value.substring(4, 6) + "-" + value.substring(0, 4);
-                    }
-
-                    if (key.equals("datum_eerste_afgifte_nederland")) {
-                        value = value.substring(6, 8) + "-" + value.substring(4, 6) + "-" + value.substring(0, 4);
-                    }
-
                     if (key.equals("vervaldatum_apk")) {
                         try {
-                            String date = value.substring(6, 8) + "-" + value.substring(4, 6) + "-" + value.substring(0, 4);
-                            if (new SimpleDateFormat("yyyyMMdd").parse(value).before(new Date())) {
+                            if (new SimpleDateFormat("dd-MM-yy").parse(value).before(new Date())) {
                                 line2.setBackground(context.getResources().getDrawable(R.drawable.border_error_item));
                             } else {
                                 line2.setBackgroundColor(Color.parseColor("#ffffff"));
                             }
-
-                            value = date;
                         } catch (ParseException PE) {
                             PE.printStackTrace();
                         }

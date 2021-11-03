@@ -2,6 +2,7 @@ package com.MennoSpijker.kentekenscanner.View;
 
 import android.content.Context;
 import android.os.AsyncTask;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
@@ -59,6 +60,7 @@ public class Async extends AsyncTask<String, String, String> {
             if (!kenteken.isEmpty()) {
                 Request response = new Request(connection, uri);
                 resp = response.PerformRequest(kenteken);
+                Log.d(TAG, "doInBackground: " + resp);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -69,6 +71,8 @@ public class Async extends AsyncTask<String, String, String> {
     @Override
     protected void onPostExecute(String result) {
         kentekenDataFactory.addParams(main, resultView, kenteken, Khandler, connection, recent);
+
+        Log.d(TAG, "onPostExecute: " + result);
 
         if (result.length() > 3) {
             kentekenDataFactory.fillArray(result);

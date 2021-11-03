@@ -75,7 +75,7 @@ public class KentekenHandler {
                 textview.setText(formatLicenseplate(kenteken));
                 result.removeAllViews();
 
-                String uri = "https://opendata.rdw.nl/resource/m9d7-ebf2.json?kenteken=" + kenteken;
+                String uri = "https://kenteken-scanner.nl/api/kenteken/" + kenteken;
                 Async runner = new Async(this.context, kenteken, result, uri, connection, button3, this, kentekenDataFactory);
                 runner.execute();
             }
