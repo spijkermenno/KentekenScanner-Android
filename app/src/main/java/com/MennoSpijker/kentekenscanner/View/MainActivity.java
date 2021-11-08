@@ -105,7 +105,7 @@ public class MainActivity extends Activity {
         showAlertsButton.setTypeface(FontManager.getTypeface(this, FontManager.FONTAWESOME));
         showAlertsButton.setTextSize(20);
 
-        performPermissionCheck();
+        //performPermissionCheck();
 
         showHistoryButton.setOnClickListener(new OnClickListener()
         {
@@ -265,39 +265,39 @@ public class MainActivity extends Activity {
         }
     }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        Log.d(TAG, "onRequestPermissionsResult: " + requestCode);
-        switch (requestCode) {
-            case 1: {
-                // If request is cancelled, the result arrays are empty.
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                } else {
-                    Toast.makeText(MainActivity.this, "Permission denied to read your External storage", Toast.LENGTH_SHORT).show();
-                }
-            }
-        }
-    }
-
-
-    public void performPermissionCheck(){
-
-        if (checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
-            Log.v(TAG,"Permission is granted");
-        } else {
-            Log.v(TAG,"Permission is revoked");
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
-        }
-
-//            int permissionCheckWriteToStorage = ContextCompat.checkSelfPermission(this, WRITE_EXTERNAL_STORAGE);
-//            int permissionCheckReadFromStorage = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE);
+//    @Override
+//    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+//        Log.d(TAG, "onRequestPermissionsResult: " + requestCode);
+//        switch (requestCode) {
+//            case 1: {
+//                // If request is cancelled, the result arrays are empty.
+//                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+//                } else {
+//                    Toast.makeText(MainActivity.this, "Permission denied to read your External storage", Toast.LENGTH_SHORT).show();
+//                }
+//            }
+//        }
+//    }
 //
 //
-//            if (permissionCheckWriteToStorage != PackageManager.PERMISSION_GRANTED) {
-//                ActivityCompat.requestPermissions(this, new String[]{WRITE_EXTERNAL_STORAGE}, 1);
-//            }
-//            if (permissionCheckReadFromStorage != PackageManager.PERMISSION_GRANTED) {
-//                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
-//            }
-     }
+//    public void performPermissionCheck(){
+//
+//        if (checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+//            Log.v(TAG,"Permission is granted");
+//        } else {
+//            Log.v(TAG,"Permission is revoked");
+//            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
+//        }
+//
+////            int permissionCheckWriteToStorage = ContextCompat.checkSelfPermission(this, WRITE_EXTERNAL_STORAGE);
+////            int permissionCheckReadFromStorage = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE);
+////
+////
+////            if (permissionCheckWriteToStorage != PackageManager.PERMISSION_GRANTED) {
+////                ActivityCompat.requestPermissions(this, new String[]{WRITE_EXTERNAL_STORAGE}, 1);
+////            }
+////            if (permissionCheckReadFromStorage != PackageManager.PERMISSION_GRANTED) {
+////                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
+////            }
+//     }
 }
