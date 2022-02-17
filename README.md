@@ -1,2 +1,2 @@
 # KentekenScanner
-For my school project i'm making an android app that can scan dutch licenseplates. using the RDW API
+[![Master](https://github.com/spijkermenno/KentekenScanner-Android/actions/workflows/android.yml/badge.svg)](https://github.com/spijkermenno/KentekenScanner-Android/actions/workflows/android.yml)
