@@ -23,4 +23,5 @@
     <string name="kenteken_placeholder">00-XXX-0</string>
     <string name="eigen_auto">Jouw auto</string>
     <string name="eigen_autos">Jouw auto\'s</string>
+    <string name="default_notification_channel_id" />
 </resources>

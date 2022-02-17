@@ -3,7 +3,6 @@ apply plugin: 'com.google.gms.google-services'
 
 android {
     compileSdkVersion 30
-    buildToolsVersion "29.0.2"
     defaultConfig {
         applicationId "com.y_gap.menno.kentekenscanner"
         minSdkVersion 26
@@ -13,9 +12,13 @@ android {
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
     }
     buildTypes {
+        debug {
+            manifestPlaceholders = [analytics_deactivated: "true"]
+        }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            manifestPlaceholders = [analytics_deactivated: "false"]
         }
     }
 }
@@ -38,4 +41,6 @@ dependencies {
     implementation platform('com.google.firebase:firebase-bom:26.3.0')
     implementation 'com.google.firebase:firebase-analytics'
     implementation 'com.google.firebase:firebase-core:18.0.1'
+    implementation 'com.google.firebase:firebase-messaging:23.0.0'
+
 }

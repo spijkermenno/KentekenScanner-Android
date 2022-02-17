@@ -14,29 +14,26 @@ import java.net.URL;
  * Created by Menno on 08/12/2017.
  */
 
-public class Request {
+public class APIHelper {
 
-    public static final String EXTRA_MESSAGE = "com.example.myfirstapp.MESSAGE";
-    private static final String TAG = "Request";
-    private static final String AUTHOR = "Author => Menno Spijker";
+    private static final String TAG = "APIHelper";
 
     private final ConnectionDetector connection;
     private final String uri;
 
-    public Request(ConnectionDetector c, String u){
-        connection = c;
-        uri = u;
+    public APIHelper(ConnectionDetector connectionDetector, String uri){
+        connection = connectionDetector;
+        this.uri = uri;
     }
 
-    public String PerformRequest(String kenteken) {
+    public String run(String kenteken) {
         String result = null;
-        String message;
         if (connection.isConnectingToInternet()) {
             try {
                 if (!kenteken.equals("")) {
                     try {
                         URL url = new URL(uri);
-                        Log.d(TAG, "PerformRequest: " + url);
+                        Log.d(TAG, url.toString());
                         HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
                         try {
                             InputStream in = new BufferedInputStream(urlConnection.getInputStream());
@@ -66,10 +63,10 @@ public class Request {
         BufferedReader reader = new BufferedReader(new InputStreamReader(is));
         StringBuilder sb = new StringBuilder();
 
-        String line = null;
+        String line;
         try {
             while ((line = reader.readLine()) != null) {
-                sb.append(line + "\n");
+                sb.append(line).append("\n");
             }
         } catch (IOException e) {
             e.printStackTrace();

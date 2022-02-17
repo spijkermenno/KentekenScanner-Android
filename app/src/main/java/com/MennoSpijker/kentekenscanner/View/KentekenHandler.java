@@ -14,19 +14,15 @@ import android.widget.TextView;
 
 import com.MennoSpijker.kentekenscanner.ConnectionDetector;
 import com.MennoSpijker.kentekenscanner.Factory.KentekenDataFactory;
-import com.MennoSpijker.kentekenscanner.FontManager;
 import com.MennoSpijker.kentekenscanner.R;
 import com.MennoSpijker.kentekenscanner.Util.FileHandling;
-import com.google.android.gms.ads.AdView;
 import com.google.firebase.analytics.FirebaseAnalytics;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.Console;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.Locale;
@@ -42,17 +38,15 @@ public class KentekenHandler {
     private final ConnectionDetector connection;
     private final ScrollView result;
     private final TextView kentekenHolder;
-    public AdView mAdView;
     private final KentekenDataFactory kentekenDataFactory = new KentekenDataFactory();
     private final Bundle bundle;
 
-    public KentekenHandler(MainActivity c, ConnectionDetector co, Button b, ScrollView r, TextView kHold, AdView mad) {
+    public KentekenHandler(MainActivity c, ConnectionDetector co, Button b, ScrollView r, TextView kHold) {
         this.context = c;
         this.connection = co;
         this.button3 = b;
         this.result = r;
         this.kentekenHolder = kHold;
-        this.mAdView = mad;
         bundle = new Bundle();
     }
 
@@ -76,7 +70,7 @@ public class KentekenHandler {
                 result.removeAllViews();
 
                 String uri = "https://kenteken-scanner.nl/api/kenteken/" + kenteken;
-                Async runner = new Async(this.context, kenteken, result, uri, connection, button3, this, kentekenDataFactory);
+                Async runner = new Async(this.context, kenteken, result, uri, connection, this, kentekenDataFactory);
                 runner.execute();
             }
         } catch (Exception e) {
@@ -144,7 +138,7 @@ public class KentekenHandler {
             LinearLayout lin = new LinearLayout(context);
             lin.setOrientation(LinearLayout.VERTICAL);
 
-            Iterator iterator = recents.keys();
+            Iterator<String> iterator = recents.keys();
 
             while (iterator.hasNext()) {
                 String key = (String) iterator.next();
@@ -168,12 +162,7 @@ public class KentekenHandler {
                     line.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
 
                     line.setOnClickListener(
-                            new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    runCamera(finalRecent, kentekenHolder);
-                                }
-                            });
+                            v -> runCamera(finalRecent, kentekenHolder));
 
                     line.setBackground(context.getDrawable(R.drawable.kentekenplaat3));
 
@@ -225,16 +214,13 @@ public class KentekenHandler {
             LinearLayout lin = new LinearLayout(context);
             lin.setOrientation(LinearLayout.VERTICAL);
 
-            Iterator iterator = recents.keys();
+            Iterator<String> iterator = recents.keys();
 
             TextView textView = new TextView(context);
             textView.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
             textView.setText(R.string.eigen_auto);
 
             System.out.println(recents.names());
-            if (recents == null && recents.getJSONArray(recents.names().getString(0)).length() > 1) {
-                textView.setText(R.string.eigen_autos);
-            }
 
             lin.addView(textView);
 
@@ -255,12 +241,7 @@ public class KentekenHandler {
                     line.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
 
                     line.setOnClickListener(
-                            new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    runCamera(finalRecent, kentekenHolder);
-                                }
-                            });
+                            v -> runCamera(finalRecent, kentekenHolder));
 
                     line.setBackground(context.getDrawable(R.drawable.kentekenplaat3));
 
@@ -310,8 +291,7 @@ public class KentekenHandler {
             }
             if (sidecode == 7 || sidecode == 9) {
                 System.out.println("sidecode 7");
-                String s = licenseplate.substring(0, 2) + '-' + licenseplate.substring(2, 5) + '-' + licenseplate.substring(5, 6);
-                return s;
+                return licenseplate.substring(0, 2) + '-' + licenseplate.substring(2, 5) + '-' + licenseplate.charAt(5);
             }
             if (sidecode == 8 || sidecode == 10) {
                 System.out.println("sidecode 8");
@@ -319,7 +299,7 @@ public class KentekenHandler {
             }
             if (sidecode == 11 || sidecode == 14) {
                 System.out.println("sidecode 11");
-                return licenseplate.substring(0, 3) + '-' + licenseplate.substring(3, 5) + '-' + licenseplate.substring(5, 6);
+                return licenseplate.substring(0, 3) + '-' + licenseplate.substring(3, 5) + '-' + licenseplate.charAt(5);
             }
             if (sidecode == 12 || sidecode == 13) {
                 System.out.println("sidecode 12");

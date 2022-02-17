@@ -20,15 +20,14 @@ public class ConnectionDetector {
         try {
             ConnectivityManager connectivity = (ConnectivityManager) _context.getSystemService(Context.CONNECTIVITY_SERVICE);
             if (connectivity != null) {
-                NetworkInfo[] info = connectivity.getAllNetworkInfo();
-                if (info != null)
-                    for (NetworkInfo networkInfo : info)
-                        if (networkInfo.getState() == NetworkInfo.State.CONNECTED) {
-                            return true;
-                        }
-
+                NetworkInfo info = connectivity.getActiveNetworkInfo();
+                if (info != null) {
+                    if (info.getState() == NetworkInfo.State.CONNECTED) {
+                        return true;
+                    }
+                }
             }
-        }catch (Exception E){
+        } catch (Exception E) {
             E.printStackTrace();
         }
         return false;

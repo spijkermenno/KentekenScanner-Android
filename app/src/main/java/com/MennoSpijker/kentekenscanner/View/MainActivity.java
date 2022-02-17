@@ -1,40 +1,28 @@
 package com.MennoSpijker.kentekenscanner.View;
 
-import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.graphics.Typeface;
 import android.os.Bundle;
-
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.KeyEvent;
-import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ScrollView;
-import android.widget.Toast;
-
-import androidx.core.app.ActivityCompat;
 
 import com.MennoSpijker.kentekenscanner.ConnectionDetector;
 import com.MennoSpijker.kentekenscanner.FontManager;
 import com.MennoSpijker.kentekenscanner.OcrCaptureActivity;
 import com.MennoSpijker.kentekenscanner.R;
-
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.LoadAdError;
 import com.google.android.gms.ads.MobileAds;
-import com.google.android.gms.ads.initialization.InitializationStatus;
-import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
-import com.google.android.gms.ads.AdView;
 import com.google.android.gms.common.api.CommonStatusCodes;
 import com.google.firebase.analytics.FirebaseAnalytics;
-
-import static android.view.View.*;
 
 public class MainActivity extends Activity {
     private static final String TAG = "MainActivity";
@@ -43,10 +31,7 @@ public class MainActivity extends Activity {
     private static final int RC_OCR_CAPTURE = 9003;
     public Button showHistoryButton, openCameraButton, showFavoritesButton, showAlertsButton;
     public ScrollView resultScrollView;
-    public String kenteken;
-    private ConnectionDetector connection;
     public KentekenHandler Khandler;
-    private static AdView mAdView;
     private Bundle bundle;
 
 
@@ -90,11 +75,11 @@ public class MainActivity extends Activity {
         showAlertsButton = findViewById(R.id.showAlerts);
 
         resultScrollView = findViewById(R.id.scroll);
-        connection = new ConnectionDetector(this);
+        ConnectionDetector connection = new ConnectionDetector(this);
 
         getAds();
 
-        Khandler = new KentekenHandler(MainActivity.this, connection, showFavoritesButton, resultScrollView, kentekenTextField, mAdView);
+        Khandler = new KentekenHandler(MainActivity.this, connection, showFavoritesButton, resultScrollView, kentekenTextField);
 
         showHistoryButton.setTypeface(FontManager.getTypeface(this, FontManager.FONTAWESOME));
         showHistoryButton.setTextSize(20);
@@ -105,84 +90,55 @@ public class MainActivity extends Activity {
         showAlertsButton.setTypeface(FontManager.getTypeface(this, FontManager.FONTAWESOME));
         showAlertsButton.setTextSize(20);
 
-        //performPermissionCheck();
+        showHistoryButton.setOnClickListener(v -> Khandler.openRecent());
 
-        showHistoryButton.setOnClickListener(new OnClickListener()
-        {
-            @Override
-            public void onClick(View v) {
-                Khandler.openRecent();
-            }
-        });
+        openCameraButton.setOnClickListener(v -> startCameraIntent());
 
-        openCameraButton.setOnClickListener(new OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        startCameraIntent();
-                    }
-                });
+        showFavoritesButton.setOnClickListener(v -> Khandler.openSaved());
 
-        showFavoritesButton.setOnClickListener(new OnClickListener()
-                {
-                    @Override
-                    public void onClick(View v) {
-                        Khandler.openSaved();
-                    }
-                });
-
-        showAlertsButton.setOnClickListener(new OnClickListener()
-        {
-            @Override
-            public void onClick(View v) {
-                //Khandler.openSaved();
-            }
+        showAlertsButton.setOnClickListener(v -> {
+            //Khandler.openSaved();
         });
         
-        kentekenTextField.setOnKeyListener(new OnKeyListener()
-        {
-            public boolean onKey(View v, int keyCode, KeyEvent event) {
-                Log.d(TAG, "onKey: " + keyCode);
-                if (event.getAction() == KeyEvent.ACTION_DOWN) {
-                    switch (keyCode) {
-                        case KeyEvent.KEYCODE_ENTER:
-                            Khandler.run(kentekenTextField);
-                            return true;
+        kentekenTextField.setOnKeyListener((v, keyCode, event) -> {
+            Log.d(TAG, "onKey: " + keyCode);
+            if (event.getAction() == KeyEvent.ACTION_DOWN) {
+                switch (keyCode) {
+                    case KeyEvent.KEYCODE_ENTER:
+                        Khandler.run(kentekenTextField);
+                        return true;
 
-                        case KeyEvent.KEYCODE_DEL:
-                            Log.d(TAG, "onKey: KEY EVENT");
-                            String text = kentekenTextField.getText().toString();
-                            text = text.replace("-", "");
+                    case KeyEvent.KEYCODE_DEL:
+                        Log.d(TAG, "onKey: KEY EVENT");
+                        String text = kentekenTextField.getText().toString();
+                        text = text.replace("-", "");
 
-                            String newText = text;
+                        String newText = text;
 
-                            if (text != null && (text.length() > 0)) {
-                                newText = text.substring(0, text.length() - 1);
-                            }
+                        if (text.length() > 0) {
+                            newText = text.substring(0, text.length() - 1);
+                        }
 
-                            kentekenTextField.setText(newText);
-                            kentekenTextField.setSelection(kentekenTextField.getText().length());
-                            return true;
-                        default:
-                            break;
-                    }
+                        kentekenTextField.setText(newText);
+                        kentekenTextField.setSelection(kentekenTextField.getText().length());
+                        return true;
+                    default:
+                        break;
                 }
-
-                if(KentekenHandler.getSidecodeLicenseplate(kentekenTextField.getText().toString().toUpperCase()) != -1 && KentekenHandler.getSidecodeLicenseplate(kentekenTextField.getText().toString().toUpperCase()) != -2) {
-                    Log.d(TAG, "onKey: BINGO");
-                    Khandler.run(kentekenTextField);
-                    return true;
-                } 
-
-                return false;
             }
+
+            if(KentekenHandler.getSidecodeLicenseplate(kentekenTextField.getText().toString().toUpperCase()) != -1 && KentekenHandler.getSidecodeLicenseplate(kentekenTextField.getText().toString().toUpperCase()) != -2) {
+                Log.d(TAG, "onKey: BINGO");
+                Khandler.run(kentekenTextField);
+                return true;
+            }
+
+            return false;
         });
     }
 
     protected void getAds() {
-        MobileAds.initialize(this, new OnInitializationCompleteListener() {
-            @Override
-            public void onInitializationComplete(InitializationStatus initializationStatus) {
-            }
+        MobileAds.initialize(this, initializationStatus -> {
         });
 
         try {
@@ -215,11 +171,6 @@ public class MainActivity extends Activity {
                 public void onAdClicked() {
                     bundle = new Bundle();
                     mFirebaseAnalytics.logEvent("AD_CLICK", bundle);
-                }
-
-                @Override
-                public void onAdLeftApplication() {
-                    // Code to be executed when the user has left the app.
                 }
 
                 @Override
@@ -265,39 +216,4 @@ public class MainActivity extends Activity {
         }
     }
 
-//    @Override
-//    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-//        Log.d(TAG, "onRequestPermissionsResult: " + requestCode);
-//        switch (requestCode) {
-//            case 1: {
-//                // If request is cancelled, the result arrays are empty.
-//                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-//                } else {
-//                    Toast.makeText(MainActivity.this, "Permission denied to read your External storage", Toast.LENGTH_SHORT).show();
-//                }
-//            }
-//        }
-//    }
-//
-//
-//    public void performPermissionCheck(){
-//
-//        if (checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
-//            Log.v(TAG,"Permission is granted");
-//        } else {
-//            Log.v(TAG,"Permission is revoked");
-//            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
-//        }
-//
-////            int permissionCheckWriteToStorage = ContextCompat.checkSelfPermission(this, WRITE_EXTERNAL_STORAGE);
-////            int permissionCheckReadFromStorage = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE);
-////
-////
-////            if (permissionCheckWriteToStorage != PackageManager.PERMISSION_GRANTED) {
-////                ActivityCompat.requestPermissions(this, new String[]{WRITE_EXTERNAL_STORAGE}, 1);
-////            }
-////            if (permissionCheckReadFromStorage != PackageManager.PERMISSION_GRANTED) {
-////                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
-////            }
-//     }
 }

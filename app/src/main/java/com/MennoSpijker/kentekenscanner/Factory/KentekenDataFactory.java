@@ -1,23 +1,18 @@
 package com.MennoSpijker.kentekenscanner.Factory;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Typeface;
-import android.graphics.drawable.GradientDrawable;
-import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
-import com.MennoSpijker.kentekenscanner.ConnectionDetector;
 import com.MennoSpijker.kentekenscanner.R;
 import com.MennoSpijker.kentekenscanner.Util.FileHandling;
-import com.MennoSpijker.kentekenscanner.View.Async;
 import com.MennoSpijker.kentekenscanner.View.KentekenHandler;
-import com.google.firebase.analytics.FirebaseAnalytics;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -30,19 +25,14 @@ import java.util.Iterator;
 
 public class KentekenDataFactory {
 
-    private static final String TAG = "KentekenDataFactory";
     private JSONArray array = new JSONArray();
     private KentekenHandler kentekenHandler;
     private String kenteken;
     private ScrollView resultView;
     private Context context;
-    private ConnectionDetector connection;
-    private Button recentButton;
-    private Bundle bundle;
 
     public KentekenDataFactory() {
         array.put(new JSONObject());
-        bundle = new Bundle();
     }
 
     public void emptyArray() {
@@ -50,40 +40,40 @@ public class KentekenDataFactory {
         array.put(new JSONObject());
     }
 
-    public void addParams(Context main, ScrollView resultView, String kenteken, KentekenHandler Khandler, ConnectionDetector connection, Button recentButton) {
-        if (context == null || !this.kenteken.equals(kenteken)) {
-            this.context = main;
+    public void addParams(Context context, ScrollView resultView, String kenteken, KentekenHandler Khandler) {
+        if (this.context == null || !this.kenteken.equals(kenteken)) {
+            this.context = context;
             this.resultView = resultView;
             this.kenteken = kenteken;
             this.kentekenHandler = Khandler;
-            this.connection = connection;
-            this.recentButton = recentButton;
 
             this.kentekenHandler.saveRecentKenteken(kenteken);
         }
     }
 
-    public void fillArray(String results) {
-        if (results.length() > 3) {
-            try {
-                JSONArray array1 = new JSONArray(results);
-                JSONObject object = array1.getJSONObject(0);
+    public void fillArray(String kentekenDataFromAPI) {
 
-                Iterator iterator = object.keys();
+        try {
+            if (kentekenDataFromAPI.length() > 3 && new JSONArray(kentekenDataFromAPI).getJSONObject(0).length() > 0) {
+                try {
+                    JSONArray array1 = new JSONArray(kentekenDataFromAPI);
+                    JSONObject object = array1.getJSONObject(0);
 
-                while (iterator.hasNext()) {
-                    String key = (String) iterator.next();
-                    String value = object.getString(key);
+                    Iterator<String> iterator = object.keys();
 
-                    array.getJSONObject(0).put(key, value);
+                    while (iterator.hasNext()) {
+                        String key = (String) iterator.next();
+                        String value = object.getString(key);
+
+                        array.getJSONObject(0).put(key, value);
+                    }
+
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
+                fillResultView();
+            } else {
 
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            fillResultView();
-        } else {
-            try {
                 if (array.getJSONObject(0).length() == 0) {
                     LinearLayout lin = new LinearLayout(context);
                     lin.setOrientation(LinearLayout.VERTICAL);
@@ -98,17 +88,14 @@ public class KentekenDataFactory {
                     resultView.removeAllViews();
                     resultView.addView(line);
                 }
-            } catch (JSONException e) {
-                e.printStackTrace();
             }
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
     }
 
-    public JSONArray getArray() {
-        return array;
-    }
 
-
+    @SuppressLint("SimpleDateFormat")
     public void fillResultView() {
         try {
             resultView.removeAllViews();
@@ -124,58 +111,48 @@ public class KentekenDataFactory {
             if (kentekens.length() != 0) {
 
 
-                Boolean inArray = false;
+                boolean inArray = false;
                 for (int i = 0; i < kentekens.getJSONArray("cars").length(); i++) {
                     if (kentekens.getJSONArray("cars").getString(i).equals(kenteken)) {
                         inArray = true;
                     }
-                    ;
                 }
 
                 if (inArray) {
                     save.setText(R.string.delete);
 
                     save.setOnClickListener(
-                            new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    try {
-                                        kentekenHandler.deleteFavoriteKenteken(kenteken);
-                                        kentekenHandler.openSaved();
-                                    } catch (JSONException e) {
-                                        e.printStackTrace();
-                                    }
+                            v -> {
+                                try {
+                                    kentekenHandler.deleteFavoriteKenteken(kenteken);
+                                    kentekenHandler.openSaved();
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
                                 }
                             });
                 } else {
                     save.setText(R.string.save);
 
                     save.setOnClickListener(
-                            new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    kentekenHandler.saveFavoriteKenteken(kenteken);
-                                    kentekenHandler.openSaved();
-                                }
+                            v -> {
+                                kentekenHandler.saveFavoriteKenteken(kenteken);
+                                kentekenHandler.openSaved();
                             });
                 }
             } else {
                 save.setText(R.string.save);
 
                 save.setOnClickListener(
-                        new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                kentekenHandler.saveFavoriteKenteken(kenteken);
-                                kentekenHandler.openSaved();
-                            }
+                        v -> {
+                            kentekenHandler.saveFavoriteKenteken(kenteken);
+                            kentekenHandler.openSaved();
                         });
             }
 
             lin.addView(save);
 
             JSONObject object = array.getJSONObject(0);
-            Iterator iterator = object.keys();
+            Iterator<String> iterator = object.keys();
 
             while (iterator.hasNext()) {
                 String key = (String) iterator.next();
