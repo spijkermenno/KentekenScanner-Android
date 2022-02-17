@@ -101,6 +101,7 @@ public class MainActivity extends Activity {
         });
         
         kentekenTextField.setOnKeyListener((v, keyCode, event) -> {
+
             Log.d(TAG, "onKey: " + keyCode);
             if (event.getAction() == KeyEvent.ACTION_DOWN) {
                 switch (keyCode) {

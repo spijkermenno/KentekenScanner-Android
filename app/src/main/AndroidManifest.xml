@@ -16,10 +16,10 @@
         android:icon="@drawable/logo_180"
         android:killAfterRestore="true"
         android:label="@string/app_name"
+        android:requestLegacyExternalStorage="true"
         android:roundIcon="@drawable/logo_180"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme"
-        android:requestLegacyExternalStorage="true">
+        android:theme="@style/AppTheme">
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
             android:value="ca-app-pub-4928043878967484~7828914059" />
@@ -35,18 +35,16 @@
             android:name="com.google.firebase.messaging.default_notification_color"
             android:resource="@color/colorKentekenYellow" />
 
-        <meta-data
-            android:name="firebase_analytics_collection_deactivated"
-            android:value="${analytics_deactivated}" />
-
-        <activity android:name=".View.MainActivity"
+        <activity
+            android:name=".View.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".OcrCaptureActivity"
+        <activity
+            android:name=".OcrCaptureActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
