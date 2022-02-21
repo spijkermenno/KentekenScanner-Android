@@ -94,16 +94,15 @@ public class MainActivity extends Activity {
             kentekenTextField.addTextChangedListener(new TextWatcher() {
                 @Override
                 public void onTextChanged(CharSequence s, int start, int before, int count) {
-                    if (kentekenTextField.getText().length() == 6) {
-                        String formatedLicenceplate = KentekenHandler.formatLicenseplate(kentekenTextField.getText().toString());
-                        if (!kentekenTextField.getText().toString().equals(formatedLicenceplate)) {
+                    String kenteken = kentekenTextField.getText().toString();
+                    if (kenteken.length() == 6) {
+                        String formatedLicenceplate = KentekenHandler.formatLicenseplate(kenteken);
+                        if (!kenteken.equals(formatedLicenceplate)) {
                             kentekenTextField.setText(formatedLicenceplate);
                             Log.d(TAG, "onTextChanged: VALID KENTEKEN: " + KentekenHandler.kentekenValid(kentekenTextField.getText().toString()));
 
                             if (KentekenHandler.kentekenValid(kentekenTextField.getText().toString())) {
-                                if (KentekenHandler.getSidecodeLicenseplate(kentekenTextField.getText().toString().toUpperCase()) != -1 && KentekenHandler.getSidecodeLicenseplate(kentekenTextField.getText().toString().toUpperCase()) != -2) {
-                                    Khandler.run(kentekenTextField);
-                                }
+                                Khandler.run(kentekenTextField);
                             }
                         }
                     }

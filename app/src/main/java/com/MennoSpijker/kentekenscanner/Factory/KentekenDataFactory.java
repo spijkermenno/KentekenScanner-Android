@@ -116,7 +116,7 @@ public class KentekenDataFactory {
     }
 
 
-    @SuppressLint("SimpleDateFormat")
+    @SuppressLint({"SimpleDateFormat", "UseCompatLoadingForDrawables"})
     public void fillResultView() {
         try {
             resultView.removeAllViews();
@@ -192,7 +192,8 @@ public class KentekenDataFactory {
 
                     if (key.equals("vervaldatum_apk")) {
                         try {
-                            if (new SimpleDateFormat("dd-MM-yy").parse(value).before(new Date())) {
+                            Date date = new SimpleDateFormat("dd-MM-yy").parse(value);
+                            if (date != null && date.before(new Date())) {
                                 line2.setBackground(context.getResources().getDrawable(R.drawable.border_error_item));
                             } else {
                                 line2.setBackgroundColor(Color.parseColor("#ffffff"));
@@ -245,17 +246,7 @@ public class KentekenDataFactory {
             je.printStackTrace();
             je.getMessage();
 
-            LinearLayout lin = new LinearLayout(context);
-            lin.setOrientation(LinearLayout.VERTICAL);
-
-            TextView line = new TextView(context);
-
-            line.setText(R.string.no_result);
-
-            line.setTextColor(Color.RED);
-
-            lin.addView(line);
-            resultView.addView(lin);
+            showErrorMessage();
         }
     }
 }
