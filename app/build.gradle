@@ -4,14 +4,23 @@ apply plugin: 'com.google.firebase.firebase-perf'
 apply plugin: 'com.google.firebase.crashlytics'
 
 android {
+    lintOptions {
+        baseline file("lint-baseline.xml")
+        checkDependencies true
+        ignoreTestSources true
+        warningsAsErrors true
+        warning 'LintBaseline'
+        lintConfig file("lint.xml")
+    }
     compileSdkVersion 30
     defaultConfig {
         applicationId "com.y_gap.menno.kentekenscanner"
-        minSdkVersion 20
+        minSdkVersion 26
         targetSdkVersion 30
         versionCode 18
         versionName "10602"
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
+        multiDexEnabled true
     }
     buildTypes {
         release {
@@ -26,6 +35,8 @@ android.buildTypes.release.ndk.debugSymbolLevel = 'full'
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation "androidx.multidex:multidex:2.0.1"
+
     implementation 'androidx.appcompat:appcompat:1.2.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
     implementation 'com.google.android.gms:play-services-ads:19.6.0'

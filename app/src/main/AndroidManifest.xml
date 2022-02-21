@@ -19,7 +19,8 @@
         android:requestLegacyExternalStorage="true"
         android:roundIcon="@drawable/logo_180"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppTheme"
+        android:name="androidx.multidex.MultiDexApplication">
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
             android:value="ca-app-pub-4928043878967484~7828914059" />

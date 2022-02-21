@@ -1,6 +1,5 @@
 package com.MennoSpijker.kentekenscanner.Factory;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Typeface;
@@ -116,7 +115,6 @@ public class KentekenDataFactory {
     }
 
 
-    @SuppressLint({"SimpleDateFormat", "UseCompatLoadingForDrawables"})
     public void fillResultView() {
         try {
             resultView.removeAllViews();

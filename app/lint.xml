@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<lint>
+    <issue id="all">
+        <ignore path="build"/>
+        <ignore path="**/localizables.xml" />
+        <ignore regexp=".*\.gradle.*" />
+    </issue>
+    <issue id="UnusedResources">
+        <ignore path="../chatbot/src/main/res/values/colors.xml" />
+        <ignore path="../chatbot/src/main/res/values/settings.xml" />
+    </issue>
+</lint>
