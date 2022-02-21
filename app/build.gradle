@@ -7,10 +7,10 @@ android {
     compileSdkVersion 30
     defaultConfig {
         applicationId "com.y_gap.menno.kentekenscanner"
-        minSdkVersion 26
+        minSdkVersion 20
         targetSdkVersion 30
-        versionCode 16
-        versionName "1.6"
+        versionCode 17
+        versionName "10601"
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
     }
     buildTypes {

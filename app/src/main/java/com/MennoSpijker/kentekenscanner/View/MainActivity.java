@@ -12,6 +12,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ScrollView;
 
+import androidx.annotation.NonNull;
+
 import com.MennoSpijker.kentekenscanner.ConnectionDetector;
 import com.MennoSpijker.kentekenscanner.FontManager;
 import com.MennoSpijker.kentekenscanner.OcrCaptureActivity;
@@ -22,7 +24,10 @@ import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.LoadAdError;
 import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.common.api.CommonStatusCodes;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.analytics.FirebaseAnalytics;
+import com.google.firebase.messaging.FirebaseMessaging;
 
 public class MainActivity extends Activity {
     private static final String TAG = "MainActivity";
@@ -56,6 +61,13 @@ public class MainActivity extends Activity {
                     String formatedLicenceplate = KentekenHandler.formatLicenseplate(kentekenTextField.getText().toString());
                     if (!kentekenTextField.getText().toString().equals(formatedLicenceplate)) {
                         kentekenTextField.setText(formatedLicenceplate);
+                        Log.d(TAG, "onTextChanged: VALID KENTEKEN: " +KentekenHandler.kentekenValid(kentekenTextField.getText().toString()));
+
+                        if (KentekenHandler.kentekenValid(kentekenTextField.getText().toString())) {
+                            if(KentekenHandler.getSidecodeLicenseplate(kentekenTextField.getText().toString().toUpperCase()) != -1 && KentekenHandler.getSidecodeLicenseplate(kentekenTextField.getText().toString().toUpperCase()) != -2) {
+                                Khandler.run(kentekenTextField);
+                            }
+                        }
                     }
                 }
             }
@@ -95,6 +107,20 @@ public class MainActivity extends Activity {
         openCameraButton.setOnClickListener(v -> startCameraIntent());
 
         showFavoritesButton.setOnClickListener(v -> Khandler.openSaved());
+
+        FirebaseMessaging.getInstance().getToken()
+                .addOnCompleteListener(task -> {
+                    if (!task.isSuccessful()) {
+                        Log.w(TAG, "Fetching FCM registration token failed", task.getException());
+                        return;
+                    }
+
+                    // Get new FCM registration token
+                    String token = task.getResult();
+
+                    // Log
+                    Log.d("FCM Token", token);
+                });
 
         showAlertsButton.setOnClickListener(v -> {
             //Khandler.openSaved();

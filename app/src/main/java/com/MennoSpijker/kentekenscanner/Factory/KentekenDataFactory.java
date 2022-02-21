@@ -54,7 +54,13 @@ public class KentekenDataFactory {
     public void fillArray(String kentekenDataFromAPI) {
 
         try {
-            if (kentekenDataFromAPI.length() > 3 && new JSONArray(kentekenDataFromAPI).getJSONObject(0).length() > 0) {
+            JSONObject APIResult = new JSONArray(kentekenDataFromAPI).getJSONObject(0);
+            if (APIResult == null) {
+                showErrorMessage();
+                return;
+            }
+
+            if (kentekenDataFromAPI.length() > 3 && APIResult.length() > 0) {
                 try {
                     JSONArray array1 = new JSONArray(kentekenDataFromAPI);
                     JSONObject object = array1.getJSONObject(0);
@@ -92,6 +98,21 @@ public class KentekenDataFactory {
         } catch (JSONException e) {
             e.printStackTrace();
         }
+    }
+
+    public void showErrorMessage() {
+        LinearLayout lin = new LinearLayout(context);
+        lin.setOrientation(LinearLayout.VERTICAL);
+
+        TextView line = new TextView(context);
+
+        line.setText(R.string.no_result);
+
+        line.setTextColor(Color.RED);
+        line.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+
+        resultView.removeAllViews();
+        resultView.addView(line);
     }
 
 

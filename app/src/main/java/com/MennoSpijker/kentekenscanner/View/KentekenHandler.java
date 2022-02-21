@@ -41,6 +41,8 @@ public class KentekenHandler {
     private final KentekenDataFactory kentekenDataFactory = new KentekenDataFactory();
     private final Bundle bundle;
 
+    private String previousSearchedKenteken = "";
+
     public KentekenHandler(MainActivity c, ConnectionDetector co, Button b, ScrollView r, TextView kHold) {
         this.context = c;
         this.connection = co;
@@ -56,8 +58,15 @@ public class KentekenHandler {
     }
 
     public void runCamera(String kenteken, TextView textview) {
+        if (this.getPreviousSearchedKenteken().equals(kenteken)) {
+            Log.d(TAG, "runCamera: Kenteken run twice, returning...");
+            return;
+        }
+
         bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, formatLicenseplate(kenteken));
         context.mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SEARCH, bundle);
+
+        this.setPreviousSearchedKenteken(kenteken);
 
         try {
             kenteken = kenteken.replace("-", "");
@@ -79,6 +88,7 @@ public class KentekenHandler {
         }
         InputMethodManager inputManager = (InputMethodManager) this.context.getSystemService(Context.INPUT_METHOD_SERVICE);
         inputManager.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0);
+        this.setPreviousSearchedKenteken("");
     }
 
     public void saveRecentKenteken(String kenteken) {
@@ -351,5 +361,13 @@ public class KentekenHandler {
 
     public static boolean kentekenValid(String s) {
         return KentekenHandler.getSidecodeLicenseplate(s) >= -1;
+    }
+
+    public String getPreviousSearchedKenteken() {
+        return previousSearchedKenteken;
+    }
+
+    public void setPreviousSearchedKenteken(String previousSearchedKenteken) {
+        this.previousSearchedKenteken = previousSearchedKenteken;
     }
 }
