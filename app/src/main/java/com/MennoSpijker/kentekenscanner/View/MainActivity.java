@@ -39,10 +39,10 @@ public class MainActivity extends Activity {
     public KentekenHandler Khandler;
     private Bundle bundle;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
+        final EditText kentekenTextField = findViewById(R.id.kenteken);
 
         Typeface iconFont = FontManager.getTypeface(getApplicationContext(), FontManager.FONTAWESOME);
         FontManager.markAsIconContainer(findViewById(R.id.icons_container), iconFont);
@@ -52,35 +52,6 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_scan);
 
-        final EditText kentekenTextField = findViewById(R.id.kenteken);
-
-        kentekenTextField.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if (kentekenTextField.getText().length() == 6) {
-                    String formatedLicenceplate = KentekenHandler.formatLicenseplate(kentekenTextField.getText().toString());
-                    if (!kentekenTextField.getText().toString().equals(formatedLicenceplate)) {
-                        kentekenTextField.setText(formatedLicenceplate);
-                        Log.d(TAG, "onTextChanged: VALID KENTEKEN: " +KentekenHandler.kentekenValid(kentekenTextField.getText().toString()));
-
-                        if (KentekenHandler.kentekenValid(kentekenTextField.getText().toString())) {
-                            if(KentekenHandler.getSidecodeLicenseplate(kentekenTextField.getText().toString().toUpperCase()) != -1 && KentekenHandler.getSidecodeLicenseplate(kentekenTextField.getText().toString().toUpperCase()) != -2) {
-                                Khandler.run(kentekenTextField);
-                            }
-                        }
-                    }
-                }
-            }
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                // TODO Auto-generated method stub
-            }
-            @Override
-            public void afterTextChanged(Editable s) {
-                // TODO Auto-generated method stub
-            }
-        });
-
         showHistoryButton = findViewById(R.id.showHistory);
         openCameraButton = findViewById(R.id.camera);
         showFavoritesButton = findViewById(R.id.showFavorites);
@@ -88,8 +59,6 @@ public class MainActivity extends Activity {
 
         resultScrollView = findViewById(R.id.scroll);
         ConnectionDetector connection = new ConnectionDetector(this);
-
-        getAds();
 
         Khandler = new KentekenHandler(MainActivity.this, connection, showFavoritesButton, resultScrollView, kentekenTextField);
 
@@ -108,60 +77,103 @@ public class MainActivity extends Activity {
 
         showFavoritesButton.setOnClickListener(v -> Khandler.openSaved());
 
-        FirebaseMessaging.getInstance().getToken()
-                .addOnCompleteListener(task -> {
-                    if (!task.isSuccessful()) {
-                        Log.w(TAG, "Fetching FCM registration token failed", task.getException());
-                        return;
-                    }
-
-                    // Get new FCM registration token
-                    String token = task.getResult();
-
-                    // Log
-                    Log.d("FCM Token", token);
-                });
-
         showAlertsButton.setOnClickListener(v -> {
             //Khandler.openSaved();
         });
-        
-        kentekenTextField.setOnKeyListener((v, keyCode, event) -> {
 
-            Log.d(TAG, "onKey: " + keyCode);
-            if (event.getAction() == KeyEvent.ACTION_DOWN) {
-                switch (keyCode) {
-                    case KeyEvent.KEYCODE_ENTER:
-                        Khandler.run(kentekenTextField);
-                        return true;
 
-                    case KeyEvent.KEYCODE_DEL:
-                        Log.d(TAG, "onKey: KEY EVENT");
-                        String text = kentekenTextField.getText().toString();
-                        text = text.replace("-", "");
+    }
 
-                        String newText = text;
+    @Override
+    protected void onStart() {
+        super.onStart();
 
-                        if (text.length() > 0) {
-                            newText = text.substring(0, text.length() - 1);
+        new Thread(() -> {
+            final EditText kentekenTextField = findViewById(R.id.kenteken);
+
+            kentekenTextField.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+                    if (kentekenTextField.getText().length() == 6) {
+                        String formatedLicenceplate = KentekenHandler.formatLicenseplate(kentekenTextField.getText().toString());
+                        if (!kentekenTextField.getText().toString().equals(formatedLicenceplate)) {
+                            kentekenTextField.setText(formatedLicenceplate);
+                            Log.d(TAG, "onTextChanged: VALID KENTEKEN: " + KentekenHandler.kentekenValid(kentekenTextField.getText().toString()));
+
+                            if (KentekenHandler.kentekenValid(kentekenTextField.getText().toString())) {
+                                if (KentekenHandler.getSidecodeLicenseplate(kentekenTextField.getText().toString().toUpperCase()) != -1 && KentekenHandler.getSidecodeLicenseplate(kentekenTextField.getText().toString().toUpperCase()) != -2) {
+                                    Khandler.run(kentekenTextField);
+                                }
+                            }
+                        }
+                    }
+                }
+
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                    // TODO Auto-generated method stub
+                }
+
+                @Override
+                public void afterTextChanged(Editable s) {
+                    // TODO Auto-generated method stub
+                }
+            });
+
+            getAds();
+
+            FirebaseMessaging.getInstance().getToken()
+                    .addOnCompleteListener(task -> {
+                        if (!task.isSuccessful()) {
+                            Log.w(TAG, "Fetching FCM registration token failed", task.getException());
+                            return;
                         }
 
-                        kentekenTextField.setText(newText);
-                        kentekenTextField.setSelection(kentekenTextField.getText().length());
-                        return true;
-                    default:
-                        break;
+                        // Get new FCM registration token
+                        String token = task.getResult();
+
+                        // Log
+                        Log.d("FCM Token", token);
+                    });
+
+            kentekenTextField.setOnKeyListener((v, keyCode, event) -> {
+
+                Log.d(TAG, "onKey: " + keyCode);
+                if (event.getAction() == KeyEvent.ACTION_DOWN) {
+                    switch (keyCode) {
+                        case KeyEvent.KEYCODE_ENTER:
+                            Khandler.run(kentekenTextField);
+                            return true;
+
+                        case KeyEvent.KEYCODE_DEL:
+                            Log.d(TAG, "onKey: KEY EVENT");
+                            String text = kentekenTextField.getText().toString();
+                            text = text.replace("-", "");
+
+                            String newText = text;
+
+                            if (text.length() > 0) {
+                                newText = text.substring(0, text.length() - 1);
+                            }
+
+                            kentekenTextField.setText(newText);
+                            kentekenTextField.setSelection(kentekenTextField.getText().length());
+                            return true;
+                        default:
+                            break;
+                    }
                 }
-            }
 
-            if(KentekenHandler.getSidecodeLicenseplate(kentekenTextField.getText().toString().toUpperCase()) != -1 && KentekenHandler.getSidecodeLicenseplate(kentekenTextField.getText().toString().toUpperCase()) != -2) {
-                Log.d(TAG, "onKey: BINGO");
-                Khandler.run(kentekenTextField);
-                return true;
-            }
+                if (KentekenHandler.getSidecodeLicenseplate(kentekenTextField.getText().toString().toUpperCase()) != -1 && KentekenHandler.getSidecodeLicenseplate(kentekenTextField.getText().toString().toUpperCase()) != -2) {
+                    Log.d(TAG, "onKey: BINGO");
+                    Khandler.run(kentekenTextField);
+                    return true;
+                }
 
-            return false;
-        });
+                return false;
+            });
+
+        }).start();
     }
 
     protected void getAds() {
