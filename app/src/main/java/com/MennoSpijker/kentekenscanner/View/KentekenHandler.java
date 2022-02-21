@@ -32,7 +32,6 @@ public class KentekenHandler {
     private static final String SavedKentekensFile = "favorites.json";
     private static final String TAG = "KentekenHandler";
 
-    private final Button button3;
     private final MainActivity context;
 
     private final ConnectionDetector connection;
@@ -46,10 +45,12 @@ public class KentekenHandler {
     public KentekenHandler(MainActivity c, ConnectionDetector co, Button b, ScrollView r, TextView kHold) {
         this.context = c;
         this.connection = co;
-        this.button3 = b;
         this.result = r;
         this.kentekenHolder = kHold;
         bundle = new Bundle();
+
+        Log.d(TAG, "KentekenHandler: " + this.kentekenHolder);
+        Log.d(TAG, "KentekenHandler: " + kHold);
     }
 
     public void run(TextView textview) {

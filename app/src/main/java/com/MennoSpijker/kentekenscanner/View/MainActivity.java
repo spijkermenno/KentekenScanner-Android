@@ -42,7 +42,6 @@ public class MainActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
-        final EditText kentekenTextField = findViewById(R.id.kenteken);
 
         Typeface iconFont = FontManager.getTypeface(getApplicationContext(), FontManager.FONTAWESOME);
         FontManager.markAsIconContainer(findViewById(R.id.icons_container), iconFont);
@@ -52,6 +51,9 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_scan);
 
+        final EditText kentekenTextField = findViewById(R.id.kenteken);
+        Log.d(TAG, "onCreate: " + kentekenTextField);
+
         showHistoryButton = findViewById(R.id.showHistory);
         openCameraButton = findViewById(R.id.camera);
         showFavoritesButton = findViewById(R.id.showFavorites);
@@ -59,6 +61,8 @@ public class MainActivity extends Activity {
 
         resultScrollView = findViewById(R.id.scroll);
         ConnectionDetector connection = new ConnectionDetector(this);
+
+        Log.d(TAG, "onCreate: " + kentekenTextField);
 
         Khandler = new KentekenHandler(MainActivity.this, connection, showFavoritesButton, resultScrollView, kentekenTextField);
 
@@ -80,8 +84,6 @@ public class MainActivity extends Activity {
         showAlertsButton.setOnClickListener(v -> {
             //Khandler.openSaved();
         });
-
-
     }
 
     @Override
@@ -96,9 +98,9 @@ public class MainActivity extends Activity {
                 public void onTextChanged(CharSequence s, int start, int before, int count) {
                     String kenteken = kentekenTextField.getText().toString();
                     if (kenteken.length() == 6) {
-                        String formatedLicenceplate = KentekenHandler.formatLicenseplate(kenteken);
-                        if (!kenteken.equals(formatedLicenceplate)) {
-                            kentekenTextField.setText(formatedLicenceplate);
+                        String formatedKenteken = KentekenHandler.formatLicenseplate(kenteken);
+                        if (!kenteken.equals(formatedKenteken)) {
+                            kentekenTextField.setText(formatedKenteken);
                             Log.d(TAG, "onTextChanged: VALID KENTEKEN: " + KentekenHandler.kentekenValid(kentekenTextField.getText().toString()));
 
                             if (KentekenHandler.kentekenValid(kentekenTextField.getText().toString())) {

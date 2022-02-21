@@ -1,19 +1,16 @@
 package com.MennoSpijker.kentekenscanner.Util;
 
 import android.content.Context;
-import android.os.Environment;
 import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -22,13 +19,11 @@ import java.util.Locale;
 
 public class FileHandling {
     private static final String TAG = "PERMISSION";
-    private Context context;
     private final String storageDir;
     private static final String RecentKentekensFile = "recent.json";
     private static final String SavedKentekensFile = "favorites.json";
 
     public FileHandling(Context context) {
-        this.context = context;
         this.storageDir = context.getFilesDir() + "/";
     }
 
@@ -57,7 +52,7 @@ public class FileHandling {
                 FNF.printStackTrace();
             }
 
-            Log.d(TAG, "readFile() returned: " + fileContent.toString());
+            Log.d(TAG, "readFile() returned: " + fileContent);
             return fileContent.toString();
         } else {
             Log.d(TAG, "readFile: File doesn't exist, try to create");
@@ -91,13 +86,11 @@ public class FileHandling {
                 boolean dateChecked = false;
                 if (amountOfDates > 0) {
 
-                    JSONObject object = otherKentekens;
-
-                    Iterator iterator = object.keys();
+                    Iterator<String> iterator = otherKentekens.keys();
 
                     while (iterator.hasNext()) {
                         String key = (String) iterator.next();
-                        JSONArray values = new JSONArray(object.getString(key));
+                        JSONArray values = new JSONArray(otherKentekens.getString(key));
                         System.out.println("main object at begin:" + mainObject);
                         System.out.println(values);
                         System.out.println(values.length());
@@ -114,7 +107,7 @@ public class FileHandling {
                                 String currentDate = s.parse(key).toString();
 
                                 // retrieve dates saved
-                                JSONArray kentekensSavedOnDate = object.getJSONArray(key);
+                                JSONArray kentekensSavedOnDate = otherKentekens.getJSONArray(key);
                                 int amountOfKentekens = kentekensSavedOnDate.length();
 
                                 // retrieve kentekens saved on certain date
@@ -141,7 +134,7 @@ public class FileHandling {
                             if (!dateChecked) {
                                 mainObject.put(newKentekenDate, new JSONArray().put(newKenteken));
                             }
-                            mainObject.put(key, object.getJSONArray(key));
+                            mainObject.put(key, otherKentekens.getJSONArray(key));
                         }
                     }
                 } else {

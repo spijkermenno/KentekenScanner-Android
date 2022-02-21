@@ -21,7 +21,6 @@ public class Async extends AsyncTask<String, String, String> {
     private Context main;
     private ConnectionDetector connection;
     public KentekenHandler Khandler;
-    public Async self;
     public KentekenDataFactory kentekenDataFactory;
     private String resp;
 
@@ -35,7 +34,6 @@ public class Async extends AsyncTask<String, String, String> {
             uri = u;
             connection = c;
             Khandler = kh;
-            self = this;
             kentekenDataFactory = kdf;
 
         } catch (Exception e) {

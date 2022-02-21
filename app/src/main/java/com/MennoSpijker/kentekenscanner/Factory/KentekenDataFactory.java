@@ -1,5 +1,6 @@
 package com.MennoSpijker.kentekenscanner.Factory;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Typeface;
@@ -115,6 +116,7 @@ public class KentekenDataFactory {
     }
 
 
+    @SuppressLint("UseCompatLoadingForDrawables")
     public void fillResultView() {
         try {
             resultView.removeAllViews();
@@ -190,7 +192,7 @@ public class KentekenDataFactory {
 
                     if (key.equals("vervaldatum_apk")) {
                         try {
-                            Date date = new SimpleDateFormat("dd-MM-yy").parse(value);
+                            @SuppressLint("SimpleDateFormat") Date date = new SimpleDateFormat("dd-MM-yy").parse(value);
                             if (date != null && date.before(new Date())) {
                                 line2.setBackground(context.getResources().getDrawable(R.drawable.border_error_item));
                             } else {

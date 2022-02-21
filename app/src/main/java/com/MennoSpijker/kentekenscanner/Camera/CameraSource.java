@@ -142,12 +142,6 @@ public class CameraSource {
     private String mFocusMode = null;
     private String mFlashMode = null;
 
-    // These instances need to be held onto to avoid GC of their underlying resources.  Even though
-    // these aren't used outside of the method that creates them, they still must have hard
-    // references maintained to them.
-    private SurfaceView mDummySurfaceView;
-    private SurfaceTexture mDummySurfaceTexture;
-
     /**
      * Dedicated thread and associated runnable for calling into the detector with frames, as the
      * frames become available from the camera.
@@ -346,10 +340,13 @@ public class CameraSource {
             // SurfaceTexture was introduced in Honeycomb (11), so if we are running and
             // old version of Android. fall back to use SurfaceView.
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-                mDummySurfaceTexture = new SurfaceTexture(DUMMY_TEXTURE_NAME);
+                SurfaceTexture mDummySurfaceTexture = new SurfaceTexture(DUMMY_TEXTURE_NAME);
                 mCamera.setPreviewTexture(mDummySurfaceTexture);
             } else {
-                mDummySurfaceView = new SurfaceView(mContext);
+                // These instances need to be held onto to avoid GC of their underlying resources.  Even though
+                // these aren't used outside of the method that creates them, they still must have hard
+                // references maintained to them.
+                SurfaceView mDummySurfaceView = new SurfaceView(mContext);
                 mCamera.setPreviewDisplay(mDummySurfaceView.getHolder());
             }
             mCamera.startPreview();
@@ -453,17 +450,17 @@ public class CameraSource {
         return mFacing;
     }
 
-    public int doZoom(float scale) {
+    public void doZoom(float scale) {
         synchronized (mCameraLock) {
             if (mCamera == null) {
-                return 0;
+                return;
             }
             int currentZoom = 0;
             int maxZoom;
             Camera.Parameters parameters = mCamera.getParameters();
             if (!parameters.isZoomSupported()) {
                 Log.w(TAG, "Zoom is not supported on this device");
-                return currentZoom;
+                return;
             }
             maxZoom = parameters.getMaxZoom();
 
@@ -482,7 +479,6 @@ public class CameraSource {
             }
             parameters.setZoom(currentZoom);
             mCamera.setParameters(parameters);
-            return currentZoom;
         }
     }
 
@@ -1102,9 +1098,7 @@ public class CameraSource {
          */
         @SuppressLint("Assert")
         void release() {
-            if (mProcessingThread != null) {
-                assert (mProcessingThread.getState() == State.TERMINATED);
-            }
+            assert mProcessingThread == null || (mProcessingThread.getState() == State.TERMINATED);
             mDetector.release();
             mDetector = null;
         }

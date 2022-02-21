@@ -1,400 +1,220 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<issues format="6" by="lint 7.1.1" type="baseline" client="gradle" dependencies="true" name="AGP (7.1.1)" variant="all" version="7.1.1">
-
-    <issue
-        id="CanvasSize"
-        message="Calling `Canvas.getWidth()` is usually wrong; you should be calling `getWidth()` instead"
-        errorLine1="                mWidthScaleFactor = (float) canvas.getWidth() / (float) mPreviewWidth;"
-        errorLine2="                                            ~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/MennoSpijker/kentekenscanner/Camera/GraphicOverlay.java"
-            line="201"
-            column="45"/>
-    </issue>
-
-    <issue
-        id="CanvasSize"
-        message="Calling `Canvas.getHeight()` is usually wrong; you should be calling `getHeight()` instead"
-        errorLine1="                mHeightScaleFactor = (float) canvas.getHeight() / (float) mPreviewHeight;"
-        errorLine2="                                             ~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/MennoSpijker/kentekenscanner/Camera/GraphicOverlay.java"
-            line="202"
-            column="46"/>
-    </issue>
-
-    <issue
-        id="DefaultLocale"
-        message="Implicitly using the default locale is a common source of bugs: Use `toUpperCase(Locale)` instead. For strings meant to be internal use `Locale.ROOT`, otherwise `Locale.getDefault()`."
-        errorLine1="        String kenteken = textview.getText().toString().toUpperCase();"
-        errorLine2="                                                        ~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/MennoSpijker/kentekenscanner/View/KentekenHandler.java"
-            line="56"
-            column="57"/>
-    </issue>
-
-    <issue
-        id="DefaultLocale"
-        message="Implicitly using the default locale is a common source of bugs: Use `toUpperCase(Locale)` instead. For strings meant to be internal use `Locale.ROOT`, otherwise `Locale.getDefault()`."
-        errorLine1="            String licenseplate = alicenseplate.replace(&quot;-&quot;, &quot;&quot;).toUpperCase();"
-        errorLine2="                                                                 ~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/MennoSpijker/kentekenscanner/View/KentekenHandler.java"
-            line="292"
-            column="66"/>
-    </issue>
-
-    <issue
-        id="DefaultLocale"
-        message="Implicitly using the default locale is a common source of bugs: Use `toUpperCase(Locale)` instead. For strings meant to be internal use `Locale.ROOT`, otherwise `Locale.getDefault()`."
-        errorLine1="        licenseplate = licenseplate.replace(&quot;-&quot;, &quot;&quot;).toUpperCase();"
-        errorLine2="                                                     ~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/MennoSpijker/kentekenscanner/View/KentekenHandler.java"
-            line="330"
-            column="54"/>
-    </issue>
-
-    <issue
-        id="DefaultLocale"
-        message="Implicitly using the default locale is a common source of bugs: Use `toUpperCase(Locale)` instead. For strings meant to be internal use `Locale.ROOT`, otherwise `Locale.getDefault()`."
-        errorLine1="                if (KentekenHandler.getSidecodeLicenseplate(kentekenTextField.getText().toString().toUpperCase()) != -1 &amp;&amp; KentekenHandler.getSidecodeLicenseplate(kentekenTextField.getText().toString().toUpperCase()) != -2) {"
-        errorLine2="                                                                                                   ~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/MennoSpijker/kentekenscanner/View/MainActivity.java"
-            line="166"
-            column="100"/>
-    </issue>
-
-    <issue
-        id="DefaultLocale"
-        message="Implicitly using the default locale is a common source of bugs: Use `toUpperCase(Locale)` instead. For strings meant to be internal use `Locale.ROOT`, otherwise `Locale.getDefault()`."
-        errorLine1="                if (KentekenHandler.getSidecodeLicenseplate(kentekenTextField.getText().toString().toUpperCase()) != -1 &amp;&amp; KentekenHandler.getSidecodeLicenseplate(kentekenTextField.getText().toString().toUpperCase()) != -2) {"
-        errorLine2="                                                                                                                                                                                                          ~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/MennoSpijker/kentekenscanner/View/MainActivity.java"
-            line="166"
-            column="203"/>
-    </issue>
-
-    <issue
-        id="SimpleDateFormat"
-        message="To get local formatting use `getDateInstance()`, `getDateTimeInstance()`, or `getTimeInstance()`, or use `new SimpleDateFormat(String template, Locale locale)` with for example `Locale.US` for ASCII dates."
-        errorLine1="                            Date date = new SimpleDateFormat(&quot;dd-MM-yy&quot;).parse(value);"
-        errorLine2="                                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/MennoSpijker/kentekenscanner/Factory/KentekenDataFactory.java"
-            line="193"
-            column="41"/>
-    </issue>
+<issues format="5" by="lint Bumblebee | 2021.1.1 Patch 1">
 
     <issue
         id="VectorRaster"
-        message="Limit vector icons sizes to 200×200 to keep icon drawing fast; see https://developer.android.com/studio/write/vector-asset-studio#when for more"
-        errorLine1="    android:width=&quot;5670dp&quot;"
-        errorLine2="                   ~~~~~~">
+        message="Limit vector icons sizes to 200×200 to keep icon drawing fast; see https://developer.android.com/studio/write/vector-asset-studio#when for more">
         <location
             file="src/main/res/drawable/kenteken_v2.xml"
-            line="3"
-            column="20"/>
+            line="3"/>
     </issue>
 
     <issue
         id="UseCompatLoadingForDrawables"
-        message="Use `ResourcesCompat.getDrawable()`"
-        errorLine1="                                line2.setBackground(context.getResources().getDrawable(R.drawable.border_error_item));"
-        errorLine2="                                                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/MennoSpijker/kentekenscanner/Factory/KentekenDataFactory.java"
-            line="195"
-            column="53"/>
-    </issue>
-
-    <issue
-        id="UseCompatLoadingForDrawables"
-        message="Use `ContextCompat.getDrawable()`"
-        errorLine1="                    line.setBackground(context.getDrawable(R.drawable.kentekenplaat3));"
-        errorLine2="                                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        message="Use `ContextCompat.getDrawable()`">
         <location
             file="src/main/java/com/MennoSpijker/kentekenscanner/View/KentekenHandler.java"
-            line="177"
-            column="40"/>
+            line="175"/>
     </issue>
 
     <issue
         id="UseCompatLoadingForDrawables"
-        message="Use `ContextCompat.getDrawable()`"
-        errorLine1="                    line.setBackground(context.getDrawable(R.drawable.kentekenplaat3));"
-        errorLine2="                                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        message="Use `ContextCompat.getDrawable()`">
         <location
             file="src/main/java/com/MennoSpijker/kentekenscanner/View/KentekenHandler.java"
-            line="256"
-            column="40"/>
+            line="254"/>
     </issue>
 
     <issue
         id="ObsoleteSdkInt"
-        message="Unnecessary; SDK_INT is always >= 26"
-        errorLine1="            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {"
-        errorLine2="                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        message="Unnecessary; SDK_INT is always >= 26">
         <location
             file="src/main/java/com/MennoSpijker/kentekenscanner/Camera/CameraSource.java"
-            line="348"
-            column="17"/>
+            line="342"/>
     </issue>
 
     <issue
         id="ObsoleteSdkInt"
-        message="Unnecessary; SDK_INT is always >= 26"
-        errorLine1="                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {"
-        errorLine2="                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        message="Unnecessary; SDK_INT is always >= 26">
         <location
             file="src/main/java/com/MennoSpijker/kentekenscanner/Camera/CameraSource.java"
-            line="426"
-            column="25"/>
+            line="423"/>
     </issue>
 
     <issue
         id="ObsoleteSdkInt"
-        message="Unnecessary; SDK_INT is never &lt; 26"
-        errorLine1="        if (Build.VERSION.SDK_INT &lt; Build.VERSION_CODES.JELLY_BEAN) {"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        message="Unnecessary; SDK_INT is never &lt; 26">
         <location
             file="src/main/java/com/MennoSpijker/kentekenscanner/Camera/CameraSource.java"
-            line="650"
-            column="13"/>
+            line="647"/>
     </issue>
 
     <issue
         id="StaticFieldLeak"
-        message="This field leaks a context object"
-        errorLine1="    private ScrollView resultView;"
-        errorLine2="    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        message="This field leaks a context object">
         <location
             file="src/main/java/com/MennoSpijker/kentekenscanner/View/Async.java"
-            line="20"
-            column="5"/>
+            line="20"/>
     </issue>
 
     <issue
         id="StaticFieldLeak"
-        message="This field leaks a context object"
-        errorLine1="    private Context main;"
-        errorLine2="    ~~~~~~~~~~~~~~~~~~~~~">
+        message="This field leaks a context object">
         <location
             file="src/main/java/com/MennoSpijker/kentekenscanner/View/Async.java"
-            line="21"
-            column="5"/>
+            line="21"/>
     </issue>
 
     <issue
         id="InefficientWeight"
-        message="Use a `layout_height` of `0dp` instead of `75dp` for better performance"
-        errorLine1="            android:layout_height=&quot;75dp&quot;"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        message="Use a `layout_height` of `0dp` instead of `75dp` for better performance">
         <location
             file="src/main/res/layout/activity_scan.xml"
-            line="22"
-            column="13"/>
+            line="22"/>
     </issue>
 
     <issue
         id="Overdraw"
-        message="Possible overdraw: Root element paints background `@color/white` with a theme that also paints a background (inferred theme is `@style/AppTheme`)"
-        errorLine1="    android:background=&quot;@color/white&quot;"
-        errorLine2="    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        message="Possible overdraw: Root element paints background `@color/white` with a theme that also paints a background (inferred theme is `@style/AppTheme`)">
         <location
             file="src/main/res/layout/activity_scan.xml"
-            line="7"
-            column="5"/>
+            line="7"/>
     </issue>
 
     <issue
         id="UnusedResources"
-        message="The resource `R.layout.activity_main` appears to be unused"
-        errorLine1="&lt;RelativeLayout xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;"
-        errorLine2="^">
+        message="The resource `R.layout.activity_main` appears to be unused">
         <location
             file="src/main/res/layout/activity_main.xml"
-            line="2"
-            column="1"/>
+            line="2"/>
     </issue>
 
     <issue
         id="UnusedResources"
-        message="The resource `R.color.border_color` appears to be unused"
-        errorLine1="    &lt;color name=&quot;border_color&quot;>#EEEEEE&lt;/color>"
-        errorLine2="           ~~~~~~~~~~~~~~~~~~~">
+        message="The resource `R.color.border_color` appears to be unused">
         <location
             file="src/main/res/values/colors.xml"
-            line="8"
-            column="12"/>
+            line="8"/>
     </issue>
 
     <issue
         id="UnusedResources"
-        message="The resource `R.color.dark_border_color` appears to be unused"
-        errorLine1="    &lt;color name=&quot;dark_border_color&quot;>#707070&lt;/color>"
-        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~">
+        message="The resource `R.color.dark_border_color` appears to be unused">
         <location
             file="src/main/res/values/colors.xml"
-            line="9"
-            column="12"/>
+            line="9"/>
     </issue>
 
     <issue
         id="UnusedResources"
-        message="The resource `R.color.light_border_color` appears to be unused"
-        errorLine1="    &lt;color name=&quot;light_border_color&quot;>#dedede&lt;/color>"
-        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~">
+        message="The resource `R.color.light_border_color` appears to be unused">
         <location
             file="src/main/res/values/colors.xml"
-            line="11"
-            column="12"/>
+            line="11"/>
     </issue>
 
     <issue
         id="UnusedResources"
-        message="The resource `R.color.black_border_color` appears to be unused"
-        errorLine1="    &lt;color name=&quot;black_border_color&quot;>#000000&lt;/color>"
-        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~">
+        message="The resource `R.color.black_border_color` appears to be unused">
         <location
             file="src/main/res/values/colors.xml"
-            line="12"
-            column="12"/>
+            line="12"/>
     </issue>
 
     <issue
         id="UnusedResources"
-        message="The resource `R.color.colorKentekenBlue` appears to be unused"
-        errorLine1="    &lt;color name=&quot;colorKentekenBlue&quot;>#014DDF&lt;/color>"
-        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~">
+        message="The resource `R.color.colorKentekenBlue` appears to be unused">
         <location
             file="src/main/res/values/colors.xml"
-            line="15"
-            column="12"/>
+            line="15"/>
     </issue>
 
     <issue
         id="UnusedResources"
-        message="The resource `R.color.background_color` appears to be unused"
-        errorLine1="    &lt;color name=&quot;background_color&quot;>#FFFFFF&lt;/color>"
-        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~">
+        message="The resource `R.color.background_color` appears to be unused">
         <location
             file="src/main/res/values/colors.xml"
-            line="17"
-            column="12"/>
+            line="17"/>
     </issue>
 
     <issue
         id="UnusedResources"
-        message="The resource `R.color.light_background_color` appears to be unused"
-        errorLine1="    &lt;color name=&quot;light_background_color&quot;>#efefef&lt;/color>"
-        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        message="The resource `R.color.light_background_color` appears to be unused">
         <location
             file="src/main/res/values/colors.xml"
-            line="18"
-            column="12"/>
+            line="18"/>
     </issue>
 
     <issue
         id="UnusedResources"
-        message="The resource `R.color.search_background_color` appears to be unused"
-        errorLine1="    &lt;color name=&quot;search_background_color&quot;>#2196F3&lt;/color>"
-        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        message="The resource `R.color.search_background_color` appears to be unused">
         <location
             file="src/main/res/values/colors.xml"
-            line="20"
-            column="12"/>
+            line="20"/>
     </issue>
 
     <issue
         id="UnusedResources"
-        message="The resource `R.color.camera_background_color` appears to be unused"
-        errorLine1="    &lt;color name=&quot;camera_background_color&quot;>#F44336&lt;/color>"
-        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        message="The resource `R.color.camera_background_color` appears to be unused">
         <location
             file="src/main/res/values/colors.xml"
-            line="21"
-            column="12"/>
+            line="21"/>
     </issue>
 
     <issue
         id="UnusedResources"
-        message="The resource `R.color.recent_background_color` appears to be unused"
-        errorLine1="    &lt;color name=&quot;recent_background_color&quot;>#4CAF50&lt;/color>"
-        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        message="The resource `R.color.recent_background_color` appears to be unused">
         <location
             file="src/main/res/values/colors.xml"
-            line="22"
-            column="12"/>
+            line="22"/>
     </issue>
 
     <issue
         id="UnusedResources"
-        message="The resource `R.color.menu_background_color` appears to be unused"
-        errorLine1="    &lt;color name=&quot;menu_background_color&quot;>#607D8B&lt;/color>"
-        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        message="The resource `R.color.menu_background_color` appears to be unused">
         <location
             file="src/main/res/values/colors.xml"
-            line="23"
-            column="12"/>
+            line="23"/>
     </issue>
 
     <issue
         id="UnusedResources"
-        message="The resource `R.color.save_background_color` appears to be unused"
-        errorLine1="    &lt;color name=&quot;save_background_color&quot;>#673AB7&lt;/color>"
-        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        message="The resource `R.color.save_background_color` appears to be unused">
         <location
             file="src/main/res/values/colors.xml"
-            line="24"
-            column="12"/>
+            line="24"/>
     </issue>
 
     <issue
         id="UnusedResources"
-        message="The resource `R.drawable.dark_background` appears to be unused"
-        errorLine1="&lt;shape xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;"
-        errorLine2="^">
+        message="The resource `R.drawable.dark_background` appears to be unused">
         <location
             file="src/main/res/drawable/dark_background.xml"
-            line="2"
-            column="1"/>
+            line="2"/>
     </issue>
 
     <issue
         id="UnusedResources"
-        message="The resource `R.dimen.activity_horizontal_margin` appears to be unused"
-        errorLine1="    &lt;dimen name=&quot;activity_horizontal_margin&quot;>16dp&lt;/dimen>"
-        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        message="The resource `R.dimen.activity_horizontal_margin` appears to be unused">
         <location
             file="src/main/res/values/dimens.xml"
-            line="3"
-            column="12"/>
+            line="3"/>
     </issue>
 
     <issue
         id="UnusedResources"
-        message="The resource `R.dimen.activity_vertical_margin` appears to be unused"
-        errorLine1="    &lt;dimen name=&quot;activity_vertical_margin&quot;>16dp&lt;/dimen>"
-        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        message="The resource `R.dimen.activity_vertical_margin` appears to be unused">
         <location
             file="src/main/res/values/dimens.xml"
-            line="4"
-            column="12"/>
+            line="4"/>
     </issue>
 
     <issue
         id="UnusedResources"
-        message="The resource `R.drawable.ic_icon` appears to be unused"
-        errorLine1="&lt;vector xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;"
-        errorLine2="^">
+        message="The resource `R.drawable.ic_icon` appears to be unused">
         <location
             file="src/main/res/drawable/ic_icon.xml"
-            line="2"
-            column="1"/>
+            line="2"/>
     </issue>
 
     <issue
@@ -402,6 +222,14 @@
         message="The resource `R.mipmap.ic_launcher` appears to be unused">
         <location
             file="src/main/res/mipmap-hdpi/ic_launcher.png"/>
+        <location
+            file="src/main/res/mipmap-mdpi/ic_launcher.png"/>
+        <location
+            file="src/main/res/mipmap-xhdpi/ic_launcher.png"/>
+        <location
+            file="src/main/res/mipmap-xxhdpi/ic_launcher.png"/>
+        <location
+            file="src/main/res/mipmap-xxxhdpi/ic_launcher.png"/>
     </issue>
 
     <issue
@@ -409,270 +237,206 @@
         message="The resource `R.mipmap.ic_launcher_round` appears to be unused">
         <location
             file="src/main/res/mipmap-hdpi/ic_launcher_round.png"/>
+        <location
+            file="src/main/res/mipmap-mdpi/ic_launcher_round.png"/>
+        <location
+            file="src/main/res/mipmap-xhdpi/ic_launcher_round.png"/>
+        <location
+            file="src/main/res/mipmap-xxhdpi/ic_launcher_round.png"/>
+        <location
+            file="src/main/res/mipmap-xxxhdpi/ic_launcher_round.png"/>
     </issue>
 
     <issue
         id="UnusedResources"
-        message="The resource `R.string.fa_icon_search` appears to be unused"
-        errorLine1="    &lt;string name=&quot;fa_icon_search&quot;>&amp;#xf002;&lt;/string>"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~">
+        message="The resource `R.string.fa_icon_search` appears to be unused">
         <location
             file="src/main/res/values/icons.xml"
-            line="3"
-            column="13"/>
+            line="3"/>
     </issue>
 
     <issue
         id="UnusedResources"
-        message="The resource `R.string.fa_icon_recent` appears to be unused"
-        errorLine1="    &lt;string name=&quot;fa_icon_recent&quot;>&amp;#xf13a;&lt;/string>"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~">
+        message="The resource `R.string.fa_icon_recent` appears to be unused">
         <location
             file="src/main/res/values/icons.xml"
-            line="5"
-            column="13"/>
+            line="5"/>
     </issue>
 
     <issue
         id="UnusedResources"
-        message="The resource `R.string.fa_icon_trash` appears to be unused"
-        errorLine1="    &lt;string name=&quot;fa_icon_trash&quot;>&amp;#xf014;&lt;/string>"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~">
+        message="The resource `R.string.fa_icon_trash` appears to be unused">
         <location
             file="src/main/res/values/icons.xml"
-            line="6"
-            column="13"/>
+            line="6"/>
     </issue>
 
     <issue
         id="UnusedResources"
-        message="The resource `R.string.fa_icon_saved` appears to be unused"
-        errorLine1="    &lt;string name=&quot;fa_icon_saved&quot;>&amp;#xf02e;&lt;/string>"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~">
+        message="The resource `R.string.fa_icon_saved` appears to be unused">
         <location
             file="src/main/res/values/icons.xml"
-            line="7"
-            column="13"/>
+            line="7"/>
     </issue>
 
     <issue
         id="UnusedResources"
-        message="The resource `R.drawable.kenteken_v2` appears to be unused"
-        errorLine1="&lt;vector xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;"
-        errorLine2="^">
+        message="The resource `R.drawable.kenteken_v2` appears to be unused">
         <location
             file="src/main/res/drawable/kenteken_v2.xml"
-            line="2"
-            column="1"/>
+            line="2"/>
     </issue>
 
     <issue
         id="UnusedResources"
-        message="The resource `R.drawable.light_background` appears to be unused"
-        errorLine1="&lt;shape xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;"
-        errorLine2="^">
+        message="The resource `R.drawable.light_background` appears to be unused">
         <location
             file="src/main/res/drawable/light_background.xml"
-            line="2"
-            column="1"/>
+            line="2"/>
     </issue>
 
     <issue
         id="UnusedResources"
-        message="The resource `R.drawable.menu_background` appears to be unused"
-        errorLine1="&lt;vector xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;>"
-        errorLine2="^">
+        message="The resource `R.drawable.menu_background` appears to be unused">
         <location
             file="src/main/res/drawable/menu_background.xml"
-            line="1"
-            column="1"/>
+            line="1"/>
     </issue>
 
     <issue
         id="UnusedResources"
-        message="The resource `R.drawable.save_background` appears to be unused"
-        errorLine1="&lt;vector xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;>"
-        errorLine2="^">
+        message="The resource `R.drawable.save_background` appears to be unused">
         <location
             file="src/main/res/drawable/save_background.xml"
-            line="1"
-            column="1"/>
+            line="1"/>
     </issue>
 
     <issue
         id="UnusedResources"
-        message="The resource `R.string.edit_kenteken` appears to be unused"
-        errorLine1="    &lt;string name=&quot;edit_kenteken&quot;>Kenteken&lt;/string>"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~">
+        message="The resource `R.string.edit_kenteken` appears to be unused">
         <location
             file="src/main/res/values/strings.xml"
-            line="3"
-            column="13"/>
+            line="3"/>
     </issue>
 
     <issue
         id="UnusedResources"
-        message="The resource `R.string.button_send` appears to be unused"
-        errorLine1="    &lt;string name=&quot;button_send&quot;>Zoeken&lt;/string>"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~">
+        message="The resource `R.string.button_send` appears to be unused">
         <location
             file="src/main/res/values/strings.xml"
-            line="4"
-            column="13"/>
+            line="4"/>
     </issue>
 
     <issue
         id="UnusedResources"
-        message="The resource `R.string.button_camera` appears to be unused"
-        errorLine1="    &lt;string name=&quot;button_camera&quot;>Scannen&lt;/string>"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~">
+        message="The resource `R.string.button_camera` appears to be unused">
         <location
             file="src/main/res/values/strings.xml"
-            line="5"
-            column="13"/>
+            line="5"/>
     </issue>
 
     <issue
         id="UnusedResources"
-        message="The resource `R.string.ocr_header` appears to be unused"
-        errorLine1="    &lt;string name=&quot;ocr_header&quot;>Klik op een kenteken om hem te scannen&lt;/string>"
-        errorLine2="            ~~~~~~~~~~~~~~~~~">
+        message="The resource `R.string.ocr_header` appears to be unused">
         <location
             file="src/main/res/values/strings.xml"
-            line="10"
-            column="13"/>
+            line="10"/>
     </issue>
 
     <issue
         id="UnusedResources"
-        message="The resource `R.string.read_text` appears to be unused"
-        errorLine1="    &lt;string name=&quot;read_text&quot;>kentekens scannen.&lt;/string>"
-        errorLine2="            ~~~~~~~~~~~~~~~~">
+        message="The resource `R.string.read_text` appears to be unused">
         <location
             file="src/main/res/values/strings.xml"
-            line="11"
-            column="13"/>
+            line="11"/>
     </issue>
 
     <issue
         id="UnusedResources"
-        message="The resource `R.string.auto_focus` appears to be unused"
-        errorLine1="    &lt;string name=&quot;auto_focus&quot;>Auto Focus&lt;/string>"
-        errorLine2="            ~~~~~~~~~~~~~~~~~">
+        message="The resource `R.string.auto_focus` appears to be unused">
         <location
             file="src/main/res/values/strings.xml"
-            line="12"
-            column="13"/>
+            line="12"/>
     </issue>
 
     <issue
         id="UnusedResources"
-        message="The resource `R.string.use_flash` appears to be unused"
-        errorLine1="    &lt;string name=&quot;use_flash&quot;>flits lampje&lt;/string>"
-        errorLine2="            ~~~~~~~~~~~~~~~~">
+        message="The resource `R.string.use_flash` appears to be unused">
         <location
             file="src/main/res/values/strings.xml"
-            line="13"
-            column="13"/>
+            line="13"/>
     </issue>
 
     <issue
         id="UnusedResources"
-        message="The resource `R.string.ocr_success` appears to be unused"
-        errorLine1="    &lt;string name=&quot;ocr_success&quot;>kenteken gelezen!&lt;/string>"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~">
+        message="The resource `R.string.ocr_success` appears to be unused">
         <location
             file="src/main/res/values/strings.xml"
-            line="14"
-            column="13"/>
+            line="14"/>
     </issue>
 
     <issue
         id="UnusedResources"
-        message="The resource `R.string.ocr_failure` appears to be unused"
-        errorLine1="    &lt;string name=&quot;ocr_failure&quot;>Geen kenteken gevonden,&lt;/string>"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~">
+        message="The resource `R.string.ocr_failure` appears to be unused">
         <location
             file="src/main/res/values/strings.xml"
-            line="15"
-            column="13"/>
+            line="15"/>
     </issue>
 
     <issue
         id="UnusedResources"
-        message="The resource `R.string.ocr_error` appears to be unused"
-        errorLine1="    &lt;string name=&quot;ocr_error&quot;>&quot;Error reading text: %1$s&quot;&lt;/string>"
-        errorLine2="            ~~~~~~~~~~~~~~~~">
+        message="The resource `R.string.ocr_error` appears to be unused">
         <location
             file="src/main/res/values/strings.xml"
-            line="16"
-            column="13"/>
+            line="16"/>
     </issue>
 
     <issue
         id="UnusedResources"
-        message="The resource `R.string.error_kenteken_scan` appears to be unused"
-        errorLine1="    &lt;string name=&quot;error_kenteken_scan&quot;>Dit is geen kenteken&lt;/string>"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        message="The resource `R.string.error_kenteken_scan` appears to be unused">
         <location
             file="src/main/res/values/strings.xml"
-            line="17"
-            column="13"/>
+            line="17"/>
     </issue>
 
     <issue
         id="UnusedResources"
-        message="The resource `R.string.no_internet_connection` appears to be unused"
-        errorLine1="    &lt;string name=&quot;no_internet_connection&quot;>Er is geen internet connectie&lt;/string>"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        message="The resource `R.string.no_internet_connection` appears to be unused">
         <location
             file="src/main/res/values/strings.xml"
-            line="18"
-            column="13"/>
+            line="18"/>
     </issue>
 
     <issue
         id="UnusedResources"
-        message="The resource `R.string.fixed` appears to be unused"
-        errorLine1="    &lt;string name=&quot;fixed&quot;>Ik heb mn internet gefixt gap!&lt;/string>"
-        errorLine2="            ~~~~~~~~~~~~">
+        message="The resource `R.string.fixed` appears to be unused">
         <location
             file="src/main/res/values/strings.xml"
-            line="22"
-            column="13"/>
+            line="22"/>
     </issue>
 
     <issue
         id="UnusedResources"
-        message="The resource `R.string.eigen_autos` appears to be unused"
-        errorLine1="    &lt;string name=&quot;eigen_autos&quot;>Jouw auto\&apos;s&lt;/string>"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~">
+        message="The resource `R.string.eigen_autos` appears to be unused">
         <location
             file="src/main/res/values/strings.xml"
-            line="25"
-            column="13"/>
+            line="25"/>
     </issue>
 
     <issue
         id="UnusedResources"
-        message="The resource `R.string.default_notification_channel_id` appears to be unused"
-        errorLine1="    &lt;string name=&quot;default_notification_channel_id&quot; />"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        message="The resource `R.string.default_notification_channel_id` appears to be unused">
         <location
             file="src/main/res/values/strings.xml"
-            line="26"
-            column="13"/>
+            line="26"/>
     </issue>
 
     <issue
         id="RedundantNamespace"
-        message="This namespace declaration is redundant"
-        errorLine1="        &lt;com.MennoSpijker.kentekenscanner.Camera.GraphicOverlay xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;"
-        errorLine2="                                                                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        message="This namespace declaration is redundant">
         <location
             file="src/main/res/layout/ocr_capture.xml"
-            line="15"
-            column="65"/>
+            line="15"/>
     </issue>
 
     <issue
@@ -698,68 +462,10 @@
 
     <issue
         id="Autofill"
-        message="Missing `autofillHints` attribute"
-        errorLine1="        &lt;EditText"
-        errorLine2="         ~~~~~~~~">
+        message="Missing `autofillHints` attribute">
         <location
             file="src/main/res/layout/activity_scan.xml"
-            line="19"
-            column="10"/>
-    </issue>
-
-    <issue
-        id="RtlHardcoded"
-        message="Redundant attribute `layout_alignParentRight`; already defining `layout_alignParentEnd` with `targetSdkVersion` 30"
-        errorLine1="        android:layout_alignParentRight=&quot;true&quot;"
-        errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/layout/activity_main.xml"
-            line="16"
-            column="9"/>
-    </issue>
-
-    <issue
-        id="RtlHardcoded"
-        message="Redundant attribute `layout_alignParentLeft`; already defining `layout_alignParentStart` with `targetSdkVersion` 30"
-        errorLine1="        android:layout_alignParentLeft=&quot;true&quot;"
-        errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/layout/activity_main.xml"
-            line="26"
-            column="9"/>
-    </issue>
-
-    <issue
-        id="RtlHardcoded"
-        message="Redundant attribute `layout_alignRight`; already defining `layout_alignEnd` with `targetSdkVersion` 30"
-        errorLine1="        android:layout_alignRight=&quot;@+id/status_message&quot;"
-        errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/layout/activity_main.xml"
-            line="29"
-            column="9"/>
-    </issue>
-
-    <issue
-        id="RtlHardcoded"
-        message="Redundant attribute `layout_alignParentLeft`; already defining `layout_alignParentStart` with `targetSdkVersion` 30"
-        errorLine1="        android:layout_alignParentLeft=&quot;true&quot;"
-        errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/layout/activity_main.xml"
-            line="46"
-            column="9"/>
-    </issue>
-
-    <issue
-        id="RtlHardcoded"
-        message="Redundant attribute `layout_alignParentRight`; already defining `layout_alignParentEnd` with `targetSdkVersion` 30"
-        errorLine1="        android:layout_alignParentRight=&quot;true&quot;"
-        errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/layout/activity_main.xml"
-            line="57"
-            column="9"/>
+            line="19"/>
     </issue>
 
 </issues>

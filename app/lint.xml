@@ -9,4 +9,7 @@
         <ignore path="../chatbot/src/main/res/values/colors.xml" />
         <ignore path="../chatbot/src/main/res/values/settings.xml" />
     </issue>
+
+    <!-- Change the severity of hardcoded strings to "error" -->
+    <issue id="HardcodedText" severity="error" />
 </lint>
