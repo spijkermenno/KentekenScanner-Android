@@ -65,7 +65,7 @@ public class KentekenHandler {
         }
 
         bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, formatLicenseplate(kenteken));
-        context.mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SEARCH, bundle);
+        context.firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SEARCH, bundle);
 
         this.setPreviousSearchedKenteken(kenteken);
 
@@ -105,7 +105,7 @@ public class KentekenHandler {
     public void saveFavoriteKenteken(String kenteken) {
         JSONObject otherKentekens = new FileHandling(context).getSavedKentekens();
 
-        context.mFirebaseAnalytics.setUserProperty("kenteken", kenteken);
+        context.firebaseAnalytics.setUserProperty("kenteken", kenteken);
 
         new FileHandling(context).writeToFile(SavedKentekensFile, kenteken, otherKentekens);
 
@@ -114,7 +114,7 @@ public class KentekenHandler {
     public void deleteFavoriteKenteken(String kenteken) throws JSONException {
         JSONObject otherKentekens = new FileHandling(context).getSavedKentekens();
 
-        context.mFirebaseAnalytics.setUserProperty("kenteken", kenteken);
+        context.firebaseAnalytics.setUserProperty("kenteken", kenteken);
 
         JSONObject temp = new JSONObject();
         temp.put("cars", new JSONArray());

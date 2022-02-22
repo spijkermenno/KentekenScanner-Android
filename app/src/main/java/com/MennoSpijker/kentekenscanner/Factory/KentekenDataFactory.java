@@ -4,9 +4,11 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
@@ -22,14 +24,17 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.Locale;
 
 public class KentekenDataFactory {
 
+    private static final String TAG = "KentekenDataFactory";
     private JSONArray array = new JSONArray();
     private KentekenHandler kentekenHandler;
     private String kenteken;
     private ScrollView resultView;
     private Context context;
+    private NotificationFactory notificationFactory;
 
     public KentekenDataFactory() {
         array.put(new JSONObject());
@@ -48,6 +53,8 @@ public class KentekenDataFactory {
             this.kentekenHandler = Khandler;
 
             this.kentekenHandler.saveRecentKenteken(kenteken);
+
+            this.notificationFactory = new NotificationFactory(context);
         }
     }
 
@@ -115,6 +122,72 @@ public class KentekenDataFactory {
         resultView.addView(line);
     }
 
+    Button createSaveButton() {
+        final Button save = new Button(context);
+
+        save.setText(R.string.save);
+
+        save.setOnClickListener(v -> {
+            kentekenHandler.saveFavoriteKenteken(kenteken);
+            kentekenHandler.openSaved();
+        });
+
+        LinearLayout.LayoutParams size = new LinearLayout.LayoutParams
+                (LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        size.weight = 1;
+
+        save.setLayoutParams(size);
+
+        return save;
+    }
+
+    Button createRemoveButton() {
+        final Button remove = new Button(context);
+
+        remove.setText(R.string.delete);
+
+        remove.setOnClickListener(v -> {
+            try {
+                kentekenHandler.deleteFavoriteKenteken(kenteken);
+                kentekenHandler.openSaved();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        });
+
+        LinearLayout.LayoutParams size = new LinearLayout.LayoutParams
+                (LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        size.weight = 1;
+
+        remove.setLayoutParams(size);
+        return remove;
+    }
+
+    Button createNotificationButton() {
+        final Button notify = new Button(context);
+
+        notify.setText(R.string.notify);
+
+        notify.setOnClickListener(v -> {
+            try {
+                Log.d(TAG, "createNotificationButton: " + array.getJSONObject(0));
+                notificationFactory.planNotification(
+                        "APK bijna verlopen!",
+                        "Pas op! de APK van jouw voertuig met het kenteken " + KentekenHandler.formatLicenseplate(kenteken) + " vervalt over 30 dagen.",
+                        notificationFactory.calculateNotifcationTime(array.getJSONObject(0).getString("vervaldatum_apk")));
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        });
+
+        LinearLayout.LayoutParams size = new LinearLayout.LayoutParams
+                (LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        size.weight = 1;
+
+        notify.setLayoutParams(size);
+        return notify;
+    }
+
 
     @SuppressLint("UseCompatLoadingForDrawables")
     public void fillResultView() {
@@ -122,15 +195,17 @@ public class KentekenDataFactory {
             resultView.removeAllViews();
             resultView.setVisibility(View.VISIBLE);
 
-            LinearLayout lin = new LinearLayout(context);
-            lin.setOrientation(LinearLayout.VERTICAL);
+            LinearLayout linearLayout = new LinearLayout(context);
+            linearLayout.setOrientation(LinearLayout.VERTICAL);
 
-            final Button save = new Button(context);
+            LinearLayout linearLayoutHorizontal = new LinearLayout(context);
+            linearLayoutHorizontal.setOrientation(LinearLayout.HORIZONTAL);
+
+            Button button;
 
             JSONObject kentekens = new FileHandling(context).getSavedKentekens();
 
             if (kentekens.length() != 0) {
-
 
                 boolean inArray = false;
                 for (int i = 0; i < kentekens.getJSONArray("cars").length(); i++) {
@@ -140,37 +215,19 @@ public class KentekenDataFactory {
                 }
 
                 if (inArray) {
-                    save.setText(R.string.delete);
-
-                    save.setOnClickListener(
-                            v -> {
-                                try {
-                                    kentekenHandler.deleteFavoriteKenteken(kenteken);
-                                    kentekenHandler.openSaved();
-                                } catch (JSONException e) {
-                                    e.printStackTrace();
-                                }
-                            });
+                    button = createRemoveButton();
                 } else {
-                    save.setText(R.string.save);
-
-                    save.setOnClickListener(
-                            v -> {
-                                kentekenHandler.saveFavoriteKenteken(kenteken);
-                                kentekenHandler.openSaved();
-                            });
+                    button = createSaveButton();
                 }
             } else {
-                save.setText(R.string.save);
-
-                save.setOnClickListener(
-                        v -> {
-                            kentekenHandler.saveFavoriteKenteken(kenteken);
-                            kentekenHandler.openSaved();
-                        });
+                button = createSaveButton();
             }
 
-            lin.addView(save);
+            linearLayoutHorizontal.addView(button);
+            // TODO add notify button
+            linearLayoutHorizontal.addView(createNotificationButton());
+
+            linearLayout.addView(linearLayoutHorizontal);
 
             JSONObject object = array.getJSONObject(0);
             Iterator<String> iterator = object.keys();
@@ -192,7 +249,8 @@ public class KentekenDataFactory {
 
                     if (key.equals("vervaldatum_apk")) {
                         try {
-                            @SuppressLint("SimpleDateFormat") Date date = new SimpleDateFormat("dd-MM-yy").parse(value);
+                            Date date = new SimpleDateFormat("dd-MM-yy", Locale.GERMANY).parse(value);
+
                             if (date != null && date.before(new Date())) {
                                 line2.setBackground(context.getResources().getDrawable(R.drawable.border_error_item));
                             } else {
@@ -231,9 +289,9 @@ public class KentekenDataFactory {
                     line3.setMinimumHeight(1);
 
                     try {
-                        lin.addView(line);
-                        lin.addView(line2);
-                        lin.addView(line3);
+                        linearLayout.addView(line);
+                        linearLayout.addView(line2);
+                        linearLayout.addView(line3);
                     } catch (Exception e) {
                         e.printStackTrace();
                         e.getMessage();
@@ -241,7 +299,7 @@ public class KentekenDataFactory {
                 }
             }
 
-            resultView.addView(lin);
+            resultView.addView(linearLayout);
         } catch (JSONException je) {
             je.printStackTrace();
             je.getMessage();

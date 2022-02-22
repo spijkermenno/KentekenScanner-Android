@@ -24,4 +24,7 @@
     <string name="eigen_auto">Jouw auto</string>
     <string name="eigen_autos">Jouw auto\'s</string>
     <string name="default_notification_channel_id" />
+    <string name="channel_name">Kenteken Scanner</string>
+    <string name="channel_description">Kenteken Scanner channel</string>
+    <string name="notify">Stel alarm in</string>
 </resources>

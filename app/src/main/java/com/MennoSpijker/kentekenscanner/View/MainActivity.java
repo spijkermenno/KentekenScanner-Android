@@ -12,9 +12,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ScrollView;
 
-import androidx.annotation.NonNull;
-
 import com.MennoSpijker.kentekenscanner.ConnectionDetector;
+import com.MennoSpijker.kentekenscanner.Factory.NotificationFactory;
 import com.MennoSpijker.kentekenscanner.FontManager;
 import com.MennoSpijker.kentekenscanner.OcrCaptureActivity;
 import com.MennoSpijker.kentekenscanner.R;
@@ -24,29 +23,38 @@ import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.LoadAdError;
 import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.common.api.CommonStatusCodes;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.messaging.FirebaseMessaging;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+import java.util.TimeZone;
+
 public class MainActivity extends Activity {
     private static final String TAG = "MainActivity";
-    public FirebaseAnalytics mFirebaseAnalytics;
-
     private static final int RC_OCR_CAPTURE = 9003;
+
+    private Bundle bundle;
+
+    public FirebaseAnalytics firebaseAnalytics;
     public Button showHistoryButton, openCameraButton, showFavoritesButton, showAlertsButton;
+    public ArrayList<Button> buttons = new ArrayList<>();
     public ScrollView resultScrollView;
     public KentekenHandler Khandler;
-    private Bundle bundle;
+    private NotificationFactory notificationFactory;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
+        firebaseAnalytics = FirebaseAnalytics.getInstance(this);
 
         Typeface iconFont = FontManager.getTypeface(getApplicationContext(), FontManager.FONTAWESOME);
         FontManager.markAsIconContainer(findViewById(R.id.icons_container), iconFont);
-
-        Log.d(TAG, "writeToFileOnDate: " + this.getFilesDir());
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_scan);
@@ -59,21 +67,22 @@ public class MainActivity extends Activity {
         showFavoritesButton = findViewById(R.id.showFavorites);
         showAlertsButton = findViewById(R.id.showAlerts);
 
+        buttons.add(showHistoryButton);
+        buttons.add(openCameraButton);
+        buttons.add(showFavoritesButton);
+        buttons.add(showAlertsButton);
+
         resultScrollView = findViewById(R.id.scroll);
-        ConnectionDetector connection = new ConnectionDetector(this);
+        ConnectionDetector connectionDetector = new ConnectionDetector(this);
 
         Log.d(TAG, "onCreate: " + kentekenTextField);
 
-        Khandler = new KentekenHandler(MainActivity.this, connection, showFavoritesButton, resultScrollView, kentekenTextField);
+        Khandler = new KentekenHandler(MainActivity.this, connectionDetector, showFavoritesButton, resultScrollView, kentekenTextField);
 
-        showHistoryButton.setTypeface(FontManager.getTypeface(this, FontManager.FONTAWESOME));
-        showHistoryButton.setTextSize(20);
-        openCameraButton.setTypeface(FontManager.getTypeface(this, FontManager.FONTAWESOME));
-        openCameraButton.setTextSize(20);
-        showFavoritesButton.setTypeface(FontManager.getTypeface(this, FontManager.FONTAWESOME));
-        showFavoritesButton.setTextSize(20);
-        showAlertsButton.setTypeface(FontManager.getTypeface(this, FontManager.FONTAWESOME));
-        showAlertsButton.setTextSize(20);
+        buttons.forEach((button) -> {
+            button.setTypeface(FontManager.getTypeface(this, FontManager.FONTAWESOME));
+            button.setTextSize(20);
+        });
 
         showHistoryButton.setOnClickListener(v -> Khandler.openRecent());
 
@@ -82,6 +91,7 @@ public class MainActivity extends Activity {
         showFavoritesButton.setOnClickListener(v -> Khandler.openSaved());
 
         showAlertsButton.setOnClickListener(v -> {
+            // TODO: create alerts
             //Khandler.openSaved();
         });
     }
@@ -90,20 +100,32 @@ public class MainActivity extends Activity {
     protected void onStart() {
         super.onStart();
 
+        // Must be run on main UI thread...
+        getAds();
+
+        // Run the setup ASYNC for faster first render.
         new Thread(() -> {
             final EditText kentekenTextField = findViewById(R.id.kenteken);
 
             kentekenTextField.addTextChangedListener(new TextWatcher() {
                 @Override
+                public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                    Log.d(TAG, "beforeTextChanged: " + charSequence.toString());
+                }
+
+                @Override
                 public void onTextChanged(CharSequence s, int start, int before, int count) {
                     String kenteken = kentekenTextField.getText().toString();
+
+                    // check if kenteken is 6 characters long
                     if (kenteken.length() == 6) {
                         String formatedKenteken = KentekenHandler.formatLicenseplate(kenteken);
                         if (!kenteken.equals(formatedKenteken)) {
+                            // Set formatted text in kentekenField
                             kentekenTextField.setText(formatedKenteken);
-                            Log.d(TAG, "onTextChanged: VALID KENTEKEN: " + KentekenHandler.kentekenValid(kentekenTextField.getText().toString()));
-
+                            // check if kenteken is valid
                             if (KentekenHandler.kentekenValid(kentekenTextField.getText().toString())) {
+                                // run API call
                                 Khandler.run(kentekenTextField);
                             }
                         }
@@ -111,17 +133,10 @@ public class MainActivity extends Activity {
                 }
 
                 @Override
-                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                    // TODO Auto-generated method stub
-                }
-
-                @Override
-                public void afterTextChanged(Editable s) {
-                    // TODO Auto-generated method stub
+                public void afterTextChanged(Editable editable) {
+                    Log.d(TAG, "afterTextChanged: " + editable.toString());
                 }
             });
-
-            getAds();
 
             FirebaseMessaging.getInstance().getToken()
                     .addOnCompleteListener(task -> {
@@ -182,23 +197,23 @@ public class MainActivity extends Activity {
         });
 
         try {
-            AdView adView = new AdView(this);
+            AdView advertisementView = new AdView(this);
 
-            adView.setAdUnitId("ca-app-pub-4928043878967484/5146910390");
-            adView = this.findViewById(R.id.ad1);
+            advertisementView.setAdUnitId("ca-app-pub-4928043878967484/5146910390");
+            advertisementView = this.findViewById(R.id.ad1);
 
-            adView.setAdListener(new AdListener() {
+            advertisementView.setAdListener(new AdListener() {
                 @Override
                 public void onAdLoaded() {
                     bundle = new Bundle();
-                    mFirebaseAnalytics.logEvent("Ad_loaded", bundle);
+                    firebaseAnalytics.logEvent("Ad_loaded", bundle);
                 }
 
                 @Override
                 public void onAdFailedToLoad(LoadAdError adError) {
                     bundle = new Bundle();
                     bundle.putString("Message", adError.getMessage());
-                    mFirebaseAnalytics.logEvent("Ad_error", bundle);
+                    firebaseAnalytics.logEvent("Ad_error", bundle);
                 }
 
                 @Override
@@ -210,7 +225,7 @@ public class MainActivity extends Activity {
                 @Override
                 public void onAdClicked() {
                     bundle = new Bundle();
-                    mFirebaseAnalytics.logEvent("AD_CLICK", bundle);
+                    firebaseAnalytics.logEvent("AD_CLICK", bundle);
                 }
 
                 @Override
@@ -221,7 +236,7 @@ public class MainActivity extends Activity {
             });
 
             AdRequest adRequest = new AdRequest.Builder().build();
-            adView.loadAd(adRequest);
+            advertisementView.loadAd(adRequest);
 
         } catch (Exception e) {
             e.printStackTrace();
