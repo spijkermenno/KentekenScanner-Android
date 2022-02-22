@@ -10,10 +10,16 @@ import androidx.work.OneTimeWorkRequest;
 import androidx.work.WorkManager;
 
 import com.MennoSpijker.kentekenscanner.R;
+import com.MennoSpijker.kentekenscanner.Util.FileHandling;
 import com.MennoSpijker.kentekenscanner.java.CustomNotification;
+
+import org.json.JSONObject;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
@@ -32,6 +38,7 @@ public class NotificationFactory {
         this.context = context;
         this.createNotificationChannel();
     }
+
     Date getDate(String dateString) throws ParseException {
         return new SimpleDateFormat("dd-MM-yy", Locale.GERMANY).parse(dateString);
     }
@@ -44,7 +51,7 @@ public class NotificationFactory {
             Calendar c = Calendar.getInstance();
             c.setTimeZone(TimeZone.getTimeZone("Europe/Amsterdam"));
             c.setTime(date);
-            c.add(Calendar.DAY_OF_YEAR, 0);
+            c.add(Calendar.DAY_OF_YEAR, -30);
             c.add(Calendar.HOUR_OF_DAY, 12);
             c.add(Calendar.MINUTE, 0);
 
@@ -64,20 +71,48 @@ public class NotificationFactory {
         return -1;
     }
 
-    public void planNotification(String notificationTitle, String notificationText, long notificationDate) {
-        Data.Builder data = new Data.Builder();
-        data.putString("title", notificationTitle);
-        data.putString("text", notificationText);
+    public void planNotification(String notificationTitle, String notificationText, String kenteken, long notificationDate) {
+        try {
+            int notificationUUID = (int) (Math.random() * 1000) + 1000;
+            Data.Builder data = new Data.Builder();
+            data.putString("title", notificationTitle);
+            data.putString("text", notificationText);
+            data.putInt("uuid", notificationUUID);
 
-        Log.d(TAG, "planNotification: " + notificationDate);
+            Log.d(TAG, "planNotification: " + notificationDate);
 
-        OneTimeWorkRequest compressionWork =
-                new OneTimeWorkRequest.Builder(CustomNotification.class)
-                        .setInitialDelay(notificationDate, TimeUnit.MILLISECONDS)
-                        .setInputData(data.build())
-                        .build();
+            LocalDateTime localDateTime = Instant.ofEpochMilli(System.currentTimeMillis() + notificationDate)
+                    .atZone(TimeZone.getTimeZone("Europe/Amsterdam")
+                            .toZoneId()
+                    ).toLocalDateTime();
 
-        WorkManager.getInstance().enqueue(compressionWork);
+            Log.d(TAG, "planNotification: " + localDateTime);
+
+            String notficationDateString = localDateTime.getDayOfMonth() + " ";
+            notficationDateString += (localDateTime.getMonth() + " ").toLowerCase();
+            notficationDateString += localDateTime.getYear();
+
+            // TODO add notification to file
+            JSONObject notificationObject = new JSONObject();
+            notificationObject.put("title", notificationTitle);
+            notificationObject.put("text", notificationText);
+            notificationObject.put("kenteken", kenteken);
+            notificationObject.put("notificationDate", notficationDateString);
+            notificationObject.put("notificationDateNoFormat", (localDateTime.getDayOfMonth() + "-" + localDateTime.getMonthValue() + "-" + localDateTime.getYear()));
+            notificationObject.put("UUID", notificationUUID);
+
+            new FileHandling(context).addNotificationToFile(notificationObject);
+
+            OneTimeWorkRequest compressionWork =
+                    new OneTimeWorkRequest.Builder(CustomNotification.class)
+                            .setInitialDelay(notificationDate, TimeUnit.MILLISECONDS)
+                            .setInputData(data.build())
+                            .build();
+
+            WorkManager.getInstance().enqueue(compressionWork);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void createNotificationChannel() {

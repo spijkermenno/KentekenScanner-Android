@@ -27,4 +27,5 @@
     <string name="channel_name">Kenteken Scanner</string>
     <string name="channel_description">Kenteken Scanner channel</string>
     <string name="notify">Stel alarm in</string>
+    <string name="notifcationActivated">Notificatie geactiveerd</string>
 </resources>

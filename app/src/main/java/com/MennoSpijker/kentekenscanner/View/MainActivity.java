@@ -1,6 +1,7 @@
 package com.MennoSpijker.kentekenscanner.View;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
@@ -17,6 +18,7 @@ import com.MennoSpijker.kentekenscanner.Factory.NotificationFactory;
 import com.MennoSpijker.kentekenscanner.FontManager;
 import com.MennoSpijker.kentekenscanner.OcrCaptureActivity;
 import com.MennoSpijker.kentekenscanner.R;
+import com.MennoSpijker.kentekenscanner.Util.FileHandling;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
@@ -92,7 +94,7 @@ public class MainActivity extends Activity {
 
         showAlertsButton.setOnClickListener(v -> {
             // TODO: create alerts
-            //Khandler.openSaved();
+            Khandler.openNotifications();
         });
     }
 
@@ -103,8 +105,12 @@ public class MainActivity extends Activity {
         // Must be run on main UI thread...
         getAds();
 
+        Context context = this;
+
         // Run the setup ASYNC for faster first render.
         new Thread(() -> {
+            new FileHandling(context).cleanUpNotificationList();
+
             final EditText kentekenTextField = findViewById(R.id.kenteken);
 
             kentekenTextField.addTextChangedListener(new TextWatcher() {

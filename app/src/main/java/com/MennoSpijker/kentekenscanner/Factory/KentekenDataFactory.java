@@ -11,6 +11,7 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.MennoSpijker.kentekenscanner.R;
 import com.MennoSpijker.kentekenscanner.Util.FileHandling;
@@ -174,7 +175,11 @@ public class KentekenDataFactory {
                 notificationFactory.planNotification(
                         "APK bijna verlopen!",
                         "Pas op! de APK van jouw voertuig met het kenteken " + KentekenHandler.formatLicenseplate(kenteken) + " vervalt over 30 dagen.",
+                        kenteken,
                         notificationFactory.calculateNotifcationTime(array.getJSONObject(0).getString("vervaldatum_apk")));
+
+                fillResultView();
+                Toast.makeText(context, R.string.notifcationActivated, Toast.LENGTH_SHORT).show();
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -225,7 +230,9 @@ public class KentekenDataFactory {
 
             linearLayoutHorizontal.addView(button);
             // TODO add notify button
-            linearLayoutHorizontal.addView(createNotificationButton());
+            if (!new FileHandling(context).doesNotificationExist(kenteken)) {
+                linearLayoutHorizontal.addView(createNotificationButton());
+            }
 
             linearLayout.addView(linearLayoutHorizontal);
 

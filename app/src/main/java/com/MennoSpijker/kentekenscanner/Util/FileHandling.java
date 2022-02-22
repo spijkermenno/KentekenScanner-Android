@@ -14,6 +14,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.Locale;
 
@@ -21,6 +22,7 @@ public class FileHandling {
     private static final String TAG = "PERMISSION";
     private final String storageDir;
     private static final String RecentKentekensFile = "recent.json";
+    private static final String NotificationsFile = "notifications.json";
     private static final String SavedKentekensFile = "favorites.json";
 
     public FileHandling(Context context) {
@@ -263,6 +265,51 @@ public class FileHandling {
         return mainObject;
     }
 
+    public JSONObject getPendingNotifications() {
+        ArrayList<JSONArray> notifications = new ArrayList<>();
+
+        String fileContent = readFile(NotificationsFile);
+
+        JSONObject mainObject = new JSONObject();
+        try {
+            mainObject = new JSONObject(fileContent);
+        } catch (JSONException e) {
+            System.out.println("error empty mainObject");
+        }
+
+        Log.d(TAG, "getPendingNotifications: " + mainObject);
+
+        //return notifications;
+        return mainObject;
+    }
+
+    public void saveNotificationsToFile(JSONArray notifications) {
+        JSONObject mainObject = new JSONObject();
+
+        File file = new File(storageDir + NotificationsFile);
+        if (file.exists()) {
+            try {
+                FileOutputStream fileOutputStream = new FileOutputStream(file);
+
+                String key = "notifications";
+
+                mainObject.put(key, notifications);
+
+                fileOutputStream.write(mainObject.toString().getBytes());
+            } catch (JSONException | IOException e) {
+                e.printStackTrace();
+            }
+        } else {
+            // generate file and re-call this method
+            try {
+                System.out.println(file.createNewFile());
+                saveNotificationsToFile(notifications);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
     public JSONObject getRecentKenteken() {
         ArrayList<JSONArray> kentekens = new ArrayList<>();
 
@@ -308,5 +355,89 @@ public class FileHandling {
             }
         }
 
+    }
+
+    public void addNotificationToFile(JSONObject notificationObject) {
+        try {
+            JSONObject notifications = getPendingNotifications();
+
+            if (notifications.length() > 0) {
+                JSONArray notificationsArray = notifications.getJSONArray("notifications");
+
+                if (!doesNotificationExist(notificationObject.getString("kenteken"))) {
+                    notificationsArray.put(notificationObject);
+                    this.saveNotificationsToFile(notificationsArray);
+                } else {
+                    Log.d(TAG, "addNotificationToFile: Notification with this kenteken already saved.");
+                }
+
+                Log.d(TAG, "addNotificationToFile: " + notifications);
+            } else {
+                this.saveNotificationsToFile(new JSONArray().put(notificationObject));
+            }
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public boolean doesNotificationExist(String kenteken) {
+        boolean doesExistInArray = false;
+        JSONObject notifications = getPendingNotifications();
+        Log.d(TAG, "doesNotificationExist: " + notifications);
+        Log.d(TAG, "doesNotificationExist: " + notifications.length());
+
+        if (notifications.length() == 0) {
+            return false;
+        }
+
+        try {
+            JSONArray notificationsArray = notifications.getJSONArray("notifications");
+
+            for (int i = 0; i < notificationsArray.length(); i++) {
+                if (notificationsArray.getJSONObject(i).getString("kenteken").equals(kenteken)) {
+                    doesExistInArray = true;
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+
+        return doesExistInArray;
+    }
+
+    public void cleanUpNotificationList() {
+        JSONObject pendingNotifications = getPendingNotifications();
+
+        if (pendingNotifications.length() == 0) {
+            return;
+        }
+
+        try {
+            JSONArray notificationsArray = pendingNotifications.getJSONArray("notifications");
+
+            boolean changedArray = false;
+
+            for (int i = 0; i < notificationsArray.length(); i++) {
+                String notificationDate = notificationsArray.getJSONObject(i).getString("notificationDateNoFormat");
+                Date date = new SimpleDateFormat("dd-MM-yy", Locale.GERMANY).parse(notificationDate);
+
+                if(date.before(new Date())) {
+                    Log.d(TAG, "cleanUpNotificationList: Date passed");
+                    notificationsArray.remove(i);
+                    changedArray = true;
+                } else {
+                    Log.d(TAG, "cleanUpNotificationList: Date not passed");
+                }
+
+                if (changedArray) {
+                    this.saveNotificationsToFile(notificationsArray);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return;
+        }
     }
 }

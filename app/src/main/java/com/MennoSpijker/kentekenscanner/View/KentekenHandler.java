@@ -1,5 +1,6 @@
 package com.MennoSpijker.kentekenscanner.View;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Typeface;
 import android.os.Bundle;
@@ -280,6 +281,81 @@ public class KentekenHandler {
 
             result.addView(lin);
 
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @SuppressLint("UseCompatLoadingForDrawables")
+    public void openNotifications() {
+        kentekenHolder.setText("");
+        kentekenHolder.clearFocus();
+
+        // Hide keyboard
+        InputMethodManager inputManager = (InputMethodManager) this.context.getSystemService(Context.INPUT_METHOD_SERVICE);
+        inputManager.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0);
+
+        result.removeAllViews();
+
+        final float scale = context.getResources().getDisplayMetrics().density;
+        int width = (int) (283 * scale + 0.5f);
+        int height = (int) (75 * scale + 0.5f);
+
+        try {
+            final JSONObject pendingNotifications = new FileHandling(context).getPendingNotifications();
+
+            LinearLayout linearLayout = new LinearLayout(context);
+            linearLayout.setOrientation(LinearLayout.VERTICAL);
+
+            Iterator<String> iterator = pendingNotifications.keys();
+            
+            while (iterator.hasNext()) {
+                String key = (String) iterator.next();
+                JSONArray values = pendingNotifications.getJSONArray(key);
+
+                for (int i = 0; i < values.length(); i++) {
+                    JSONObject notification = values.getJSONObject(i);
+                    String kenteken = notification.getString("kenteken");
+                    Log.d(TAG, "openNotifications: " + kenteken);
+
+                    TextView dateView = new TextView(context);
+                    dateView.setText(notification.getString("notificationDate"));
+                    dateView.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+
+                    linearLayout.addView(dateView);
+
+                    Button button = new Button(context);
+                    button.setText(formatLicenseplate(kenteken));
+
+                    button.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+
+                    button.setOnClickListener(v -> runCamera(kenteken, kentekenHolder));
+
+                    button.setBackground(context.getDrawable(R.drawable.kentekenplaat3));
+
+                    LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                            width,
+                            height
+                    );
+                    params.setMargins(0, 10, 0, 10);
+                    params.gravity = 17;
+                    button.setLayoutParams(params);
+
+                    button.setTextSize(TypedValue.COMPLEX_UNIT_SP, 32);
+                    button.setTypeface(Typeface.defaultFromStyle(Typeface.BOLD));
+
+                    int left = (int) (45 * scale + 0.5f);
+                    int right = (int) (10 * scale + 0.5f);
+                    int top = (int) (0 * scale + 0.5f);
+                    int bottom = (int) (0 * scale + 0.5f);
+
+                    button.setPadding(left, top, right, bottom);
+
+                    linearLayout.addView(button);
+                }
+            }
+
+            result.addView(linearLayout);
         } catch (Exception e) {
             e.printStackTrace();
         }

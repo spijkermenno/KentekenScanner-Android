@@ -14,6 +14,7 @@ import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 
 import com.MennoSpijker.kentekenscanner.R;
+import com.MennoSpijker.kentekenscanner.Util.FileHandling;
 import com.MennoSpijker.kentekenscanner.View.MainActivity;
 
 import java.time.LocalTime;
@@ -36,6 +37,7 @@ public class CustomNotification extends Worker {
     private void createNotification() {
         String title = getInputData().getString("title");
         String text = getInputData().getString("text");
+        int uuid = getInputData().getInt("uuid", 1);
 
         // Create an explicit intent for an Activity in your app
         Intent intent = new Intent(context, MainActivity.class);
@@ -54,6 +56,6 @@ public class CustomNotification extends Worker {
 
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
 
-        notificationManager.notify(LocalTime.now().getSecond(), builder.build());
+        notificationManager.notify(uuid, builder.build());
     }
 }
