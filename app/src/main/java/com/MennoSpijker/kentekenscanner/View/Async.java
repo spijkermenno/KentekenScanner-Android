@@ -3,6 +3,7 @@ package com.MennoSpijker.kentekenscanner.View;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
+import android.widget.ProgressBar;
 import android.widget.ScrollView;
 
 import com.MennoSpijker.kentekenscanner.APIHelper;
@@ -18,23 +19,23 @@ public class Async extends AsyncTask<String, String, String> {
 
     private String kenteken, uri;
     private ScrollView resultView;
-    private Context main;
+    private MainActivity mainActivity;
     private ConnectionDetector connection;
     public KentekenHandler Khandler;
     public KentekenDataFactory kentekenDataFactory;
     private String resp;
+    private ProgressBar progressBar;
 
-
-
-    public Async(Context m, String k, ScrollView r, String u, ConnectionDetector c, KentekenHandler kh, KentekenDataFactory kdf) {
+    public Async(MainActivity mainActivity, String k, ScrollView r, String u, ConnectionDetector c, KentekenHandler kh, KentekenDataFactory kdf, ProgressBar progressBar) {
         try {
-            main = m;
+            this.mainActivity = mainActivity;
             kenteken = k;
             resultView = r;
             uri = u;
             connection = c;
             Khandler = kh;
             kentekenDataFactory = kdf;
+            this.progressBar = progressBar;
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -43,6 +44,7 @@ public class Async extends AsyncTask<String, String, String> {
 
     @Override
     protected String doInBackground(String... params) {
+        progressBar.setProgress(60);
         try {
             if (!kenteken.isEmpty()) {
                 APIHelper response = new APIHelper(connection, uri);
@@ -57,9 +59,9 @@ public class Async extends AsyncTask<String, String, String> {
 
     @Override
     protected void onPostExecute(String result) {
-        kentekenDataFactory.addParams(main, resultView, kenteken, Khandler);
+        kentekenDataFactory.addParams(mainActivity, resultView, kenteken, Khandler);
         Log.d(TAG, "onPostExecute: " + result);
-        kentekenDataFactory.fillArray(result);
+        kentekenDataFactory.fillArray(result, progressBar);
     }
 
 

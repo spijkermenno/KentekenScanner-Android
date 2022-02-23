@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
@@ -43,7 +44,7 @@ public class KentekenHandler {
 
     private String previousSearchedKenteken = "";
 
-    public KentekenHandler(MainActivity c, ConnectionDetector co, Button b, ScrollView r, TextView kHold) {
+    public KentekenHandler(MainActivity c, ConnectionDetector co, ScrollView r, TextView kHold) {
         this.context = c;
         this.connection = co;
         this.result = r;
@@ -59,7 +60,14 @@ public class KentekenHandler {
         runCamera(kenteken, textview);
     }
 
+    @SuppressLint("UseCompatLoadingForDrawables")
     public void runCamera(String kenteken, TextView textview) {
+        ProgressBar progressBar = context.findViewById(R.id.progressBar);
+        progressBar.setProgress(10);
+        progressBar.setVisibility(View.VISIBLE);
+
+        Log.d(TAG, "runCamera: " + progressBar);
+        
         if (this.getPreviousSearchedKenteken().equals(kenteken)) {
             Log.d(TAG, "runCamera: Kenteken run twice, returning...");
             return;
@@ -69,6 +77,8 @@ public class KentekenHandler {
         context.firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SEARCH, bundle);
 
         this.setPreviousSearchedKenteken(kenteken);
+
+        progressBar.setProgress(15);
 
         try {
             kenteken = kenteken.replace("-", "");
@@ -81,12 +91,15 @@ public class KentekenHandler {
                 result.removeAllViews();
 
                 String uri = "https://kenteken-scanner.nl/api/kenteken/" + kenteken;
-                Async runner = new Async(this.context, kenteken, result, uri, connection, this, kentekenDataFactory);
+                Async runner = new Async(this.context, kenteken, result, uri, connection, this, kentekenDataFactory, progressBar);
                 runner.execute();
+            } else {
+                progressBar.setVisibility(View.GONE);
             }
         } catch (Exception e) {
             e.printStackTrace();
             e.getMessage();
+            progressBar.setVisibility(View.GONE);
         }
         InputMethodManager inputManager = (InputMethodManager) this.context.getSystemService(Context.INPUT_METHOD_SERVICE);
         inputManager.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0);
@@ -131,6 +144,7 @@ public class KentekenHandler {
         new FileHandling(context).writeToFile(SavedKentekensFile, temp);
     }
 
+    @SuppressLint("UseCompatLoadingForDrawables")
     public void openRecent() {
         kentekenHolder.setText("");
         kentekenHolder.clearFocus();
@@ -153,7 +167,7 @@ public class KentekenHandler {
             Iterator<String> iterator = recents.keys();
 
             while (iterator.hasNext()) {
-                String key = (String) iterator.next();
+                String key = iterator.next();
                 JSONArray values = recents.getJSONArray(key);
 
                 TextView dateView = new TextView(context);
@@ -207,6 +221,7 @@ public class KentekenHandler {
         }
     }
 
+    @SuppressLint("UseCompatLoadingForDrawables")
     public void openSaved() {
         kentekenHolder.setText("");
         kentekenHolder.clearFocus();
@@ -237,7 +252,7 @@ public class KentekenHandler {
             lin.addView(textView);
 
             while (iterator.hasNext()) {
-                String key = (String) iterator.next();
+                String key = iterator.next();
                 JSONArray values = recents.getJSONArray(key);
 
 
@@ -310,7 +325,7 @@ public class KentekenHandler {
             Iterator<String> iterator = pendingNotifications.keys();
             
             while (iterator.hasNext()) {
-                String key = (String) iterator.next();
+                String key = iterator.next();
                 JSONArray values = pendingNotifications.getJSONArray(key);
 
                 for (int i = 0; i < values.length(); i++) {

@@ -28,15 +28,7 @@ import com.google.android.gms.common.api.CommonStatusCodes;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.messaging.FirebaseMessaging;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-import java.util.TimeZone;
 
 public class MainActivity extends Activity {
     private static final String TAG = "MainActivity";
@@ -79,7 +71,7 @@ public class MainActivity extends Activity {
 
         Log.d(TAG, "onCreate: " + kentekenTextField);
 
-        Khandler = new KentekenHandler(MainActivity.this, connectionDetector, showFavoritesButton, resultScrollView, kentekenTextField);
+        Khandler = new KentekenHandler(MainActivity.this, connectionDetector, resultScrollView, kentekenTextField);
 
         buttons.forEach((button) -> {
             button.setTypeface(FontManager.getTypeface(this, FontManager.FONTAWESOME));

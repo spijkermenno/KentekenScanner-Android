@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
@@ -59,16 +60,18 @@ public class KentekenDataFactory {
         }
     }
 
-    public void fillArray(String kentekenDataFromAPI) {
-
+    public void fillArray(String kentekenDataFromAPI, ProgressBar progressBar) {
+        progressBar.setProgress(50);
         try {
             JSONObject APIResult = new JSONArray(kentekenDataFromAPI).getJSONObject(0);
             if (APIResult == null) {
                 showErrorMessage();
+                progressBar.setVisibility(View.GONE);
                 return;
             }
 
             if (kentekenDataFromAPI.length() > 3 && APIResult.length() > 0) {
+                progressBar.setProgress(77);
                 try {
                     JSONArray array1 = new JSONArray(kentekenDataFromAPI);
                     JSONObject object = array1.getJSONObject(0);
@@ -76,6 +79,8 @@ public class KentekenDataFactory {
                     Iterator<String> iterator = object.keys();
 
                     while (iterator.hasNext()) {
+                        progressBar.incrementProgressBy(1);
+
                         String key = (String) iterator.next();
                         String value = object.getString(key);
 
@@ -86,6 +91,7 @@ public class KentekenDataFactory {
                     e.printStackTrace();
                 }
                 fillResultView();
+                progressBar.setVisibility(View.GONE);
             } else {
 
                 if (array.getJSONObject(0).length() == 0) {
@@ -101,10 +107,13 @@ public class KentekenDataFactory {
 
                     resultView.removeAllViews();
                     resultView.addView(line);
+                    progressBar.setVisibility(View.GONE);
                 }
+                progressBar.setVisibility(View.GONE);
             }
         } catch (JSONException e) {
             e.printStackTrace();
+            progressBar.setVisibility(View.GONE);
         }
     }
 
