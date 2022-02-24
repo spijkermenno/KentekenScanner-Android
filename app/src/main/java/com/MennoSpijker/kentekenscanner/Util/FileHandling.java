@@ -59,7 +59,7 @@ public class FileHandling {
         } else {
             Log.d(TAG, "readFile: File doesn't exist, try to create");
             try {
-                Boolean var = file.createNewFile();
+                file.createNewFile();
                 writeToFile(filename, new JSONObject());
                 return readFile(filename);
             } catch (IOException e) {
@@ -91,7 +91,7 @@ public class FileHandling {
                     Iterator<String> iterator = otherKentekens.keys();
 
                     while (iterator.hasNext()) {
-                        String key = (String) iterator.next();
+                        String key = iterator.next();
                         JSONArray values = new JSONArray(otherKentekens.getString(key));
                         System.out.println("main object at begin:" + mainObject);
                         System.out.println(values);

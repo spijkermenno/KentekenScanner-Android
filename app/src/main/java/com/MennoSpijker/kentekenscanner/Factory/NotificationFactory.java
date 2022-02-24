@@ -78,6 +78,7 @@ public class NotificationFactory {
             data.putString("title", notificationTitle);
             data.putString("text", notificationText);
             data.putInt("uuid", notificationUUID);
+            data.putString("kenteken", kenteken);
 
             Log.d(TAG, "planNotification: " + notificationDate);
 

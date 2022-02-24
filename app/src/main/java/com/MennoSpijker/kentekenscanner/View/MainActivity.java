@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.os.PersistableBundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -12,6 +13,8 @@ import android.view.KeyEvent;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ScrollView;
+
+import androidx.annotation.Nullable;
 
 import com.MennoSpijker.kentekenscanner.ConnectionDetector;
 import com.MennoSpijker.kentekenscanner.Factory.NotificationFactory;
@@ -85,22 +88,26 @@ public class MainActivity extends Activity {
         showFavoritesButton.setOnClickListener(v -> Khandler.openSaved());
 
         showAlertsButton.setOnClickListener(v -> {
-            // TODO: create alerts
             Khandler.openNotifications();
         });
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // Must be run on main UI thread...
+        getAds();
     }
 
     @Override
     protected void onStart() {
         super.onStart();
 
-        // Must be run on main UI thread...
-        getAds();
-
         Context context = this;
 
         // Run the setup ASYNC for faster first render.
         new Thread(() -> {
+            // Notifications cleanup
             new FileHandling(context).cleanUpNotificationList();
 
             final EditText kentekenTextField = findViewById(R.id.kenteken);
@@ -186,6 +193,10 @@ public class MainActivity extends Activity {
 
                 return false;
             });
+
+            if (getIntent().getStringExtra("kenteken") != null) {
+                Khandler.runCamera(getIntent().getStringExtra("kenteken"), kentekenTextField);
+            }
 
         }).start();
     }

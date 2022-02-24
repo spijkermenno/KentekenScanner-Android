@@ -17,8 +17,8 @@ android {
         applicationId "com.y_gap.menno.kentekenscanner"
         minSdkVersion 26
         targetSdkVersion 30
-        versionCode 19
-        versionName "10701"
+        versionCode 20
+        versionName "10703"
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
         multiDexEnabled true
     }
@@ -26,7 +26,12 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            manifestPlaceholders = [analytics_deactivated: "false"]
+            resValue("bool", "FIREBASE_ANALYTICS_DEACTIVATED", "false")
+        }
+
+        debug {
+            debuggable true
+            resValue("bool", "FIREBASE_ANALYTICS_DEACTIVATED", "true")
         }
     }
 }
