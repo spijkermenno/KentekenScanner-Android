@@ -28,4 +28,5 @@
     <string name="channel_description">Kenteken Scanner channel</string>
     <string name="notify">Stel alarm in</string>
     <string name="notifcationActivated">Notificatie geactiveerd</string>
+    <string name="APK_ALERT">APK bijna verlopen!</string>
 </resources>

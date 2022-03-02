@@ -9,8 +9,8 @@ android {
         applicationId "com.y_gap.menno.kentekenscanner"
         minSdkVersion 26
         targetSdkVersion 30
-        versionCode 20
-        versionName "10703"
+        versionCode 21
+        versionName "10704"
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
         multiDexEnabled true
     }

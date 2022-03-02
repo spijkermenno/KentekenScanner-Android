@@ -1,9 +1,12 @@
 package com.MennoSpijker.kentekenscanner.Factory;
 
+import static com.MennoSpijker.kentekenscanner.View.KentekenHandler.formatLicenseplate;
+
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -17,6 +20,8 @@ import android.widget.Toast;
 import com.MennoSpijker.kentekenscanner.R;
 import com.MennoSpijker.kentekenscanner.Util.FileHandling;
 import com.MennoSpijker.kentekenscanner.View.KentekenHandler;
+import com.MennoSpijker.kentekenscanner.View.MainActivity;
+import com.google.firebase.analytics.FirebaseAnalytics;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -35,7 +40,7 @@ public class KentekenDataFactory {
     private KentekenHandler kentekenHandler;
     private String kenteken;
     private ScrollView resultView;
-    private Context context;
+    private MainActivity context;
     private NotificationFactory notificationFactory;
 
     public KentekenDataFactory() {
@@ -47,7 +52,7 @@ public class KentekenDataFactory {
         array.put(new JSONObject());
     }
 
-    public void addParams(Context context, ScrollView resultView, String kenteken, KentekenHandler Khandler) {
+    public void addParams(MainActivity context, ScrollView resultView, String kenteken, KentekenHandler Khandler) {
         if (this.context == null || !this.kenteken.equals(kenteken)) {
             this.context = context;
             this.resultView = resultView;
@@ -180,10 +185,16 @@ public class KentekenDataFactory {
 
         notify.setOnClickListener(v -> {
             try {
+                String notificationText = "Pas op! De APK van jouw voertuig met het kenteken " + formatLicenseplate(kenteken) + " vervalt over 30 dagen. (Heb je de APK al verlengd? Dan kun je dit bericht negeren!)";
+
+                Bundle bundle = new Bundle();
+                bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, formatLicenseplate(kenteken));
+                context.firebaseAnalytics.logEvent("notification_created", bundle);
+
                 Log.d(TAG, "createNotificationButton: " + array.getJSONObject(0));
                 notificationFactory.planNotification(
-                        "APK bijna verlopen!",
-                        "Pas op! de APK van jouw voertuig met het kenteken " + KentekenHandler.formatLicenseplate(kenteken) + " vervalt over 30 dagen.",
+                        context.getString(R.string.APK_ALERT),
+                        notificationText,
                         kenteken,
                         notificationFactory.calculateNotifcationTime(array.getJSONObject(0).getString("vervaldatum_apk")));
 
@@ -260,7 +271,7 @@ public class KentekenDataFactory {
                     View line3 = new View(context);
 
                     if (key.equals("kenteken")) {
-                        value = KentekenHandler.formatLicenseplate(value);
+                        value = formatLicenseplate(value);
                     }
 
                     if (key.equals("vervaldatum_apk")) {
