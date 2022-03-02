@@ -4,14 +4,6 @@ apply plugin: 'com.google.firebase.firebase-perf'
 apply plugin: 'com.google.firebase.crashlytics'
 
 android {
-    lintOptions {
-        baseline file("lint-baseline.xml")
-        checkDependencies true
-        ignoreTestSources true
-        warningsAsErrors true
-        warning 'LintBaseline'
-        lintConfig file("lint.xml")
-    }
     compileSdkVersion 30
     defaultConfig {
         applicationId "com.y_gap.menno.kentekenscanner"
@@ -33,6 +25,14 @@ android {
             debuggable true
             resValue("bool", "FIREBASE_ANALYTICS_DEACTIVATED", "true")
         }
+    }
+    lint {
+        baseline file('lint-baseline.xml')
+        checkDependencies true
+        ignoreTestSources true
+        lintConfig file('lint.xml')
+        warning 'LintBaseline'
+        warningsAsErrors true
     }
 }
 
