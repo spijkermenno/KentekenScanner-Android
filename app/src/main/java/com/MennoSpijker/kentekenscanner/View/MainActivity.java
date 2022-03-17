@@ -5,16 +5,15 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
-import android.os.PersistableBundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.RelativeLayout;
 import android.widget.ScrollView;
-
-import androidx.annotation.Nullable;
 
 import com.MennoSpijker.kentekenscanner.ConnectionDetector;
 import com.MennoSpijker.kentekenscanner.Factory.NotificationFactory;
@@ -24,14 +23,17 @@ import com.MennoSpijker.kentekenscanner.R;
 import com.MennoSpijker.kentekenscanner.Util.FileHandling;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.LoadAdError;
 import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.common.api.CommonStatusCodes;
+import com.google.api.Advice;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.messaging.FirebaseMessaging;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 public class MainActivity extends Activity {
     private static final String TAG = "MainActivity";
@@ -54,7 +56,7 @@ public class MainActivity extends Activity {
         FontManager.markAsIconContainer(findViewById(R.id.icons_container), iconFont);
 
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_scan);
+        setContentView(R.layout.activity_main);
 
         final EditText kentekenTextField = findViewById(R.id.kenteken);
         Log.d(TAG, "onCreate: " + kentekenTextField);
@@ -90,13 +92,15 @@ public class MainActivity extends Activity {
         showAlertsButton.setOnClickListener(v -> {
             Khandler.openNotifications();
         });
+
+        getAds();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         // Must be run on main UI thread...
-        getAds();
+
     }
 
     @Override
@@ -202,14 +206,27 @@ public class MainActivity extends Activity {
     }
 
     protected void getAds() {
+        Log.d(TAG, "getAds: INIT");
         MobileAds.initialize(this, initializationStatus -> {
         });
 
         try {
+            RelativeLayout adLayout = this.findViewById(R.id.adView);
             AdView advertisementView = new AdView(this);
 
-            advertisementView.setAdUnitId("ca-app-pub-4928043878967484/5146910390");
-            advertisementView = this.findViewById(R.id.ad1);
+            Random rd = new Random();
+            if (rd.nextBoolean()) {
+                advertisementView.setAdUnitId("ca-app-pub-4928043878967484/2205259265");
+                advertisementView.setAdSize(AdSize.LARGE_BANNER);
+                firebaseAnalytics.setUserProperty("banner_size", "LARGE_BANNER");
+            } else {
+                advertisementView.setAdUnitId("ca-app-pub-4928043878967484/5146910390");
+                advertisementView.setAdSize(AdSize.BANNER);
+                firebaseAnalytics.setUserProperty("banner_size", "SMALL_BANNER");
+            }
+
+            adLayout.addView(advertisementView);
+
 
             advertisementView.setAdListener(new AdListener() {
                 @Override
@@ -248,6 +265,7 @@ public class MainActivity extends Activity {
             advertisementView.loadAd(adRequest);
 
         } catch (Exception e) {
+            Log.d(TAG, "getAds: ERROR");
             e.printStackTrace();
         }
     }
