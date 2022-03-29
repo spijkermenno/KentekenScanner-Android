@@ -22,6 +22,7 @@ import com.MennoSpijker.kentekenscanner.Util.FileHandling;
 import com.MennoSpijker.kentekenscanner.View.KentekenHandler;
 import com.MennoSpijker.kentekenscanner.View.MainActivity;
 import com.google.firebase.analytics.FirebaseAnalytics;
+import com.google.firebase.crashlytics.FirebaseCrashlytics;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -66,6 +67,10 @@ public class KentekenDataFactory {
     }
 
     public void fillArray(String kentekenDataFromAPI, ProgressBar progressBar) {
+        FirebaseCrashlytics crashlytics = FirebaseCrashlytics.getInstance();
+        crashlytics.setCustomKey("API_RESPONSE", kentekenDataFromAPI);
+        crashlytics.setCustomKey("KENTEKEN", this.kenteken);
+
         progressBar.setProgress(50);
         try {
             JSONObject APIResult = new JSONArray(kentekenDataFromAPI).getJSONObject(0);
@@ -96,7 +101,6 @@ public class KentekenDataFactory {
                     e.printStackTrace();
                 }
                 fillResultView();
-                progressBar.setVisibility(View.GONE);
             } else {
 
                 if (array.getJSONObject(0).length() == 0) {
@@ -114,8 +118,8 @@ public class KentekenDataFactory {
                     resultView.addView(line);
                     progressBar.setVisibility(View.GONE);
                 }
-                progressBar.setVisibility(View.GONE);
             }
+            progressBar.setVisibility(View.GONE);
         } catch (JSONException e) {
             e.printStackTrace();
             progressBar.setVisibility(View.GONE);
