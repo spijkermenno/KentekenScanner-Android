@@ -1,6 +1,5 @@
 package com.MennoSpijker.kentekenscanner.View;
 
-import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.ProgressBar;
@@ -8,7 +7,7 @@ import android.widget.ScrollView;
 
 import com.MennoSpijker.kentekenscanner.APIHelper;
 import com.MennoSpijker.kentekenscanner.ConnectionDetector;
-import com.MennoSpijker.kentekenscanner.Factory.KentekenDataFactory;
+import com.MennoSpijker.kentekenscanner.Factory.LicencePlateDataFactory;
 
 /**
  * Created by Menno on 08/12/2017.
@@ -22,11 +21,11 @@ public class Async extends AsyncTask<String, String, String> {
     private MainActivity mainActivity;
     private ConnectionDetector connection;
     public KentekenHandler Khandler;
-    public KentekenDataFactory kentekenDataFactory;
+    public LicencePlateDataFactory licencePlateDataFactory;
     private String resp;
     private ProgressBar progressBar;
 
-    public Async(MainActivity mainActivity, String k, ScrollView r, String u, ConnectionDetector c, KentekenHandler kh, KentekenDataFactory kdf, ProgressBar progressBar) {
+    public Async(MainActivity mainActivity, String k, ScrollView r, String u, ConnectionDetector c, KentekenHandler kh, LicencePlateDataFactory kdf, ProgressBar progressBar) {
         try {
             this.mainActivity = mainActivity;
             kenteken = k;
@@ -34,7 +33,7 @@ public class Async extends AsyncTask<String, String, String> {
             uri = u;
             connection = c;
             Khandler = kh;
-            kentekenDataFactory = kdf;
+            licencePlateDataFactory = kdf;
             this.progressBar = progressBar;
 
         } catch (Exception e) {
@@ -59,9 +58,9 @@ public class Async extends AsyncTask<String, String, String> {
 
     @Override
     protected void onPostExecute(String result) {
-        kentekenDataFactory.addParams(mainActivity, resultView, kenteken, Khandler);
+        licencePlateDataFactory.addParams(mainActivity, resultView, kenteken, Khandler);
         Log.d(TAG, "onPostExecute: " + result);
-        kentekenDataFactory.fillArray(result, progressBar);
+        licencePlateDataFactory.fillArray(result, progressBar);
     }
 
 

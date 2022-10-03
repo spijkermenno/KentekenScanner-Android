@@ -59,7 +59,7 @@ class OcrDetectorProcessor implements Detector.Processor<TextBlock> {
         for (int i = 0; i < items.size(); ++i) {
             final TextBlock item = items.valueAt(i);
             if (item != null && item.getValue() != null) {
-                if (KentekenHandler.kentekenValid(item.getValue())) {
+                if (KentekenHandler.isLicensePlateValid(item.getValue())) {
 
                     if (DIRECTSEARCH) {
                         Intent data = new Intent();

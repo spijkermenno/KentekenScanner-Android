@@ -1,9 +1,8 @@
 package com.MennoSpijker.kentekenscanner.Factory;
 
-import static com.MennoSpijker.kentekenscanner.View.KentekenHandler.formatLicenseplate;
+import static com.MennoSpijker.kentekenscanner.View.KentekenHandler.formatLicensePlate;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
@@ -12,7 +11,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
-import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -34,7 +32,7 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.Locale;
 
-public class KentekenDataFactory {
+public class LicencePlateDataFactory {
 
     private static final String TAG = "KentekenDataFactory";
     private JSONArray array = new JSONArray();
@@ -44,7 +42,7 @@ public class KentekenDataFactory {
     private MainActivity context;
     private NotificationFactory notificationFactory;
 
-    public KentekenDataFactory() {
+    public LicencePlateDataFactory() {
         array.put(new JSONObject());
     }
 
@@ -189,10 +187,10 @@ public class KentekenDataFactory {
 
         notify.setOnClickListener(v -> {
             try {
-                String notificationText = "Pas op! De APK van jouw voertuig met het kenteken " + formatLicenseplate(kenteken) + " vervalt over 30 dagen. (Heb je de APK al verlengd? Dan kun je dit bericht negeren!)";
+                String notificationText = "Pas op! De APK van jouw voertuig met het kenteken " + formatLicensePlate(kenteken) + " vervalt over 30 dagen. (Heb je de APK al verlengd? Dan kun je dit bericht negeren!)";
 
                 Bundle bundle = new Bundle();
-                bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, formatLicenseplate(kenteken));
+                bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, formatLicensePlate(kenteken));
                 context.firebaseAnalytics.logEvent("notification_created", bundle);
 
                 Log.d(TAG, "createNotificationButton: " + array.getJSONObject(0));
@@ -275,7 +273,11 @@ public class KentekenDataFactory {
                     View line3 = new View(context);
 
                     if (key.equals("kenteken")) {
-                        value = formatLicenseplate(value);
+                        value = formatLicensePlate(value);
+                    }
+
+                    if (key.equals("imageURL")) {
+                        continue;
                     }
 
                     if (key.equals("vervaldatum_apk")) {

@@ -9,14 +9,12 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.KeyEvent;
-import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 
 import com.MennoSpijker.kentekenscanner.ConnectionDetector;
-import com.MennoSpijker.kentekenscanner.Factory.NotificationFactory;
 import com.MennoSpijker.kentekenscanner.FontManager;
 import com.MennoSpijker.kentekenscanner.OcrCaptureActivity;
 import com.MennoSpijker.kentekenscanner.R;
@@ -28,7 +26,6 @@ import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.LoadAdError;
 import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.common.api.CommonStatusCodes;
-import com.google.api.Advice;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.messaging.FirebaseMessaging;
 
@@ -46,7 +43,6 @@ public class MainActivity extends Activity {
     public ArrayList<Button> buttons = new ArrayList<>();
     public ScrollView resultScrollView;
     public KentekenHandler Khandler;
-    private NotificationFactory notificationFactory;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,7 +55,28 @@ public class MainActivity extends Activity {
         setContentView(R.layout.activity_main);
 
         final EditText kentekenTextField = findViewById(R.id.kenteken);
-        Log.d(TAG, "onCreate: " + kentekenTextField);
+
+        kentekenTextField.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (kentekenTextField.getText().length() == 6) {
+                    String formatedLicenceplate = KentekenHandler.formatLicensePlate(kentekenTextField.getText().toString());
+                    if (!kentekenTextField.getText().toString().equals(formatedLicenceplate)) {
+                        kentekenTextField.setText(formatedLicenceplate);
+                    }
+                }
+            }
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                // TODO Auto-generated method stub
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                // TODO Auto-generated method stub
+            }
+        });
 
         showHistoryButton = findViewById(R.id.showHistory);
         openCameraButton = findViewById(R.id.camera);
@@ -74,7 +91,19 @@ public class MainActivity extends Activity {
         resultScrollView = findViewById(R.id.scroll);
         ConnectionDetector connectionDetector = new ConnectionDetector(this);
 
-        Log.d(TAG, "onCreate: " + kentekenTextField);
+        getAds();
+
+        FirebaseMessaging.getInstance().getToken()
+                .addOnCompleteListener(task -> {
+                    if (!task.isSuccessful()) {
+                        Log.w(TAG, "Fetching FCM registration token failed", task.getException());
+                        return;
+                    }
+
+                    // Get new FCM registration token
+                    String token = task.getResult();
+                    Log.d(TAG, "onCreate: TOKEN: " + token);
+                });
 
         Khandler = new KentekenHandler(MainActivity.this, connectionDetector, resultScrollView, kentekenTextField);
 
@@ -89,9 +118,7 @@ public class MainActivity extends Activity {
 
         showFavoritesButton.setOnClickListener(v -> Khandler.openSaved());
 
-        showAlertsButton.setOnClickListener(v -> {
-            Khandler.openNotifications();
-        });
+        showAlertsButton.setOnClickListener(v -> Khandler.openNotifications());
 
         getAds();
     }
@@ -128,12 +155,12 @@ public class MainActivity extends Activity {
 
                     // check if kenteken is 6 characters long
                     if (kenteken.length() == 6) {
-                        String formatedKenteken = KentekenHandler.formatLicenseplate(kenteken);
+                        String formatedKenteken = KentekenHandler.formatLicensePlate(kenteken);
                         if (!kenteken.equals(formatedKenteken)) {
                             // Set formatted text in kentekenField
                             kentekenTextField.setText(formatedKenteken);
                             // check if kenteken is valid
-                            if (KentekenHandler.kentekenValid(kentekenTextField.getText().toString())) {
+                            if (KentekenHandler.isLicensePlateValid(kentekenTextField.getText().toString())) {
                                 // run API call
                                 Khandler.run(kentekenTextField);
                             }
@@ -189,8 +216,9 @@ public class MainActivity extends Activity {
                     }
                 }
 
-                if (KentekenHandler.getSidecodeLicenseplate(kentekenTextField.getText().toString().toUpperCase()) != -1 && KentekenHandler.getSidecodeLicenseplate(kentekenTextField.getText().toString().toUpperCase()) != -2) {
-                    Log.d(TAG, "onKey: BINGO");
+                int sideCode = KentekenHandler.getSideCodeOfLicensePlate(kentekenTextField.getText().toString().toUpperCase());
+
+                if (sideCode != -1 && sideCode != -2) {
                     Khandler.run(kentekenTextField);
                     return true;
                 }
@@ -206,7 +234,6 @@ public class MainActivity extends Activity {
     }
 
     protected void getAds() {
-        Log.d(TAG, "getAds: INIT");
         MobileAds.initialize(this, initializationStatus -> {
         });
 
