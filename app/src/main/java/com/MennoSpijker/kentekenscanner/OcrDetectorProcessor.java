@@ -27,7 +27,7 @@ import android.util.SparseArray;
 import android.view.View;
 
 import com.MennoSpijker.kentekenscanner.Camera.GraphicOverlay;
-import com.MennoSpijker.kentekenscanner.View.KentekenHandler;
+import com.MennoSpijker.kentekenscanner.view.KentekenHandler;
 import com.google.android.gms.common.api.CommonStatusCodes;
 import com.google.android.gms.vision.Detector;
 import com.google.android.gms.vision.text.TextBlock;

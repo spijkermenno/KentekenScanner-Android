@@ -1,4 +1,4 @@
-package com.MennoSpijker.kentekenscanner.View
+package com.MennoSpijker.kentekenscanner.view
 
 import com.MennoSpijker.kentekenscanner.ConnectionDetector
 import com.MennoSpijker.kentekenscanner.Factory.LicencePlateDataFactory
@@ -25,70 +25,8 @@ import kotlin.collections.ArrayList
 
 class KentekenHandler(
     private val context: MainActivity,
-    private val connection: ConnectionDetector,
-    private val result: ScrollView,
     private val licensePlateHolder: TextView
 ) {
-    private val licensePlateDataFactory = LicencePlateDataFactory()
-    private val bundle: Bundle = Bundle()
-
-    private var previousSearchedLicensePlate = ""
-
-    fun run(textview: TextView) {
-        val licensePlate = textview.text.toString().uppercase(Locale.getDefault())
-        runCamera(licensePlate, textview)
-    }
-
-    @SuppressLint("UseCompatLoadingForDrawables")
-    fun runCamera(licensePlate: String, textview: TextView) {
-        var newLicensePlate = licensePlate
-        val progressBar = context.findViewById<ProgressBar>(R.id.progressBar)
-
-        progressBar.visibility = View.VISIBLE
-
-        if (previousSearchedLicensePlate == newLicensePlate) {
-            return
-        }
-        previousSearchedLicensePlate = newLicensePlate
-
-        bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, formatLicensePlate(newLicensePlate))
-        context.firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SEARCH, bundle)
-
-        try {
-            newLicensePlate = newLicensePlate.replace("-", "")
-            newLicensePlate = newLicensePlate.replace(" ", "")
-            newLicensePlate = newLicensePlate.replace("\n", "")
-
-            if (newLicensePlate.isNotEmpty()) {
-                licensePlateDataFactory.emptyArray()
-                textview.text = formatLicensePlate(newLicensePlate)
-                result.removeAllViews()
-                val uri = "https://kenteken-scanner.nl/api/kenteken/$newLicensePlate"
-                val runner = Async(
-                    context,
-                    newLicensePlate,
-                    result,
-                    uri,
-                    connection,
-                    this,
-                    licensePlateDataFactory,
-                    progressBar
-                )
-                runner.execute()
-            } else {
-                progressBar.visibility = View.GONE
-            }
-        } catch (e: Exception) {
-            e.printStackTrace()
-            e.message
-            progressBar.visibility = View.GONE
-        }
-        val inputManager =
-            context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-        inputManager.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0)
-        previousSearchedLicensePlate = ""
-    }
-
     fun saveRecentKenteken(kenteken: String?) {
         val otherKentekens = FileHandling(context).recentKenteken
         val wantedFormat = SimpleDateFormat("dd/MM/yyyy", Locale.ENGLISH)

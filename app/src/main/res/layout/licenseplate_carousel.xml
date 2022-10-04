@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    android:clickable="true">
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/licensePlateCardView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginLeft="@dimen/default_spacing_0_5x"
+        android:layout_marginTop="@dimen/default_spacing_0_5x"
+        android:layout_marginRight="@dimen/default_spacing_0_5x"
+        android:layout_marginBottom="@dimen/default_spacing_0_5x"
+        android:foreground="?attr/selectableItemBackground"
+        app:cardCornerRadius="@dimen/default_spacing_0_25x"
+        app:cardElevation="@dimen/default_spacing_0_25x"
+        tools:ignore="KeyboardInaccessibleWidget">
+
+        <LinearLayout
+            android:id="@+id/linear_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/white"
+            android:orientation="vertical"
+            android:paddingBottom="@dimen/default_spacing_1_0x">
+
+            <LinearLayout
+                android:id="@+id/image_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <ImageView
+                    android:id="@+id/image_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:foregroundGravity="center"
+                    android:scaleType="centerCrop"
+                    android:minHeight="@dimen/default_spacing_4_0x"
+                    app:srcCompat="@drawable/placeholder_background"
+                    tools:ignore="ContentDescription"
+                    android:background="@color/background_image_color"/>
+
+            </LinearLayout>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/licenseplate_details_recyclerview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/default_spacing_0_5x"
+                android:clipToPadding="false"
+                android:nestedScrollingEnabled="false"
+                android:orientation="horizontal"
+                android:paddingLeft="@dimen/default_spacing_2_0x"
+                android:paddingRight="@dimen/default_spacing_2_0x"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:itemCount="3"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                tools:listitem="@layout/license_plate_details"/>
+
+            <ru.tinkoff.scrollingpagerindicator.ScrollingPagerIndicator
+                android:id="@+id/indicator"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"/>
+
+        </LinearLayout>
+
+    </androidx.cardview.widget.CardView>
+
+</RelativeLayout>

@@ -1,6 +1,6 @@
 package com.MennoSpijker.kentekenscanner.Factory;
 
-import static com.MennoSpijker.kentekenscanner.View.KentekenHandler.formatLicensePlate;
+import static com.MennoSpijker.kentekenscanner.view.KentekenHandler.formatLicensePlate;
 
 import android.annotation.SuppressLint;
 import android.graphics.Color;
@@ -17,8 +17,8 @@ import android.widget.Toast;
 
 import com.MennoSpijker.kentekenscanner.R;
 import com.MennoSpijker.kentekenscanner.Util.FileHandling;
-import com.MennoSpijker.kentekenscanner.View.KentekenHandler;
-import com.MennoSpijker.kentekenscanner.View.MainActivity;
+import com.MennoSpijker.kentekenscanner.view.KentekenHandler;
+import com.MennoSpijker.kentekenscanner.view.MainActivity;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.crashlytics.FirebaseCrashlytics;
 

@@ -1,4 +1,4 @@
-package com.MennoSpijker.kentekenscanner.View;
+package com.MennoSpijker.kentekenscanner.view;
 
 import android.os.AsyncTask;
 import android.util.Log;
