@@ -29,4 +29,8 @@
     <string name="notify">Stel alarm in</string>
     <string name="notifcationActivated">Notificatie geactiveerd</string>
     <string name="APK_ALERT">APK bijna verlopen!</string>
+    <string name="apk_alarm">APK Alarm! Uw APK verloopt in minder dan 30 dagen.</string>
+    <string name="apk_alarm_short">APK verloopt in 30 dagen.</string>
+    <string name="apk_waarschuwing">APK Waarschuwing! Uw APK verloopt in minder dan 60 dagen.</string>
+    <string name="apk_waarschuwing_short">APK verloopt in 60 dagen.</string>
 </resources>

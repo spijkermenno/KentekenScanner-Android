@@ -4,8 +4,8 @@ import com.google.gson.annotations.SerializedName
 
 data class LicensePlateDetails (
     @SerializedName("key")
-    var key: String? = null,
+    var key: String = "",
 
     @SerializedName("content")
-    var content: String? = null
+    var content: String = ""
 )

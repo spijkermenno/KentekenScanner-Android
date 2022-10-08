@@ -1,10 +1,11 @@
-package com.MennoSpijker.kentekenscanner.view
+package com.MennoSpijker.kentekenscanner.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.MennoSpijker.kentekenscanner.databinding.LicensePlateDetailsBinding
 import com.MennoSpijker.kentekenscanner.models.LicensePlateDetails
+import com.MennoSpijker.kentekenscanner.viewholder.LicensePlateDetailsViewHolder
 
 class LicensePlateDetailsAdapter : RecyclerView.Adapter<LicensePlateDetailsViewHolder>() {
 

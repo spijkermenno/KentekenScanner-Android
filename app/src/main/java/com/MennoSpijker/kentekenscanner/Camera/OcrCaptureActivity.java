@@ -1,4 +1,4 @@
-/*
+package com.MennoSpijker.kentekenscanner.Camera;/*
  * Copyright (C) The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.MennoSpijker.kentekenscanner;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
@@ -31,6 +30,8 @@ import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Vibrator;
 import androidx.annotation.NonNull;
+
+import com.MennoSpijker.kentekenscanner.R;
 import com.google.android.material.snackbar.Snackbar;
 import androidx.core.app.ActivityCompat;
 import androidx.appcompat.app.AppCompatActivity;
@@ -114,7 +115,7 @@ public final class OcrCaptureActivity extends AppCompatActivity {
         scaleGestureDetector = new ScaleGestureDetector(this, new ScaleListener());
 
         Snackbar.make(mGraphicOverlay, "Druk op een kenteken om hem te gebruiken. je kunt trouwens ook zoomen!",
-                Snackbar.LENGTH_LONG)
+                        Snackbar.LENGTH_LONG)
                 .show();
     }
 
@@ -135,16 +136,11 @@ public final class OcrCaptureActivity extends AppCompatActivity {
 
         final Activity thisActivity = this;
 
-        View.OnClickListener listener = new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                ActivityCompat.requestPermissions(thisActivity, permissions,
-                        RC_HANDLE_CAMERA_PERM);
-            }
-        };
+        View.OnClickListener listener = view -> ActivityCompat.requestPermissions(thisActivity, permissions,
+                RC_HANDLE_CAMERA_PERM);
 
         Snackbar.make(mGraphicOverlay, R.string.permission_camera_rationale,
-                Snackbar.LENGTH_INDEFINITE)
+                        Snackbar.LENGTH_INDEFINITE)
                 .setAction(R.string.ok, listener)
                 .show();
     }

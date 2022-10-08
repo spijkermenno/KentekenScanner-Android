@@ -82,6 +82,8 @@ android {
 
             buildConfigField "Boolean", "FIREBASE_ANALYTICS_DEACTIVATED", "true"
             buildConfigField "String", "ENDPOINT_API", "\"https://kenteken-scanner.nl/api/v2/\""
+
+//            buildConfigField "String", "ENDPOINT_API", "\"http://192.168.68.117/api/v2/\""
         }
     }
     lint {
@@ -170,4 +172,8 @@ dependencies {
     kapt 'com.github.bumptech.glide:compiler:4.12.0'
 
     annotationProcessor 'com.github.bumptech.glide:compiler:4.7.1'
+
+    implementation 'com.github.smarteist:autoimageslider:1.4.0'
+    implementation 'com.google.android.material:material:1.2.0'
+
 }

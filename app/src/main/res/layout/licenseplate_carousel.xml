@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_gravity="center"
-    android:clickable="true">
+    android:clickable="false">
 
     <androidx.cardview.widget.CardView
         android:id="@+id/licensePlateCardView"
@@ -29,23 +29,71 @@
             android:orientation="vertical"
             android:paddingBottom="@dimen/default_spacing_1_0x">
 
-            <LinearLayout
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/image_container"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
-                <ImageView
-                    android:id="@+id/image_view"
+                <androidx.viewpager.widget.ViewPager
+                    android:id="@+id/imagePager"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:foregroundGravity="center"
-                    android:scaleType="centerCrop"
-                    android:minHeight="@dimen/default_spacing_4_0x"
-                    app:srcCompat="@drawable/placeholder_background"
-                    tools:ignore="ContentDescription"
-                    android:background="@color/background_image_color"/>
+                    android:layout_height="wrap_content"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:background="@drawable/placeholder"
+                    tools:layout_height="150dp" />
 
-            </LinearLayout>
+                <LinearLayout
+                    android:id="@+id/apk_warning"
+                    android:layout_width="@dimen/default_spacing_1_5x"
+                    android:layout_height="@dimen/default_spacing_1_5x"
+                    android:layout_margin="@dimen/default_spacing_0_25x"
+                    android:background="@drawable/circle"
+                    android:backgroundTint="@color/warning_yellow"
+                    android:padding="@dimen/default_spacing_0_25x"
+                    app:layout_constraintBottom_toBottomOf="@id/image_container"
+                    app:layout_constraintRight_toRightOf="@id/image_container">
+
+                    <com.google.android.material.floatingactionbutton.FloatingActionButton
+                        android:id="@+id/apk_warning_fab"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:backgroundTint="@color/transparent"
+                        android:contentDescription="@string/apk_waarschuwing"
+                        android:foreground="@drawable/wrench"
+                        android:tooltipText="@string/apk_waarschuwing_short"
+                        app:borderWidth="0dp"
+                        app:elevation="0dp" />
+                </LinearLayout>
+                <LinearLayout
+                    android:id="@+id/apk_alert"
+                    android:layout_width="@dimen/default_spacing_1_5x"
+                    android:layout_height="@dimen/default_spacing_1_5x"
+                    android:layout_margin="@dimen/default_spacing_0_25x"
+                    android:background="@drawable/circle"
+                    android:backgroundTint="@color/emergency_red"
+                    android:padding="@dimen/default_spacing_0_25x"
+                    app:layout_constraintBottom_toBottomOf="@id/image_container"
+                    app:layout_constraintRight_toRightOf="@id/image_container">
+
+                    <com.google.android.material.floatingactionbutton.FloatingActionButton
+                        android:id="@+id/apk_alert_fab"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:backgroundTint="@color/transparent"
+                        android:contentDescription="@string/apk_alarm"
+                        android:foreground="@drawable/wrench"
+                        android:tooltipText="@string/apk_alarm_short"
+                        app:borderWidth="0dp"
+                        app:elevation="0dp" />
+                </LinearLayout>
+
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/licenseplate_details_recyclerview"
@@ -57,17 +105,17 @@
                 android:orientation="horizontal"
                 android:paddingLeft="@dimen/default_spacing_2_0x"
                 android:paddingRight="@dimen/default_spacing_2_0x"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 tools:itemCount="3"
-                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                tools:listitem="@layout/license_plate_details"/>
+                tools:listitem="@layout/license_plate_details" />
 
             <ru.tinkoff.scrollingpagerindicator.ScrollingPagerIndicator
                 android:id="@+id/indicator"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"/>
+                android:layout_gravity="center" />
 
         </LinearLayout>
 

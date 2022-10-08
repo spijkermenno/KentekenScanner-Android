@@ -1,11 +1,8 @@
-package com.MennoSpijker.kentekenscanner.view
+package com.MennoSpijker.kentekenscanner.repositories
 
-import android.util.Log
 import com.MennoSpijker.kentekenscanner.BuildConfig
-import com.MennoSpijker.kentekenscanner.repositories.LicensePlateEndpoint
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import kotlin.math.log
 
 object RestService {
     private var licensePlateEndpoint: LicensePlateEndpoint? = null

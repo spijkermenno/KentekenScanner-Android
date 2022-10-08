@@ -19,6 +19,7 @@
         android:requestLegacyExternalStorage="true"
         android:roundIcon="@drawable/logo_180"
         android:supportsRtl="true"
+        android:usesCleartextTraffic="true"
         android:theme="@style/AppTheme">
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
@@ -33,7 +34,7 @@
             android:resource="@color/colorKentekenYellow" />
 
         <activity
-            android:name=".view.MainActivity"
+            android:name=".activity.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -41,7 +42,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".OcrCaptureActivity"
+            android:name=".Camera.OcrCaptureActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

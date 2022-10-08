@@ -1,24 +1,21 @@
-package com.MennoSpijker.kentekenscanner.view
+package com.MennoSpijker.kentekenscanner.viewholder
 
-import android.content.Context
 import android.util.Log
+import android.view.View
 import android.widget.LinearLayout
-import android.widget.RelativeLayout
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.PagerSnapHelper
-import androidx.recyclerview.widget.RecyclerView
 import com.MennoSpijker.kentekenscanner.R
+import com.MennoSpijker.kentekenscanner.adapter.ImagePagerAdapter
+import com.MennoSpijker.kentekenscanner.adapter.LicensePlateDetailsAdapter
 import com.MennoSpijker.kentekenscanner.databinding.LicenseplateCarouselBinding
 import com.MennoSpijker.kentekenscanner.responses.LicensePlateResponse
-import com.bumptech.glide.Glide
 
 class LicensePlateCarouselViewHolder(private val binding: LicenseplateCarouselBinding) :
-    RecyclerView.ViewHolder(binding.root) {
-    val context: Context = itemView.context
+    CustomViewHolder(binding.root) {
 
     fun bind(licensePlateResponse: LicensePlateResponse) {
-        Log.d("TAG", "bind: ${licensePlateResponse.image}")
-
         this.binding.imageContainer.post {
             val width = this.binding.imageContainer.width
             val height = (this.binding.imageContainer.width / 16) * 9
@@ -30,10 +27,24 @@ class LicensePlateCarouselViewHolder(private val binding: LicenseplateCarouselBi
 
             this.binding.imageContainer.layoutParams = layoutParams
 
-            Glide.with(context)
-                .load(licensePlateResponse.image)
-                .placeholder(R.drawable.placeholder_background)
-                .into(this.binding.imageView)
+            binding.imagePager.adapter = ImagePagerAdapter(context, licensePlateResponse.images)
+        }
+
+        if (licensePlateResponse.daysTillAPK == null) {
+            binding.apkAlert.visibility = View.GONE
+            binding.apkWarning.visibility = View.GONE
+        } else {
+            if (licensePlateResponse.daysTillAPK > 60) {
+                binding.apkAlert.visibility = View.GONE
+                binding.apkWarning.visibility = View.GONE
+
+            } else if (licensePlateResponse.daysTillAPK in 31..59) {
+                // yellow icon
+                binding.apkAlert.visibility = View.GONE
+            } else {
+                // red icon
+                binding.apkWarning.visibility = View.GONE
+            }
         }
 
         val recyclerView = this.binding.licenseplateDetailsRecyclerview
@@ -47,6 +58,7 @@ class LicensePlateCarouselViewHolder(private val binding: LicenseplateCarouselBi
 
         adapter.submit(licensePlateResponse.details)
 
+        recyclerView.onFlingListener = null
         PagerSnapHelper().attachToRecyclerView(recyclerView)
 
         this.binding.indicator.apply {
