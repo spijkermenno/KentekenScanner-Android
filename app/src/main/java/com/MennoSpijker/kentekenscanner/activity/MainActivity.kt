@@ -5,7 +5,6 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Typeface
 import android.os.Bundle
-import android.provider.Settings
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
@@ -14,29 +13,27 @@ import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.EditText
-import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.MennoSpijker.kentekenscanner.Util.FontManager
 import com.MennoSpijker.kentekenscanner.Camera.OcrCaptureActivity
 import com.MennoSpijker.kentekenscanner.R
 import com.MennoSpijker.kentekenscanner.Util.FileHandling
-import com.MennoSpijker.kentekenscanner.Util.KentekenHandler
+import com.MennoSpijker.kentekenscanner.Util.FontManager
 import com.MennoSpijker.kentekenscanner.Util.KentekenHandler.Companion.formatLicensePlate
 import com.MennoSpijker.kentekenscanner.Util.KentekenHandler.Companion.getSideCodeOfLicensePlate
 import com.MennoSpijker.kentekenscanner.Util.KentekenHandler.Companion.isLicensePlateValid
+import com.MennoSpijker.kentekenscanner.Util.Utils
 import com.MennoSpijker.kentekenscanner.adapter.LicensePlateAdapter
 import com.MennoSpijker.kentekenscanner.viewmodel.LicensePlateViewModel
-import com.google.android.gms.ads.*
-import com.google.android.gms.ads.initialization.InitializationStatus
 import com.google.android.gms.common.api.CommonStatusCodes
 import com.google.android.gms.tasks.Task
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.messaging.FirebaseMessaging
 import java.util.*
 import java.util.function.Consumer
+
 
 class MainActivity : AppCompatActivity() {
     private var bundle: Bundle? = Bundle()
@@ -76,9 +73,8 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    @SuppressLint("HardwareIds")
     private fun initLicensePlateHandling() {
-        uuid = Settings.Secure.getString(this.contentResolver, Settings.Secure.ANDROID_ID);
+        uuid = Utils.getUUID(this)
 
         val linearLayoutManager = LinearLayoutManager(this)
         linearLayoutManager.orientation = LinearLayoutManager.VERTICAL

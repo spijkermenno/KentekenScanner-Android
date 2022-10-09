@@ -1,6 +1,12 @@
 package com.MennoSpijker.kentekenscanner.viewholder
 
+import android.app.ActionBar.LayoutParams
 import android.content.res.Resources
+import android.view.View
+import android.view.ViewGroup
+import android.widget.RelativeLayout
+import androidx.core.view.updateLayoutParams
+import com.MennoSpijker.kentekenscanner.R
 import com.MennoSpijker.kentekenscanner.databinding.AdvertisementBinding
 import com.MennoSpijker.kentekenscanner.viewholder.CustomViewHolder
 import com.google.android.gms.ads.AdRequest
@@ -13,11 +19,25 @@ class AdvertisementBindingViewHolder(val binding: AdvertisementBinding) :
     fun bind() {
         val adview = AdView(binding.root.context)
 
-        adview.adSize = if (Random.nextBoolean()) {
-            AdSize.MEDIUM_RECTANGLE
+        val layoutParams = RelativeLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT)
+
+        if (Random.nextBoolean()) {
+            adview.adSize = AdSize.MEDIUM_RECTANGLE
+            // 300 x 250
+            layoutParams.marginStart =
+                binding.root.context.resources.getDimension(R.dimen.default_spacing_0_5x).toInt()
+            layoutParams.marginEnd =
+                binding.root.context.resources.getDimension(R.dimen.default_spacing_0_5x).toInt()
         } else {
-            AdSize.LARGE_BANNER
+            adview.adSize = AdSize.LARGE_BANNER
+            // 320 x 100
+            layoutParams.marginStart =
+                binding.root.context.resources.getDimension(R.dimen.default_spacing_0_25x).toInt()
+            layoutParams.marginEnd =
+                binding.root.context.resources.getDimension(R.dimen.default_spacing_0_25x).toInt()
         }
+
+        binding.holder.layoutParams = layoutParams
 
         adview.adUnitId = "ca-app-pub-4928043878967484/5013055585"
 

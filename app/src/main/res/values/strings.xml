@@ -33,4 +33,5 @@
     <string name="apk_alarm_short">APK verloopt in 30 dagen.</string>
     <string name="apk_waarschuwing">APK Waarschuwing! Uw APK verloopt in minder dan 60 dagen.</string>
     <string name="apk_waarschuwing_short">APK verloopt in 60 dagen.</string>
+    <string name="openDetails">Details</string>
 </resources>

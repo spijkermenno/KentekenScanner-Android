@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.MennoSpijker.kentekenscanner.activity.MainActivity
 import com.MennoSpijker.kentekenscanner.databinding.AdvertisementBinding
 import com.MennoSpijker.kentekenscanner.databinding.EmptyRecyclerViewBinding
 import com.MennoSpijker.kentekenscanner.databinding.LicenseplateCarouselBinding
@@ -14,7 +15,7 @@ import com.MennoSpijker.kentekenscanner.responses.LicensePlateResponse
 import com.MennoSpijker.kentekenscanner.responses.RecyclerViewItem
 import com.MennoSpijker.kentekenscanner.viewholder.*
 
-class LicensePlateAdapter : RecyclerView.Adapter<CustomViewHolder>() {
+class LicensePlateAdapter() : RecyclerView.Adapter<CustomViewHolder>() {
 
     var licensePlateResponses = ArrayList<RecyclerViewItem>()
 
