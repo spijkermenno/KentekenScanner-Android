@@ -1,10 +1,14 @@
 package com.MennoSpijker.kentekenscanner.activity
 
+import android.Manifest
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.Typeface
 import android.os.Bundle
+import android.os.Environment
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
@@ -15,6 +19,7 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.MennoSpijker.kentekenscanner.Camera.OcrCaptureActivity
@@ -114,7 +119,6 @@ class MainActivity : AppCompatActivity() {
 
                 // Get new FCM registration token
                 val token = task.result
-                Log.d(TAG, "onCreate: TOKEN: $token")
             }
 
         buttons.forEach(Consumer { button: Button? ->

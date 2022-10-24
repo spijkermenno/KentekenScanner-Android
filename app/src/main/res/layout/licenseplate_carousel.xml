@@ -101,7 +101,7 @@
                 android:orientation="vertical">
 
                 <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/licenseplate_details_recyclerview"
+                    android:id="@+id/licenseplate_card_recyclerview"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/default_spacing_0_5x"
@@ -114,7 +114,7 @@
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
                     tools:itemCount="3"
-                    tools:listitem="@layout/license_plate_details" />
+                    tools:listitem="@layout/license_plate_card" />
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"

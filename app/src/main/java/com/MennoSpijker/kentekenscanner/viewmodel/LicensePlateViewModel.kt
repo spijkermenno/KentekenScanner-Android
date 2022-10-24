@@ -65,7 +65,7 @@ class LicensePlateViewModel(val context: Context) {
         LicensePlateRepository.getLicensePlatesWithUUIDAndLicenseplateID(uuid, licenseplateId) {
             Log.d("TAG", "getLicensePlatesWithUUIDAndLicenseplateID: $it")
             it?.let {
-                this.list.value = arrayListOf(it);
+                this.list.value = arrayListOf(it)
             }
         }
     }

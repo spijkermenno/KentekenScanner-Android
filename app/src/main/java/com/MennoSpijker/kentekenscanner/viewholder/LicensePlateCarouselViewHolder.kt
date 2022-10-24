@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.PagerSnapHelper
 import com.MennoSpijker.kentekenscanner.activity.LicensePlateDetailsActivity
 import com.MennoSpijker.kentekenscanner.adapter.ImagePagerAdapter
-import com.MennoSpijker.kentekenscanner.adapter.LicensePlateDetailsAdapter
+import com.MennoSpijker.kentekenscanner.adapter.LicensePlateCardAdapter
 import com.MennoSpijker.kentekenscanner.databinding.LicenseplateCarouselBinding
 import com.MennoSpijker.kentekenscanner.responses.LicensePlateResponse
 
@@ -70,9 +70,9 @@ class LicensePlateCarouselViewHolder(
             }
         }
 
-        val recyclerView = this.binding.licenseplateDetailsRecyclerview
+        val recyclerView = this.binding.licenseplateCardRecyclerview
 
-        val adapter = LicensePlateDetailsAdapter()
+        val adapter = LicensePlateCardAdapter()
         val linearLayoutManager = LinearLayoutManager(context)
         linearLayoutManager.orientation = LinearLayoutManager.HORIZONTAL
 

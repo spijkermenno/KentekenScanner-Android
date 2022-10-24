@@ -7,5 +7,5 @@ data class LicensePlateDetails (
     var key: String = "",
 
     @SerializedName("content")
-    var content: String = ""
+    var content: String? = ""
 )

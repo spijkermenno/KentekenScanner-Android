@@ -11,16 +11,19 @@ import retrofit2.Response
 
 object LicensePlateRepository {
 
-    fun uploadFile(licenseplate: String, body: MultipartBody.Part?) {
+    fun uploadFile(licenseplate: String, body: MultipartBody.Part?, callback: (Boolean) -> Unit) {
         val call = RestService.getLicensePlateEndPoint().upload(licenseplate, body)
 
         call.enqueue(object : Callback<ResponseBody> {
             override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
-                Log.v("Upload", "success")
+                Log.d("TAG", "upload: onResponse: success")
+                callback(true)
             }
 
             override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
-                Log.e("Upload error:", t.message!!)
+                Log.d("TAG", "upload: onFailure: ${t.message}")
+                t.printStackTrace()
+                callback(false)
             }
         })
     }

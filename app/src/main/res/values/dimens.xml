@@ -9,4 +9,12 @@
     <dimen name="default_spacing_2_0x">64dp</dimen>
     <dimen name="default_spacing_1_5x">48dp</dimen>
     <dimen name="default_spacing_4_0x">128dp</dimen>
+
+    <dimen name="negative_spacing_0_125x">-4dp</dimen>
+    <dimen name="negative_spacing_0_25x">-8dp</dimen>
+    <dimen name="negative_spacing_0_5x">-16dp</dimen>
+    <dimen name="negative_spacing_1_0x">-32dp</dimen>
+    <dimen name="negative_spacing_2_0x">-64dp</dimen>
+    <dimen name="negative_spacing_1_5x">-48dp</dimen>
+    <dimen name="negative_spacing_4_0x">-128dp</dimen>
 </resources>

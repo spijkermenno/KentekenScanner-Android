@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+
+    android:background="@color/white"
+    android:orientation="vertical"
+    android:minWidth="@dimen/default_spacing_4_0x"
+    android:paddingBottom="@dimen/default_spacing_1_0x">
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/default_spacing_0_5x"
+
+        android:textSize="25sp"
+        android:textColor="@color/key_text_color"
+
+        tools:text="Vermogen"
+        android:textAlignment="center"
+        android:maxLines="2"
+        android:minLines="2"/>
+
+    <TextView
+        android:id="@+id/content"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/default_spacing_0_5x"
+
+        android:textSize="25sp"
+        android:textColor="@color/content_text_color"
+
+        tools:text="120pk of 91kw"
+        android:textAlignment="center"
+        android:maxLines="2"
+        android:minLines="2"
+        android:maxEms="20"/>
+</LinearLayout>

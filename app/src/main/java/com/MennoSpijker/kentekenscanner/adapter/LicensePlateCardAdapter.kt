@@ -4,23 +4,21 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.MennoSpijker.kentekenscanner.databinding.LicensePlateCardBinding
-import com.MennoSpijker.kentekenscanner.databinding.LicensePlateDetailsBinding
 import com.MennoSpijker.kentekenscanner.models.LicensePlateDetails
 import com.MennoSpijker.kentekenscanner.viewholder.LicensePlateCardViewHolder
-import com.MennoSpijker.kentekenscanner.viewholder.LicensePlateDetailsViewHolder
 
-class LicensePlateDetailsAdapter : RecyclerView.Adapter<LicensePlateDetailsViewHolder>() {
+class LicensePlateCardAdapter : RecyclerView.Adapter<LicensePlateCardViewHolder>() {
 
     var licensePlateDetails = ArrayList<LicensePlateDetails>()
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): LicensePlateDetailsViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): LicensePlateCardViewHolder {
         val inflater = LayoutInflater.from(parent.context)
-        val binding = LicensePlateDetailsBinding.inflate(inflater, parent, false)
+        val binding = LicensePlateCardBinding.inflate(inflater, parent, false)
 
-        return LicensePlateDetailsViewHolder(binding)
+        return LicensePlateCardViewHolder(binding)
     }
 
-    override fun onBindViewHolder(holder: LicensePlateDetailsViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: LicensePlateCardViewHolder, position: Int) {
         holder.bind(licensePlateDetails[position])
     }
 
