@@ -1,11 +1,14 @@
 package com.MennoSpijker.kentekenscanner.viewmodel
 
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.MutableLiveData
 import com.MennoSpijker.kentekenscanner.Util.KentekenHandler
+import com.MennoSpijker.kentekenscanner.activity.LicensePlateDetailsActivity
 import com.MennoSpijker.kentekenscanner.activity.MainActivity
 import com.MennoSpijker.kentekenscanner.repositories.LicensePlateRepository
 import com.MennoSpijker.kentekenscanner.responses.LicensePlateResponse
@@ -38,9 +41,10 @@ class LicensePlateViewModel(val context: Context) {
         Log.d("TAG", "addLicensePlateToUUID: $licencePlateReadyForRequest")
 
         LicensePlateRepository.addLicensePlateToUUID(licencePlateReadyForRequest, uuid) {
-            LicensePlateRepository.getLicensePlatesForUUID(uuid) {
-                this.list.value = it;
-            }
+            val intent = Intent(context, LicensePlateDetailsActivity::class.java)
+            intent.putExtra("licenseplateID", it)
+            intent.putExtra("licenseplate", licencePlateReadyForRequest)
+            ContextCompat.startActivity(context, intent, null)
         }
     }
 

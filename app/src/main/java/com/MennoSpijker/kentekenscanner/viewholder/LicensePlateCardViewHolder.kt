@@ -8,6 +8,7 @@ import com.MennoSpijker.kentekenscanner.databinding.LicensePlateCardBinding
 import com.MennoSpijker.kentekenscanner.models.LicensePlateDetails
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
+import java.time.format.FormatStyle
 import java.util.*
 
 class LicensePlateCardViewHolder(private val binding: LicensePlateCardBinding) :
@@ -22,9 +23,6 @@ class LicensePlateCardViewHolder(private val binding: LicensePlateCardBinding) :
         key = key.capitalize(Locale.getDefault())
 
         if (content != null) {
-            if (key.lowercase().contains("massa")) {
-                content += "kg"
-            }
 
             when (key.lowercase()) {
                 "kenteken" -> {
@@ -40,7 +38,7 @@ class LicensePlateCardViewHolder(private val binding: LicensePlateCardBinding) :
 
             if (key.lowercase().contains("datum")) {
                 val localDate = LocalDate.parse(content, DateTimeFormatter.ofPattern("dd-MM-yyyy"))
-                content = localDate.toString()
+                content = localDate.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG))
             }
 
             this.binding.title.text = key

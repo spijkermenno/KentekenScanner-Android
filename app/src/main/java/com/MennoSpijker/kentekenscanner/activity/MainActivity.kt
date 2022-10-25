@@ -125,6 +125,8 @@ class MainActivity : AppCompatActivity() {
             button!!.typeface = FontManager.getTypeface(this, FontManager.FONTAWESOME)
             button.textSize = 20f
         })
+
+        Log.e(TAG, "onCreate: ${Utils.getUUID(this)}")
     }
 
     override fun onStart() {

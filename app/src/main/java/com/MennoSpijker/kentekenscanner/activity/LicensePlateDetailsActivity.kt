@@ -24,6 +24,7 @@ import com.MennoSpijker.kentekenscanner.Util.FontManager
 import com.MennoSpijker.kentekenscanner.Util.KentekenHandler
 import com.MennoSpijker.kentekenscanner.Util.Utils
 import com.MennoSpijker.kentekenscanner.adapter.LicensePlateDetailsAdapter
+import com.MennoSpijker.kentekenscanner.models.LicensePlateDetails
 import com.MennoSpijker.kentekenscanner.repositories.LicensePlateRepository
 import com.MennoSpijker.kentekenscanner.viewmodel.LicensePlateViewModel
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -78,6 +79,13 @@ open class LicensePlateDetailsActivity : AppCompatActivity() {
 
         viewModel.list.observe(this) {
             Log.d("TAG", "onCreate: ${it.first().licensePlate}")
+
+            var imagesString = ""
+            it.first().images.forEach { image ->
+                imagesString += "$image,"
+            }
+
+            it.first().details.add(0, LicensePlateDetails("imageURL", imagesString))
             adapter.submit(it.first().details)
         }
 

@@ -83,7 +83,7 @@ android {
             buildConfigField "Boolean", "FIREBASE_ANALYTICS_DEACTIVATED", "true"
             buildConfigField "String", "ENDPOINT_API", "\"https://kenteken-scanner.nl/api/v2/\""
 
-//            buildConfigField "String", "ENDPOINT_API", "\"http://192.168.68.117/api/v2/\""
+            //buildConfigField "String", "ENDPOINT_API", "\"http://192.168.68.117/api/v2/\""
         }
     }
     lint {

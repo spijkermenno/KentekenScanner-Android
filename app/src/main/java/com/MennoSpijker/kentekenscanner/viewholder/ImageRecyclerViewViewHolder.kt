@@ -1,21 +1,32 @@
 package com.MennoSpijker.kentekenscanner.viewholder
 
-import android.app.ActionBar
-import android.widget.RelativeLayout
-import com.MennoSpijker.kentekenscanner.R
+import android.util.Log
+import android.widget.LinearLayout
 import com.MennoSpijker.kentekenscanner.adapter.ImagePagerAdapter
-import com.MennoSpijker.kentekenscanner.databinding.EmptyRecyclerViewBinding
-import com.MennoSpijker.kentekenscanner.viewholder.CustomViewHolder
-import com.google.android.gms.ads.AdRequest
-import com.google.android.gms.ads.AdSize
-import com.google.android.gms.ads.AdView
+import com.MennoSpijker.kentekenscanner.databinding.ImageRecyclerViewBinding
 import kotlinx.android.synthetic.main.image_recycler_view.view.*
-import kotlin.random.Random
 
-class ImageRecyclerViewViewHolder(val binding: EmptyRecyclerViewBinding) : CustomViewHolder(binding.root) {
-    fun bind(images: ArrayList<String>) {
+class ImageRecyclerViewViewHolder(val binding: ImageRecyclerViewBinding) :
+    CustomViewHolder(binding.root) {
+    fun bind(imagesString: String) {
+
+        val images: ArrayList<String> = imagesString.split(",").toCollection(ArrayList())
         val imagePager = binding.root.imagePager
 
-       imagePager.adapter = ImagePagerAdapter(context, images)
+        images.removeLast()
+
+        this.binding.imageContainer.post {
+            val width = this.binding.imageContainer.width
+            val height = (this.binding.imageContainer.width / 16) * 9
+
+            val layoutParams = LinearLayout.LayoutParams(
+                width,
+                height
+            )
+
+            this.binding.imageContainer.layoutParams = layoutParams
+
+            imagePager.adapter = ImagePagerAdapter(context, images)
+        }
     }
 }

@@ -24,7 +24,7 @@ interface LicensePlateEndpoint {
     fun requestNewLicensePlateData(
         @Path("licenseplate") licenseplate: String,
         @Path("uuid") uuid: String
-    ): Call<ArrayList<Any>>
+    ): Call<Int>
 
     @Multipart
     @POST("kenteken/image/{licenseplate}")

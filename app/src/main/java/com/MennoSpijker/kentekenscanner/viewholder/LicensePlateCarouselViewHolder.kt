@@ -22,8 +22,6 @@ class LicensePlateCarouselViewHolder(
     private var licencePlateId: Int? = null;
 
     private fun onClickListener(licenseplate: String) {
-        Log.d("TAG", "onClickListener: CLICK")
-
         val intent = Intent(context, LicensePlateDetailsActivity::class.java)
         intent.putExtra("licenseplateID", licencePlateId)
         intent.putExtra("licenseplate", licenseplate)

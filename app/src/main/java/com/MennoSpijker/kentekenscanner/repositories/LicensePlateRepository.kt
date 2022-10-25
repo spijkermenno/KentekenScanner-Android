@@ -16,8 +16,11 @@ object LicensePlateRepository {
 
         call.enqueue(object : Callback<ResponseBody> {
             override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
-                Log.d("TAG", "upload: onResponse: success")
-                callback(true)
+                if (response.code() == 200) {
+                    callback(true)
+                } else {
+                    callback(false)
+                }
             }
 
             override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
@@ -28,26 +31,21 @@ object LicensePlateRepository {
         })
     }
 
-    fun addLicensePlateToUUID(licensePlate: String, uuid: String, callback: () -> Unit) {
-        Log.d("TAG", "addLicensePlateToUUID: $uuid $licensePlate")
-        Log.d(
-            "TAG",
-            "addLicensePlateToUUID: ${BuildConfig.ENDPOINT_API}kenteken/$uuid/$licensePlate/"
-        )
+    fun addLicensePlateToUUID(licensePlate: String, uuid: String, callback: (Int) -> Unit) {
         val request =
             RestService.getLicensePlateEndPoint().requestNewLicensePlateData(licensePlate, uuid)
 
-        request.enqueue(object : Callback<ArrayList<Any>> {
+        request.enqueue(object : Callback<Int> {
             override fun onResponse(
-                call: Call<ArrayList<Any>>,
-                response: Response<ArrayList<Any>>
+                call: Call<Int>,
+                response: Response<Int>
             ) {
-                callback()
+                response.body()?.let(callback) ?: callback(-1)
             }
 
-            override fun onFailure(call: Call<ArrayList<Any>>, t: Throwable) {
+            override fun onFailure(call: Call<Int>, t: Throwable) {
                 t.printStackTrace()
-                callback()
+                callback(-1)
             }
         })
     }
@@ -77,7 +75,6 @@ object LicensePlateRepository {
     }
 
     fun getLicensePlatesForUUID(uuid: String, callback: (ArrayList<LicensePlateResponse>) -> Unit) {
-        Log.d("TAG", "getLicensePlatesForUUID: $uuid")
         val request = RestService.getLicensePlateEndPoint().getLicensePlatesForUUID(uuid)
 
         request.enqueue(object : Callback<ArrayList<LicensePlateResponse>> {
@@ -85,7 +82,6 @@ object LicensePlateRepository {
                 call: Call<ArrayList<LicensePlateResponse>>,
                 response: Response<ArrayList<LicensePlateResponse>>
             ) {
-                Log.d("TAG", "getLicensePlatesForUUID UUID: $response")
                 if (response.isSuccessful && response.body() != null) {
                     callback(response.body()!!)
                 } else {
@@ -94,7 +90,6 @@ object LicensePlateRepository {
             }
 
             override fun onFailure(call: Call<ArrayList<LicensePlateResponse>>, t: Throwable) {
-                Log.d("TAG", "getLicensePlatesForUUID error: ${t.message}")
                 t.printStackTrace()
                 callback(ArrayList())
             }

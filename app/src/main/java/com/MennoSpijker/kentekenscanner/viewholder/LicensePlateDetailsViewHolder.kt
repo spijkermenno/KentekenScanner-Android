@@ -10,12 +10,11 @@ import com.MennoSpijker.kentekenscanner.databinding.LicensePlateDetailsBinding
 import com.MennoSpijker.kentekenscanner.models.LicensePlateDetails
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
+import java.time.format.FormatStyle
 import java.util.*
 
 class LicensePlateDetailsViewHolder(private val binding: LicensePlateDetailsBinding) :
-    RecyclerView.ViewHolder(binding.root) {
-    val context: Context = itemView.context
-
+    CustomViewHolder(binding.root) {
     fun bind(licensePlateDetails: LicensePlateDetails) {
         var key = licensePlateDetails.key
         var content = licensePlateDetails.content
@@ -24,9 +23,6 @@ class LicensePlateDetailsViewHolder(private val binding: LicensePlateDetailsBind
         key = key.capitalize(Locale.getDefault())
 
         if (content != null) {
-            if (key.lowercase().contains("massa")) {
-                content += "kg"
-            }
 
             when (key.lowercase()) {
                 "kenteken" -> {
@@ -42,7 +38,7 @@ class LicensePlateDetailsViewHolder(private val binding: LicensePlateDetailsBind
 
             if (key.lowercase().contains("datum")) {
                 val localDate = LocalDate.parse(content, DateTimeFormatter.ofPattern("dd-MM-yyyy"))
-                content = localDate.toString()
+                content = localDate.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG))
             }
 
             this.binding.title.text = key
