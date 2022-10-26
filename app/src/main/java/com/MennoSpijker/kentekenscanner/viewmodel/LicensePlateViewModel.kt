@@ -38,8 +38,6 @@ class LicensePlateViewModel(val context: Context) {
 
         FirebaseAnalytics.getInstance(context).logEvent(FirebaseAnalytics.Event.SEARCH, bundle)
 
-        Log.d("TAG", "addLicensePlateToUUID: $licencePlateReadyForRequest")
-
         LicensePlateRepository.addLicensePlateToUUID(licencePlateReadyForRequest, uuid) {
             val intent = Intent(context, LicensePlateDetailsActivity::class.java)
             intent.putExtra("licenseplateID", it)
@@ -55,8 +53,6 @@ class LicensePlateViewModel(val context: Context) {
         )
         FirebaseAnalytics.getInstance(context).logEvent(FirebaseAnalytics.Event.LOGIN, bundle)
 
-        Log.d("TAG", "getLicensePlatesForUUID: $uuid")
-
         LicensePlateRepository.getLicensePlatesForUUID(uuid) {
             this.list.value = it;
         }
@@ -67,7 +63,6 @@ class LicensePlateViewModel(val context: Context) {
         licenseplateId: Int
     ) {
         LicensePlateRepository.getLicensePlatesWithUUIDAndLicenseplateID(uuid, licenseplateId) {
-            Log.d("TAG", "getLicensePlatesWithUUIDAndLicenseplateID: $it")
             it?.let {
                 this.list.value = arrayListOf(it)
             }

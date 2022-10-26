@@ -97,4 +97,17 @@
             tools:itemCount="2"
             tools:listitem="@layout/license_plate_details" />
     </LinearLayout>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end|bottom"
+        android:src="@drawable/alert"
+        android:backgroundTint="@color/background_color_extra_tinted"
+        android:contentDescription="@string/delete"
+        android:layout_margin="@dimen/default_spacing_0_5x"
+        app:borderWidth="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintRight_toRightOf="parent"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

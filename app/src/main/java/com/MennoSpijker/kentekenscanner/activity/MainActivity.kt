@@ -147,7 +147,6 @@ class MainActivity : AppCompatActivity() {
                     i1: Int,
                     i2: Int
                 ) {
-                    Log.d(TAG, "beforeTextChanged: $charSequence")
                 }
 
                 override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
@@ -171,13 +170,11 @@ class MainActivity : AppCompatActivity() {
                 }
 
                 override fun afterTextChanged(editable: Editable) {
-                    Log.d(TAG, "afterTextChanged: $editable")
                 }
             })
             FirebaseMessaging.getInstance().token
                 .addOnCompleteListener { task: Task<String?> ->
                     if (!task.isSuccessful) {
-                        Log.w(TAG, "Fetching FCM registration token failed", task.exception)
                         return@addOnCompleteListener
                     }
 
@@ -188,7 +185,6 @@ class MainActivity : AppCompatActivity() {
                     Log.d("FCM Token", token!!)
                 }
             kentekenTextField.setOnKeyListener { v: View?, keyCode: Int, event: KeyEvent ->
-                Log.d(TAG, "onKey: $keyCode")
                 if (event.action == KeyEvent.ACTION_DOWN) {
                     when (keyCode) {
                         KeyEvent.KEYCODE_ENTER -> {
@@ -199,7 +195,6 @@ class MainActivity : AppCompatActivity() {
                             return@setOnKeyListener true
                         }
                         KeyEvent.KEYCODE_DEL -> {
-                            Log.d(TAG, "onKey: KEY EVENT")
                             var text = kentekenTextField.text.toString()
                             text = text.replace("-", "")
                             var newText = text

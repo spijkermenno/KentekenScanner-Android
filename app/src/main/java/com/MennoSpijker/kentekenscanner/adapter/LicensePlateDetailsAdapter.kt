@@ -57,7 +57,6 @@ class LicensePlateDetailsAdapter : RecyclerView.Adapter<CustomViewHolder>() {
     override fun getItemViewType(position: Int): Int {
         val item = licensePlateDetails.get(position);
 
-        Log.d("TAG", "getItemViewType: ${item.key}")
         return if (item.key == "imageURL") {
             VIEWTYPE_IMAGE
         } else {

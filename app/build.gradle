@@ -13,7 +13,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.google.gms:google-services:4.3.5'
+        classpath 'com.google.gms:google-services:4.3.14'
         classpath 'com.google.firebase:firebase-crashlytics-gradle:2.5.2'
         classpath 'com.jakewharton:butterknife-gradle-plugin:10.1.0'
     }
@@ -48,8 +48,8 @@ android {
         applicationId "com.y_gap.menno.kentekenscanner"
         minSdkVersion 26
         targetSdkVersion 30
-        versionCode 22
-        versionName "1.8.1"
+        versionCode 23
+        versionName "1.9.0"
         setProperty("archivesBaseName", "$applicationName -v$versionName ($versionCode)")
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
         multiDexKeepProguard file("proguard.multidex.config")

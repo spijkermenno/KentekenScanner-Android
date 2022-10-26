@@ -24,7 +24,6 @@ object LicensePlateRepository {
             }
 
             override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
-                Log.d("TAG", "upload: onFailure: ${t.message}")
                 t.printStackTrace()
                 callback(false)
             }
@@ -63,7 +62,6 @@ object LicensePlateRepository {
                 call: Call<LicensePlateResponse>,
                 response: Response<LicensePlateResponse>
             ) {
-                Log.d("TAG", "onResponse: $response")
                 callback(response.body())
             }
 

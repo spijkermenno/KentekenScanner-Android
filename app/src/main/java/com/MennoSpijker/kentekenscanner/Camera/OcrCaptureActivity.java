@@ -251,13 +251,11 @@ public final class OcrCaptureActivity extends AppCompatActivity {
                                            @NonNull String[] permissions,
                                            @NonNull int[] grantResults) {
         if (requestCode != RC_HANDLE_CAMERA_PERM) {
-            Log.d(TAG, "Got unexpected permission result: " + requestCode);
             super.onRequestPermissionsResult(requestCode, permissions, grantResults);
             return;
         }
 
         if (grantResults.length != 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            Log.d(TAG, "Camera permission granted - initialize the camera source");
             // We have permission, so create the camerasource
             boolean autoFocus = getIntent().getBooleanExtra(AutoFocus, false);
             boolean useFlash = getIntent().getBooleanExtra(UseFlash, false);
@@ -336,16 +334,13 @@ public final class OcrCaptureActivity extends AppCompatActivity {
                         Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
                         v.vibrate(700);
                     } catch (Exception IE) {
-                        Log.println(Log.ERROR, TAG, "no sound could be played.");
                         IE.printStackTrace();
                     }
                 }
                 finish();
             } else {
-                Log.d(TAG, "text data is null");
             }
         } else {
-            Log.d(TAG, "no text detected");
         }
         return text != null;
     }
