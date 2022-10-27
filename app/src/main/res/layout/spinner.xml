@@ -14,5 +14,8 @@
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
 
+        android:minHeight="200dp"
+        android:minWidth="200dp"
+
         android:indeterminateDrawable="@drawable/customprogressbar" />
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -167,6 +167,14 @@ open class LicensePlateDetailsActivity : AppCompatActivity() {
         } else {
 
             val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+
+            takePictureIntent.putExtra("crop", "true");
+            takePictureIntent.putExtra("outputX", 150);
+            takePictureIntent.putExtra("outputY", 150);
+            takePictureIntent.putExtra("aspectX", 1);
+            takePictureIntent.putExtra("aspectY", 1);
+            takePictureIntent.putExtra("scale", true);
+
             // Ensure that there's a camera activity to handle the intent
             if (takePictureIntent.resolveActivity(packageManager) != null) {
                 // Create the File where the photo should go
@@ -201,6 +209,14 @@ open class LicensePlateDetailsActivity : AppCompatActivity() {
                 Intent.ACTION_PICK,
                 MediaStore.Images.Media.EXTERNAL_CONTENT_URI
             )
+
+            pickPhoto.putExtra("crop", "true");
+            pickPhoto.putExtra("outputX", 600);
+            pickPhoto.putExtra("outputY", 450);
+            pickPhoto.putExtra("aspectX", 4);
+            pickPhoto.putExtra("aspectY", 3);
+            pickPhoto.putExtra("scale", true);
+
             startActivityForResult(pickPhoto, 1)
         }
     }
@@ -212,6 +228,7 @@ open class LicensePlateDetailsActivity : AppCompatActivity() {
         val filePathColumn = arrayOf(MediaStore.Images.Media.DATA)
 
         if (resultCode == RESULT_OK) {
+            Log.d("TAG", "onActivityResult: $requestCode")
             when (requestCode) {
                 0 -> {
                     selectedImage = Uri.parse(mCurrentPhotoPath)
@@ -219,6 +236,8 @@ open class LicensePlateDetailsActivity : AppCompatActivity() {
                 }
                 1 -> {
                     selectedImage = imageReturnedIntent?.data
+
+                    Log.d("TAG", "onActivityResult: $selectedImage")
 
                     selectedImage?.let {
                         val cursor: Cursor? = contentResolver.query(
@@ -263,16 +282,23 @@ open class LicensePlateDetailsActivity : AppCompatActivity() {
 
     private fun uploadImage(uri: String) {
         uri.let {
+            Log.d("TAG", "uploadImage: uri $uri")
             val file = File(uri)
+            Log.d("TAG", "uploadImage: file $uri")
 
-            val requestFile = file.asRequestBody("multipart/form-data".toMediaTypeOrNull())
+            val mediatype = "multipart/form-data".toMediaTypeOrNull()
+            Log.d("TAG", "uploadImage: mediatype $mediatype")
+
+            val requestFile = file.asRequestBody(mediatype)
+            Log.d("TAG", "uploadImage: file req $requestFile")
 
             // MultipartBody.Part is used to send also the actual file name
             val body =
                 MultipartBody.Part.createFormData("afbeeldingAuto", file.name, requestFile)
+            Log.d("TAG", "uploadImage: body $body")
 
             LicensePlateRepository.uploadFile(licenseplate, body) {
-                if (it) {
+                if (it == 200) {
                     Toast.makeText(
                         this, "Afbeelding geupload, deze zal zichtbaar zijn na goedkeuring.",
                         Toast.LENGTH_LONG

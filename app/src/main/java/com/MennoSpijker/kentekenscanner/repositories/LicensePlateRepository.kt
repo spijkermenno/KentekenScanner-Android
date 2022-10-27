@@ -11,21 +11,17 @@ import retrofit2.Response
 
 object LicensePlateRepository {
 
-    fun uploadFile(licenseplate: String, body: MultipartBody.Part?, callback: (Boolean) -> Unit) {
+    fun uploadFile(licenseplate: String, body: MultipartBody.Part?, callback: (Int) -> Unit) {
         val call = RestService.getLicensePlateEndPoint().upload(licenseplate, body)
 
         call.enqueue(object : Callback<ResponseBody> {
             override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
-                if (response.code() == 200) {
-                    callback(true)
-                } else {
-                    callback(false)
-                }
+                callback(response.code())
             }
 
             override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
                 t.printStackTrace()
-                callback(false)
+                callback(-1)
             }
         })
     }

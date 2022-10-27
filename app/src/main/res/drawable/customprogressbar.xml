@@ -2,8 +2,7 @@
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android" >
     <item>
         <rotate
-            android:drawable="@mipmap/ic_launcher"
-            android:fillAfter="true"
+            android:drawable="@drawable/spinner"
             android:fromDegrees="0"
             android:pivotX="50%"
             android:pivotY="50%"

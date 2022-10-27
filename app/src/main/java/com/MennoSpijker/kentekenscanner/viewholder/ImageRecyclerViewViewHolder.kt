@@ -17,7 +17,7 @@ class ImageRecyclerViewViewHolder(val binding: ImageRecyclerViewBinding) :
 
         this.binding.imageContainer.post {
             val width = this.binding.imageContainer.width
-            val height = (this.binding.imageContainer.width / 16) * 9
+            val height = (this.binding.imageContainer.width / 4) * 3
 
             val layoutParams = LinearLayout.LayoutParams(
                 width,
