@@ -48,8 +48,8 @@ android {
         applicationId "com.y_gap.menno.kentekenscanner"
         minSdkVersion 26
         targetSdkVersion 30
-        versionCode 23
-        versionName "1.9.0"
+        versionCode 24
+        versionName "1.9.1"
         setProperty("archivesBaseName", "$applicationName -v$versionName ($versionCode)")
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
         multiDexKeepProguard file("proguard.multidex.config")
