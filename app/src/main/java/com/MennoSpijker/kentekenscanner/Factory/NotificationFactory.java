@@ -33,36 +33,29 @@ public class NotificationFactory {
     private final Context context;
 
     public NotificationFactory(Context context) {
-        Log.d(TAG, "NotificationFactory: New notifcationFactory generated");
 
         this.context = context;
         this.createNotificationChannel();
     }
 
-    Date getDate(String dateString) throws ParseException {
+    static Date getDate(String dateString) throws ParseException {
         return new SimpleDateFormat("dd-MM-yy", Locale.GERMANY).parse(dateString);
     }
 
-    public long calculateNotifcationTime(String dateString) {
+    static public long calculateNotifcationTime(String dateString) {
         try {
-            Date date = this.getDate(dateString);
-            Log.d(TAG, "onCreate: " + date.toString());
+            Date date = getDate(dateString);
 
             Calendar c = Calendar.getInstance();
             c.setTimeZone(TimeZone.getTimeZone("Europe/Amsterdam"));
             c.setTime(date);
-            c.add(Calendar.DAY_OF_YEAR, -30);
-            c.add(Calendar.HOUR_OF_DAY, 12);
-            c.add(Calendar.MINUTE, 0);
-
-            Log.d(TAG, "onCreate: " + System.currentTimeMillis());
-            Log.d(TAG, "onCreate: " + c.getTimeInMillis());
+            c.add(Calendar.DAY_OF_YEAR, -45);
+            c.add(Calendar.HOUR_OF_DAY, 14);
+            c.add(Calendar.MINUTE, 11);
 
             long currentTime = System.currentTimeMillis();
             long specificTimeToTrigger = c.getTimeInMillis();
             long delayToPass = specificTimeToTrigger - currentTime;
-
-            Log.d(TAG, "onCreate: " + delayToPass);
 
             return delayToPass;
         } catch (Exception e) {
@@ -80,14 +73,10 @@ public class NotificationFactory {
             data.putInt("uuid", notificationUUID);
             data.putString("kenteken", kenteken);
 
-            Log.d(TAG, "planNotification: " + notificationDate);
-
             LocalDateTime localDateTime = Instant.ofEpochMilli(System.currentTimeMillis() + notificationDate)
                     .atZone(TimeZone.getTimeZone("Europe/Amsterdam")
                             .toZoneId()
                     ).toLocalDateTime();
-
-            Log.d(TAG, "planNotification: " + localDateTime);
 
             String notficationDateString = localDateTime.getDayOfMonth() + " ";
             notficationDateString += (localDateTime.getMonth() + " ").toLowerCase();
@@ -129,6 +118,5 @@ public class NotificationFactory {
         NotificationManager notificationManager = context.getSystemService(NotificationManager.class);
         notificationManager.createNotificationChannel(channel);
 
-        Log.d(TAG, "createNotificationChannel: Notification channel created...");
     }
 }

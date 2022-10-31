@@ -22,4 +22,12 @@
     <color name="recent_background_color">#4CAF50</color>
     <color name="menu_background_color">#607D8B</color>
     <color name="save_background_color">#673AB7</color>
+    <color name="background_image_color">#E5E5E5</color>
+    <color name="content_text_color">#5D5D5D</color>
+    <color name="key_text_color">#1A1A1A</color>
+    <color name="background_color_tinted">#f0f0f0</color>
+    <color name="background_color_extra_tinted">#E0E0E0</color>
+    <color name="transparent">#00885753</color>
+    <color name="emergency_red">#FF2029</color>
+    <color name="warning_yellow">#eed202</color>
 </resources>

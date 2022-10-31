@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.MennoSpijker.kentekenscanner;
+package com.MennoSpijker.kentekenscanner.Camera;
 
 import android.content.Context;
 import android.content.Intent;
@@ -26,8 +26,8 @@ import android.util.Log;
 import android.util.SparseArray;
 import android.view.View;
 
-import com.MennoSpijker.kentekenscanner.Camera.GraphicOverlay;
-import com.MennoSpijker.kentekenscanner.View.KentekenHandler;
+import com.MennoSpijker.kentekenscanner.R;
+import com.MennoSpijker.kentekenscanner.Util.KentekenHandler;
 import com.google.android.gms.common.api.CommonStatusCodes;
 import com.google.android.gms.vision.Detector;
 import com.google.android.gms.vision.text.TextBlock;
@@ -59,7 +59,7 @@ class OcrDetectorProcessor implements Detector.Processor<TextBlock> {
         for (int i = 0; i < items.size(); ++i) {
             final TextBlock item = items.valueAt(i);
             if (item != null && item.getValue() != null) {
-                if (KentekenHandler.kentekenValid(item.getValue())) {
+                if (KentekenHandler.isLicensePlateValid(item.getValue())) {
 
                     if (DIRECTSEARCH) {
                         Intent data = new Intent();

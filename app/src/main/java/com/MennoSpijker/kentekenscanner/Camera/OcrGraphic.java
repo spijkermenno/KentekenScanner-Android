@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.MennoSpijker.kentekenscanner;
+package com.MennoSpijker.kentekenscanner.Camera;
 
 import android.graphics.Canvas;
 import android.graphics.Color;

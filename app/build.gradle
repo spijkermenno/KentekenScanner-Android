@@ -1,29 +1,89 @@
+buildscript {
+
+    repositories {
+        maven { url "https://jitpack.io" }
+        maven { url "https://maven.fabric.io/public" }
+        jcenter()
+        mavenCentral()
+        maven {
+            url 'https://maven.google.com/'
+            name 'Google'
+        }
+        google()
+    }
+
+    dependencies {
+        classpath 'com.google.gms:google-services:4.3.14'
+        classpath 'com.google.firebase:firebase-crashlytics-gradle:2.5.2'
+        classpath 'com.jakewharton:butterknife-gradle-plugin:10.1.0'
+    }
+}
+
 apply plugin: 'com.android.application'
-apply plugin: 'com.google.gms.google-services'
-apply plugin: 'com.google.firebase.firebase-perf'
+apply plugin: 'com.jakewharton.butterknife'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
 apply plugin: 'com.google.firebase.crashlytics'
+apply plugin: 'com.google.gms.google-services'
+
+repositories {
+    maven { url "https://jitpack.io" }
+    maven { url "https://maven.google.com" }
+    maven { url 'https://maven.fabric.io/public' }
+    jcenter()
+    mavenCentral()
+    google()
+}
 
 android {
-    compileSdkVersion 30
+    compileSdkVersion 33
+    buildToolsVersion '30.0.3'
+
+    kotlinOptions {
+        jvmTarget = '1.8'
+        freeCompilerArgs = ['-Xjvm-default=enable']
+    }
+
     defaultConfig {
         applicationId "com.y_gap.menno.kentekenscanner"
         minSdkVersion 26
         targetSdkVersion 30
-        versionCode 22
-        versionName "10801"
+        versionCode 24
+        versionName "1.9.1"
+        setProperty("archivesBaseName", "$applicationName -v$versionName ($versionCode)")
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
+        multiDexKeepProguard file("proguard.multidex.config")
         multiDexEnabled true
     }
+
+    buildFeatures {
+        viewBinding = true
+        dataBinding = true
+    }
+
+    applicationVariants.all { variant ->
+        variant.outputs.each { output ->
+            def newFileName = applicationName + "-v" + versionName + "(" + versionCode + ")-" + output.name + ".apk"
+            output.outputFileName = new File(output.name, output.outputFile.name.replace("app-release.apk", newFileName))
+        }
+    }
+
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            resValue("bool", "FIREBASE_ANALYTICS_DEACTIVATED", "false")
+
+            buildConfigField "Boolean", "FIREBASE_ANALYTICS_DEACTIVATED", "false"
+            buildConfigField "String", "ENDPOINT_API", "\"https://kenteken-scanner.nl/api/v2/\""
         }
 
         debug {
             debuggable true
-            resValue("bool", "FIREBASE_ANALYTICS_DEACTIVATED", "true")
+
+            buildConfigField "Boolean", "FIREBASE_ANALYTICS_DEACTIVATED", "true"
+            buildConfigField "String", "ENDPOINT_API", "\"https://kenteken-scanner.nl/api/v2/\""
+
+            //buildConfigField "String", "ENDPOINT_API", "\"http://192.168.68.117/api/v2/\""
         }
     }
     lint {
@@ -34,17 +94,31 @@ android {
         warning 'LintBaseline'
         warningsAsErrors true
     }
+    namespace 'com.MennoSpijker.kentekenscanner'
 }
 
 android.buildTypes.release.ndk.debugSymbolLevel = 'full'
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.4.0'
+
+    implementation 'androidx.multidex:multidex:2.0.1'
+    implementation 'com.google.android.material:material:1.5.0'
+    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+    implementation 'androidx.cardview:cardview:1.0.0'
+    implementation 'androidx.recyclerview:recyclerview:1.2.0-alpha04'
+    implementation 'androidx.percentlayout:percentlayout:1.0.0'
+    implementation 'androidx.legacy:legacy-support-core-utils:1.0.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
+    implementation 'androidx.annotation:annotation:1.2.0'
+    implementation 'androidx.activity:activity-ktx:1.3.1'
+    implementation 'androidx.fragment:fragment-ktx:1.3.6'
+
     implementation "androidx.multidex:multidex:2.0.1"
-    implementation "androidx.core:core:1.6.0"
     implementation "androidx.work:work-runtime:2.0.1"
 
-    implementation 'androidx.appcompat:appcompat:1.2.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
     implementation 'com.google.android.gms:play-services-ads:19.6.0'
 
@@ -52,7 +126,6 @@ dependencies {
     implementation 'com.google.android.material:material:1.2.1'
     implementation 'com.google.android.gms:play-services-vision:20.1.3'
 
-    implementation 'androidx.appcompat:appcompat:1.2.0'
     implementation 'com.google.android.gms:play-services-ads:19.6.0'
 
     implementation platform('com.google.firebase:firebase-bom:26.3.0')
@@ -61,5 +134,46 @@ dependencies {
     implementation 'com.google.firebase:firebase-messaging:23.0.0'
     implementation 'com.google.firebase:firebase-perf:20.0.5'
     implementation 'com.google.firebase:firebase-crashlytics:18.2.8'
+
+    implementation 'com.github.bumptech.glide:glide:4.11.0'
+
+    implementation 'com.squareup.retrofit2:retrofit:2.7.0'
+    implementation 'com.squareup.retrofit2:converter-gson:2.4.0'
+    implementation 'com.squareup:otto:1.3.8'
+
+    implementation 'com.squareup.okhttp3:logging-interceptor:3.12.12'
+
+    implementation "ru.tinkoff.scrollingpagerindicator:scrollingpagerindicator:1.2.3"
+    implementation "com.android.support:recyclerview-v7:1.1.1"
+
+    implementation 'com.google.android.gms:play-services-maps:18.0.2'
+    androidTestImplementation 'org.junit.jupiter:junit-jupiter:5.5.1'
+    androidTestImplementation("androidx.test:runner:1.4.0")
+    androidTestImplementation 'android.arch.core:core-testing:1.1.1'
+
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.5.1'
+    testImplementation("androidx.test:runner:1.4.0")
+    testImplementation 'android.arch.core:core-testing:1.1.1'
+
+    apply plugin: 'kotlin-kapt'
+
+    implementation 'androidx.core:core-ktx:1.7.0'
+    implementation 'androidx.appcompat:appcompat:1.4.1'
+    implementation 'com.google.android.material:material:1.5.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.3'
+
+    // Network
+    implementation 'com.squareup.retrofit2:retrofit:2.9.0'
+    implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
+    implementation 'com.squareup.okhttp3:okhttp:4.2.1'
+
+    //Glide
+    implementation 'com.github.bumptech.glide:glide:4.12.0'
+    kapt 'com.github.bumptech.glide:compiler:4.12.0'
+
+    annotationProcessor 'com.github.bumptech.glide:compiler:4.7.1'
+
+    implementation 'com.github.smarteist:autoimageslider:1.4.0'
+    implementation 'com.google.android.material:material:1.2.0'
 
 }

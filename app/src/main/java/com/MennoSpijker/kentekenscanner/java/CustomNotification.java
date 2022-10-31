@@ -14,10 +14,7 @@ import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 
 import com.MennoSpijker.kentekenscanner.R;
-import com.MennoSpijker.kentekenscanner.Util.FileHandling;
-import com.MennoSpijker.kentekenscanner.View.MainActivity;
-
-import java.time.LocalTime;
+import com.MennoSpijker.kentekenscanner.activity.MainActivity;
 
 public class CustomNotification extends Worker {
     private final Context context;

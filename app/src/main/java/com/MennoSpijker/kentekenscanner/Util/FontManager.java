@@ -1,4 +1,4 @@
-package com.MennoSpijker.kentekenscanner;
+package com.MennoSpijker.kentekenscanner.Util;
 
 import android.content.Context;
 import android.graphics.Typeface;

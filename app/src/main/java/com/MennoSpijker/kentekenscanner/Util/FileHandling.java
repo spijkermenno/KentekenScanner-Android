@@ -35,9 +35,7 @@ public class FileHandling {
         StringBuilder fileContent = new StringBuilder();
 
         File file = new File(storageDir + filename);
-        System.out.println("FILENAME: " + file);
         if (file.exists()) {
-            Log.d(TAG, "readFile: File exists.");
             try {
                 fis = new FileInputStream(file);
 
@@ -54,10 +52,8 @@ public class FileHandling {
                 FNF.printStackTrace();
             }
 
-            Log.d(TAG, "readFile() returned: " + fileContent);
             return fileContent.toString();
         } else {
-            Log.d(TAG, "readFile: File doesn't exist, try to create");
             try {
                 file.createNewFile();
                 writeToFile(filename, new JSONObject());
@@ -274,10 +270,7 @@ public class FileHandling {
         try {
             mainObject = new JSONObject(fileContent);
         } catch (JSONException e) {
-            System.out.println("error empty mainObject");
         }
-
-        Log.d(TAG, "getPendingNotifications: " + mainObject);
 
         //return notifications;
         return mainObject;
@@ -368,10 +361,7 @@ public class FileHandling {
                     notificationsArray.put(notificationObject);
                     this.saveNotificationsToFile(notificationsArray);
                 } else {
-                    Log.d(TAG, "addNotificationToFile: Notification with this kenteken already saved.");
                 }
-
-                Log.d(TAG, "addNotificationToFile: " + notifications);
             } else {
                 this.saveNotificationsToFile(new JSONArray().put(notificationObject));
             }
@@ -384,8 +374,6 @@ public class FileHandling {
     public boolean doesNotificationExist(String kenteken) {
         boolean doesExistInArray = false;
         JSONObject notifications = getPendingNotifications();
-        Log.d(TAG, "doesNotificationExist: " + notifications);
-        Log.d(TAG, "doesNotificationExist: " + notifications.length());
 
         if (notifications.length() == 0) {
             return false;
@@ -424,11 +412,9 @@ public class FileHandling {
                 Date date = new SimpleDateFormat("dd-MM-yy", Locale.GERMANY).parse(notificationDate);
 
                 if(date.before(new Date())) {
-                    Log.d(TAG, "cleanUpNotificationList: Date passed");
                     notificationsArray.remove(i);
                     changedArray = true;
                 } else {
-                    Log.d(TAG, "cleanUpNotificationList: Date not passed");
                 }
 
                 if (changedArray) {
