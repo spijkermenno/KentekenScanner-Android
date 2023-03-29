@@ -80,6 +80,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun initLicensePlateHandling() {
         uuid = Utils.getUUID(this)
+        FirebaseAnalytics.getInstance(this).setUserId(uuid)
 
         val linearLayoutManager = LinearLayoutManager(this)
         linearLayoutManager.orientation = LinearLayoutManager.VERTICAL
@@ -125,8 +126,6 @@ class MainActivity : AppCompatActivity() {
             button!!.typeface = FontManager.getTypeface(this, FontManager.FONTAWESOME)
             button.textSize = 20f
         })
-
-        Log.e(TAG, "onCreate: ${Utils.getUUID(this)}")
     }
 
     override fun onStart() {

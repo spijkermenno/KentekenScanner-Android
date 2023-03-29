@@ -35,6 +35,8 @@ import com.MennoSpijker.kentekenscanner.R;
 import com.google.android.material.snackbar.Snackbar;
 import androidx.core.app.ActivityCompat;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
+
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
@@ -67,7 +69,7 @@ public final class OcrCaptureActivity extends AppCompatActivity {
     private static final int RC_HANDLE_GMS = 9001;
 
     // Permission request codes need to be < 256
-    private static final int RC_HANDLE_CAMERA_PERM = 2;
+    public static final int RC_HANDLE_CAMERA_PERM = 2;
 
     // Constants used to pass extra data in the intent
     public static final String AutoFocus = "AutoFocus";
@@ -128,16 +130,15 @@ public final class OcrCaptureActivity extends AppCompatActivity {
 
         final String[] permissions = new String[]{Manifest.permission.CAMERA};
 
-        if (!ActivityCompat.shouldShowRequestPermissionRationale(this,
-                Manifest.permission.CAMERA)) {
-            ActivityCompat.requestPermissions(this, permissions, RC_HANDLE_CAMERA_PERM);
+
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[] { Manifest.permission.CAMERA }, RC_HANDLE_CAMERA_PERM);
             return;
         }
 
         final Activity thisActivity = this;
 
-        View.OnClickListener listener = view -> ActivityCompat.requestPermissions(thisActivity, permissions,
-                RC_HANDLE_CAMERA_PERM);
+        View.OnClickListener listener = view -> ActivityCompat.requestPermissions(thisActivity, permissions, RC_HANDLE_CAMERA_PERM);
 
         Snackbar.make(mGraphicOverlay, R.string.permission_camera_rationale,
                         Snackbar.LENGTH_INDEFINITE)

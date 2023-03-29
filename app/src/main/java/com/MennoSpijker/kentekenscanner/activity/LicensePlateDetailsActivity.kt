@@ -1,8 +1,6 @@
 package com.MennoSpijker.kentekenscanner.activity
 
-import R2.id.kenteken
 import android.Manifest
-import android.R.array
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -19,10 +17,12 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.MennoSpijker.kentekenscanner.BuildConfig
+import com.MennoSpijker.kentekenscanner.Camera.OcrCaptureActivity
 import com.MennoSpijker.kentekenscanner.Factory.NotificationFactory
 import com.MennoSpijker.kentekenscanner.R
 import com.MennoSpijker.kentekenscanner.Util.FontManager
@@ -165,6 +165,11 @@ open class LicensePlateDetailsActivity : AppCompatActivity() {
         if (!checkPermissionForReadExtertalStorage()) {
             requestPermissionForReadExtertalStorage()
         } else {
+
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.CAMERA),
+                    OcrCaptureActivity.RC_HANDLE_CAMERA_PERM)
+            }
 
             val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
 
