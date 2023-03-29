@@ -1,14 +1,10 @@
 package com.MennoSpijker.kentekenscanner.activity
 
-import android.Manifest
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.graphics.Typeface
 import android.os.Bundle
-import android.os.Environment
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
@@ -19,7 +15,6 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.MennoSpijker.kentekenscanner.Camera.OcrCaptureActivity
@@ -39,14 +34,13 @@ import com.google.firebase.messaging.FirebaseMessaging
 import java.util.*
 import java.util.function.Consumer
 
-
 class MainActivity : AppCompatActivity() {
     private var bundle: Bundle? = Bundle()
 
-    lateinit var firebaseAnalytics: FirebaseAnalytics
-    lateinit var resultRecyclerView: RecyclerView
-    lateinit var licensePlateTextEdit: EditText
-    lateinit var openCameraButton: Button
+    private lateinit var firebaseAnalytics: FirebaseAnalytics
+    private lateinit var resultRecyclerView: RecyclerView
+    private lateinit var licensePlateTextEdit: EditText
+    private lateinit var openCameraButton: Button
 
     @SuppressLint("HardwareIds")
     lateinit var uuid: String;
@@ -72,7 +66,7 @@ class MainActivity : AppCompatActivity() {
         setOnClickListener()
     }
 
-    fun setOnClickListener() {
+    private fun setOnClickListener() {
         openCameraButton.setOnClickListener {
             startCameraIntent()
         }
@@ -98,8 +92,8 @@ class MainActivity : AppCompatActivity() {
 
     private fun hideKeyboard() {
         this.currentFocus?.let { view ->
-            val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
-            imm?.hideSoftInputFromWindow(view.windowToken, 0)
+            val inputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
+            inputMethodManager?.hideSoftInputFromWindow(view.windowToken, 0)
         }
     }
 
@@ -138,8 +132,8 @@ class MainActivity : AppCompatActivity() {
         Thread {
             // Notifications cleanup
             FileHandling(context).cleanUpNotificationList()
-            val kentekenTextField = findViewById<EditText>(R.id.kenteken)
-            kentekenTextField.addTextChangedListener(object : TextWatcher {
+            val licencePlateTextField = findViewById<EditText>(R.id.kenteken)
+            licencePlateTextField.addTextChangedListener(object : TextWatcher {
                 override fun beforeTextChanged(
                     charSequence: CharSequence,
                     i: Int,
@@ -149,15 +143,15 @@ class MainActivity : AppCompatActivity() {
                 }
 
                 override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
-                    val kenteken = kentekenTextField.text.toString()
+                    val licencePlate = licencePlateTextField.text.toString()
 
-                    if (kenteken.length == 6) {
-                        val formatedKenteken = formatLicensePlate(kenteken)
-                        if (kenteken != formatedKenteken) {
-                            kentekenTextField.setText(formatedKenteken)
-                            if (isLicensePlateValid(kentekenTextField.text.toString())) {
+                    if (licencePlate.length == 6) {
+                        val formattedLicencePlate = formatLicensePlate(licencePlate)
+                        if (licencePlate != formattedLicencePlate) {
+                            licencePlateTextField.setText(formattedLicencePlate)
+                            if (isLicensePlateValid(licencePlateTextField.text.toString())) {
                                 // run API call
-                                val licensePlate = kentekenTextField.text.toString().uppercase()
+                                val licensePlate = licencePlateTextField.text.toString().uppercase()
                                 hideKeyboard()
 
                                 viewModel.addLicensePlateToUUID(licensePlate, uuid)
@@ -183,37 +177,37 @@ class MainActivity : AppCompatActivity() {
                     // Log
                     Log.d("FCM Token", token!!)
                 }
-            kentekenTextField.setOnKeyListener { v: View?, keyCode: Int, event: KeyEvent ->
+            licencePlateTextField.setOnKeyListener { v: View?, keyCode: Int, event: KeyEvent ->
                 if (event.action == KeyEvent.ACTION_DOWN) {
                     when (keyCode) {
                         KeyEvent.KEYCODE_ENTER -> {
-                            var licensePlate = kentekenTextField.text.toString().uppercase()
+                            val licensePlate = licencePlateTextField.text.toString().uppercase()
 
                             viewModel.addLicensePlateToUUID(licensePlate, uuid)
 
                             return@setOnKeyListener true
                         }
                         KeyEvent.KEYCODE_DEL -> {
-                            var text = kentekenTextField.text.toString()
+                            var text = licencePlateTextField.text.toString()
                             text = text.replace("-", "")
                             var newText = text
                             if (text.isNotEmpty()) {
                                 newText = text.substring(0, text.length - 1)
                             }
-                            kentekenTextField.setText(newText)
-                            kentekenTextField.setSelection(kentekenTextField.text.length)
+                            licencePlateTextField.setText(newText)
+                            licencePlateTextField.setSelection(licencePlateTextField.text.length)
                             return@setOnKeyListener true
                         }
                         else -> {}
                     }
                 }
                 val sideCode = getSideCodeOfLicensePlate(
-                    kentekenTextField.text.toString().uppercase(
+                    licencePlateTextField.text.toString().uppercase(
                         Locale.getDefault()
                     )
                 )
                 if (sideCode != -1 && sideCode != -2) {
-                    var licensePlate = kentekenTextField.text.toString().uppercase()
+                    val licensePlate = licencePlateTextField.text.toString().uppercase()
 
                     viewModel.addLicensePlateToUUID(licensePlate, uuid)
                     return@setOnKeyListener true
@@ -221,11 +215,11 @@ class MainActivity : AppCompatActivity() {
                 false
             }
             if (intent.getStringExtra("kenteken") != null) {
-                var licensePlate = intent.getStringExtra("kenteken").toString().uppercase()
+                val licensePlate = intent.getStringExtra("kenteken").toString().uppercase()
 
                 viewModel.addLicensePlateToUUID(licensePlate, uuid)
-                val kentekenTextView = kentekenTextField as TextView
-                kentekenTextView.text = formatLicensePlate(licensePlate)
+                val licencePlateTextView = licencePlateTextField as TextView
+                licencePlateTextView.text = formatLicensePlate(licensePlate)
             }
         }.start()
     }
@@ -249,14 +243,14 @@ class MainActivity : AppCompatActivity() {
         if (requestCode == RC_OCR_CAPTURE) {
             if (resultCode == CommonStatusCodes.SUCCESS) {
                 val text = data?.getStringExtra(OcrCaptureActivity.TextBlockObject)
-                val textfield = findViewById<EditText>(R.id.kenteken)
+                val editText = findViewById<EditText>(R.id.kenteken)
 
                 text?.let {
                     if (isLicensePlateValid(text)) {
                         adapter.showLoader()
                         viewModel.addLicensePlateToUUID(text, uuid)
-                        val kentekenTextView = textfield as TextView
-                        kentekenTextView.text = formatLicensePlate(text)
+                        val licencePlateTextView = editText as TextView
+                        licencePlateTextView.text = formatLicensePlate(text)
                     }
                 }
             }
