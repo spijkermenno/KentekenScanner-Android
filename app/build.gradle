@@ -48,7 +48,7 @@ android {
         applicationId "com.y_gap.menno.kentekenscanner"
         minSdkVersion 26
         targetSdkVersion 33
-        versionCode 25
+        versionCode 26
         versionName "1.9.2"
         setProperty("archivesBaseName", "$applicationName -v$versionName ($versionCode)")
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'

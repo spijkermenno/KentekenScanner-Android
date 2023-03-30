@@ -1,5 +1,6 @@
 package com.MennoSpijker.kentekenscanner.java;
 
+import static android.app.PendingIntent.FLAG_IMMUTABLE;
 import static com.MennoSpijker.kentekenscanner.Factory.NotificationFactory.CHANNEL_ID;
 
 import android.annotation.SuppressLint;
@@ -41,7 +42,7 @@ public class CustomNotification extends Worker {
         Intent intent = new Intent(context, MainActivity.class);
         intent.putExtra("kenteken", kenteken);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        @SuppressLint("UnspecifiedImmutableFlag") PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, 0);
+        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, FLAG_IMMUTABLE);
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this.context, CHANNEL_ID)
                 .setSmallIcon(R.drawable.logo_180)
