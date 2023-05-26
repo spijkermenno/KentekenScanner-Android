@@ -17,4 +17,7 @@
     <dimen name="negative_spacing_2_0x">-64dp</dimen>
     <dimen name="negative_spacing_1_5x">-48dp</dimen>
     <dimen name="negative_spacing_4_0x">-128dp</dimen>
+
+    <dimen name="tablet_max_width">500dp</dimen>
+    <dimen name="tablet_max_width_cards">400dp</dimen>
 </resources>
